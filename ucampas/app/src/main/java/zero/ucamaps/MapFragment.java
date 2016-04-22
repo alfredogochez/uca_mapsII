@@ -16,7 +16,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech.OnInitListener;
+import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -38,20 +38,16 @@ import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.esri.android.map.Callout;
 import com.esri.android.map.GraphicsLayer;
-import com.esri.android.map.Layer;
 import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.LocationDisplayManager.AutoPanMode;
 import com.esri.android.map.MapOnTouchListener;
 import com.esri.android.map.MapView;
-import com.esri.android.map.ags.ArcGISFeatureLayer;
 import com.esri.android.map.event.OnPinchListener;
-import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.map.event.OnStatusChangedListener;
 
-import butterknife.OnClick;
 import zero.ucamaps.dialogs.ProgressDialogFragment;
+import zero.ucamaps.dialogs.SaveDialogFragment;
 import zero.ucamaps.location.DirectionsDialogFragment;
 import zero.ucamaps.location.DirectionsDialogFragment.DirectionsDialogListener;
 import zero.ucamaps.location.RoutingDialogFragment;
@@ -924,6 +920,18 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				showSearchBoxLayout();
 				// Remove all graphics from the map
 				resetGraphicsLayers();
+			}
+		});
+
+		ImageView iv_save = (ImageView) mSearchResult.findViewById(R.id.imageView4);
+		iv_save.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+					SaveDialogFragment save = new SaveDialogFragment();
+					save.show(getActivity().getFragmentManager(),null);
+
 			}
 		});
 
