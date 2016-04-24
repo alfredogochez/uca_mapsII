@@ -87,16 +87,6 @@
         android:src="@drawable/ic_routing_take_center_fork" />
 
     <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="5dp"
-        android:layout_weight="1"
-        android:contentDescription="@string/icon_cancel"
-        android:src="@drawable/ic_action_cancel" />
-
-    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/imageView4"
@@ -105,5 +95,15 @@
         android:contentDescription="@string/icon_cancel"
         android:src="@drawable/ic_save_black_24dp"
         android:clickable="true" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="5dp"
+        android:layout_weight="1"
+        android:contentDescription="@string/icon_cancel"
+        android:src="@drawable/ic_action_cancel" />
 
 </LinearLayout>

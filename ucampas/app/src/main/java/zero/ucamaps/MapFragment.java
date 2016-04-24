@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,7 +17,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -47,13 +47,14 @@ import com.esri.android.map.event.OnPinchListener;
 import com.esri.android.map.event.OnStatusChangedListener;
 
 import zero.ucamaps.dialogs.ProgressDialogFragment;
-import zero.ucamaps.dialogs.SaveDialogFragment;
 import zero.ucamaps.location.DirectionsDialogFragment;
 import zero.ucamaps.location.DirectionsDialogFragment.DirectionsDialogListener;
 import zero.ucamaps.location.RoutingDialogFragment;
 import zero.ucamaps.location.RoutingDialogFragment.RoutingDialogListener;
 import zero.ucamaps.tools.Compass;
 import zero.ucamaps.tts.TTSManager;
+import zero.ucamaps.util.DialogFavoriteRoute;
+import zero.ucamaps.util.GlobalPoints;
 import zero.ucamaps.util.TaskExecutor;
 
 import com.esri.core.geometry.Envelope;
@@ -782,7 +783,8 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	 */
 	@SuppressWarnings("unchecked")
 	private void executeRoutingTask(String start, String end) {
-		// Create a list of start end point params
+
+        // Create a list of start end point params
 		LocatorFindParameters routeStartParams = new LocatorFindParameters(start);
 		LocatorFindParameters routeEndParams = new LocatorFindParameters(end);
 		List<LocatorFindParameters> routeParams = new ArrayList<LocatorFindParameters>();
@@ -791,7 +793,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		routeParams.add(routeStartParams);
 		routeParams.add(routeEndParams);
 
-		// Execute async task to do the routing
+        // Execute async task to do the routing
 		RouteAsyncTask routeTask = new RouteAsyncTask();
 		routeTask.execute(routeParams);
 		mPendingTask = routeTask;
@@ -929,8 +931,8 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			@Override
 			public void onClick(View v) {
 
-					SaveDialogFragment save = new SaveDialogFragment();
-					save.show(getActivity().getFragmentManager(),null);
+				DialogFragment newFragment = new DialogFavoriteRoute();
+				newFragment.show(getFragmentManager(),"Favorites");
 
 			}
 		});
@@ -1054,7 +1056,11 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			// Perform routing request on background thread
 			mException = null;
 
-			// Define route objects
+            //Declarando clase global
+            final GlobalPoints globalVariable;
+            globalVariable = (GlobalPoints) getActivity().getApplicationContext();
+
+            // Define route objects
 			List<LocatorGeocodeResult> geocodeStartResult = null;
 			List<LocatorGeocodeResult> geocodeEndResult = null;
 			Point startPoint = null;
@@ -1089,6 +1095,10 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 					endPoint = geocodeEndResult.get(0).getLocation();
 					mEndLocation = geocodeEndResult.get(0).getAddress();
 				}
+
+                //Guardando puntos
+                globalVariable.setLongitude( startPoint.getX());
+                globalVariable.setLatitude( endPoint.getY());
 
 			} catch (Exception e) {
 				mException = e;
