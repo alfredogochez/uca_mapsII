@@ -58,6 +58,7 @@ import zero.ucamaps.location.RoutingDialogFragment;
 import zero.ucamaps.location.RoutingDialogFragment.RoutingDialogListener;
 import zero.ucamaps.tools.Compass;
 import zero.ucamaps.tts.TTSManager;
+import zero.ucamaps.util.GlobalPoints;
 import zero.ucamaps.util.TaskExecutor;
 
 import com.esri.core.geometry.Envelope;
@@ -786,7 +787,8 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	 */
 	@SuppressWarnings("unchecked")
 	private void executeRoutingTask(String start, String end) {
-		// Create a list of start end point params
+
+        // Create a list of start end point params
 		LocatorFindParameters routeStartParams = new LocatorFindParameters(start);
 		LocatorFindParameters routeEndParams = new LocatorFindParameters(end);
 		List<LocatorFindParameters> routeParams = new ArrayList<LocatorFindParameters>();
@@ -795,7 +797,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		routeParams.add(routeStartParams);
 		routeParams.add(routeEndParams);
 
-		// Execute async task to do the routing
+        // Execute async task to do the routing
 		RouteAsyncTask routeTask = new RouteAsyncTask();
 		routeTask.execute(routeParams);
 		mPendingTask = routeTask;
@@ -1046,7 +1048,11 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			// Perform routing request on background thread
 			mException = null;
 
-			// Define route objects
+            //Declarando clase global
+            final GlobalPoints globalVariable;
+            globalVariable = (GlobalPoints) getActivity().getApplicationContext();
+
+            // Define route objects
 			List<LocatorGeocodeResult> geocodeStartResult = null;
 			List<LocatorGeocodeResult> geocodeEndResult = null;
 			Point startPoint = null;
@@ -1081,6 +1087,10 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 					endPoint = geocodeEndResult.get(0).getLocation();
 					mEndLocation = geocodeEndResult.get(0).getAddress();
 				}
+
+                //Guardando puntos
+                globalVariable.setLongitude( startPoint.getX());
+                globalVariable.setLatitude( endPoint.getY());
 
 			} catch (Exception e) {
 				mException = e;
