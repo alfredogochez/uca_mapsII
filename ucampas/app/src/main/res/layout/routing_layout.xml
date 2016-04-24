@@ -45,9 +45,10 @@
         android:id="@+id/getRouteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/holo_blue_light"
+        android:background="@color/background_floating_material_dark"
         android:padding="5dp"
         android:text="@string/get_route" 
-        android:layout_gravity="center_horizontal"/>
+        android:layout_gravity="center_horizontal"
+        android:textColor="@color/abc_primary_text_material_dark" />
 
 </LinearLayout>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="esri_white">#FFFFFFFF</color>
+    <color name="esri_white">#ffffff</color>
     <color name="esri_off_white">#FFF9F9F9</color>
     <color name="esri_lightest_gray">#FFEDEDED</color>
     <color name="esri_lighter_gray">#FFCCCCCC</color>

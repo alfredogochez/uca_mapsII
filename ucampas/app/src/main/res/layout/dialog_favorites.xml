@@ -31,9 +31,9 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="59dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Medium Text"
+            android:text="\nNombre:"
             android:id="@+id/Nombre" />
 
         <EditText
