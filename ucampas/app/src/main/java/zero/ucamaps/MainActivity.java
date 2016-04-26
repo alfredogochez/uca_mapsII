@@ -1,9 +1,11 @@
 package zero.ucamaps;
 
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -13,6 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterViewAnimator;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,6 +24,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.zxing.client.android.CaptureActivity;
 
 import java.util.ArrayList;
@@ -37,11 +44,16 @@ public class MainActivity extends ActionBarActivity {
     public static DrawerLayout mDrawerLayout;
     private String changeSound = "";
     private String baseColor = "";
+
+
+
+
     MapFragment mapFragment;
     /**
      * The list of menu items in the navigation drawer
      */
-    @InjectView(R.id.uca_maps_activity_left_drawer) ListView mDrawerList;
+    @InjectView(R.id.uca_maps_activity_left_drawer)
+    ListView mDrawerList;
 
     private final List<DrawerItem> mDrawerItems = new ArrayList<>();
 
@@ -49,6 +61,11 @@ public class MainActivity extends ActionBarActivity {
      * Helper component that ties the action bar to the navigation drawer.
      */
     private ActionBarDrawerToggle mDrawerToggle;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +76,9 @@ public class MainActivity extends ActionBarActivity {
         setupDrawer();
         setView();
 
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     @Override
@@ -88,7 +108,7 @@ public class MainActivity extends ActionBarActivity {
 
         // set a custom shadow that overlays the main content when the drawer
         // opens
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,GravityCompat.START);
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
 
         //ActionBar actionBar = getSupportActionBar();
@@ -132,7 +152,7 @@ public class MainActivity extends ActionBarActivity {
     private void setView() {
         // show the default map
         setChangeSound("Sound Off");
-        showMapWithSound(null,changeSound);
+        showMapWithSound(null, changeSound);
 
     }
 
@@ -183,7 +203,7 @@ public class MainActivity extends ActionBarActivity {
 
                     @Override
                     public void onBasemapChanged(String itemId) {
-                        showMapWithSound(itemId,changeSound);
+                        showMapWithSound(itemId, changeSound);
                     }
                 });
                 basemapsFrag.show(getFragmentManager(), null);
@@ -205,7 +225,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick() {
 
-                Intent myIntent= new Intent(MainActivity.this,CaptureActivity.class);
+                Intent myIntent = new Intent(MainActivity.this, CaptureActivity.class);
                 startActivityForResult(myIntent, 1);
                 //Close and lock the drawer
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -229,10 +249,10 @@ public class MainActivity extends ActionBarActivity {
                 //Sends the parameter to the dynamic fragment
                 if (getChangeSound().equals("Sound Off")) {
                     setChangeSound("Sound On");
-                    showMapWithSound(baseColor,changeSound);
+                    showMapWithSound(baseColor, changeSound);
                 } else {
                     setChangeSound("Sound Off");
-                    showMapWithSound(baseColor,changeSound);
+                    showMapWithSound(baseColor, changeSound);
                 }
                 //Close and lock the drawer
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -263,6 +283,31 @@ public class MainActivity extends ActionBarActivity {
             }
 
         });
+
+        mDrawerItems.add(item);
+
+
+        // añandiendo el item de rutas favoritas
+        LinearLayout favorites = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
+        TextView text_favorites = (TextView) favorites.findViewById(R.id.drawer_item_textview);
+        ImageView icon_favorites = (ImageView) favorites.findViewById(R.id.drawer_item_icon);
+
+        text_favorites.setText("Favorite Routes");
+        icon_favorites.setImageResource(R.drawable.ic_star_black_24dp);
+        item = new DrawerItem(favorites, new DrawerItem.OnClickListener() {
+
+            @Override
+            public void onClick() {
+
+                DialogFragment favFrag = new DialogFavoriteList();
+                favFrag.show(getFragmentManager(),"Favorite Routes");
+
+
+
+            }
+
+        });
+
         mDrawerItems.add(item);
 
 
@@ -274,6 +319,46 @@ public class MainActivity extends ActionBarActivity {
             adapter.notifyDataSetChanged();
         }
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://zero.ucamaps/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://zero.ucamaps/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
     }
 
     /**
