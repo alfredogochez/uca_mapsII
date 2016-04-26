@@ -37,6 +37,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import zero.ucamaps.basemaps.BasemapsDialogFragment;
 import zero.ucamaps.dialogs.AboutDialog;
+import zero.ucamaps.util.DialogFavoriteRoute;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -309,6 +310,31 @@ public class MainActivity extends ActionBarActivity {
         });
 
         mDrawerItems.add(item);
+
+/*      // Adding the Favorites item in the Drawer
+        LinearLayout view_favorite = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
+        TextView text_drawer_favorite = (TextView) view_favorite.findViewById(R.id.drawer_item_textview);
+        ImageView icon_drawer_favorite = (ImageView) view_favorite.findViewById(R.id.drawer_item_icon);
+
+        text_drawer_favorite.setText("Favoritas");
+        icon_drawer_favorite.setImageResource(R.drawable.action_qr_code);
+        item = new DrawerItem(view_favorite, new DrawerItem.OnClickListener() {
+
+            @Override
+            public void onClick() {
+
+                Intent myIntent= new Intent(MainActivity.this,CaptureActivity.class);
+                startActivityForResult(myIntent, 1);
+                //Close and lock the drawer
+                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+                DialogFragment newFragment = new DialogFavoriteRoute();
+                newFragment.show(getFragmentManager(),"Favorites");
+
+            }
+        });
+        mDrawerItems.add(item);
+         */
 
 
         BaseAdapter adapter = (BaseAdapter) mDrawerList.getAdapter();

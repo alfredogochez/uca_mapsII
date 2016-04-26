@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,7 +17,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -38,19 +38,14 @@ import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.esri.android.map.Callout;
 import com.esri.android.map.GraphicsLayer;
-import com.esri.android.map.Layer;
 import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.LocationDisplayManager.AutoPanMode;
 import com.esri.android.map.MapOnTouchListener;
 import com.esri.android.map.MapView;
-import com.esri.android.map.ags.ArcGISFeatureLayer;
 import com.esri.android.map.event.OnPinchListener;
-import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.map.event.OnStatusChangedListener;
 
-import butterknife.OnClick;
 import zero.ucamaps.dialogs.ProgressDialogFragment;
 import zero.ucamaps.location.DirectionsDialogFragment;
 import zero.ucamaps.location.DirectionsDialogFragment.DirectionsDialogListener;
@@ -58,6 +53,8 @@ import zero.ucamaps.location.RoutingDialogFragment;
 import zero.ucamaps.location.RoutingDialogFragment.RoutingDialogListener;
 import zero.ucamaps.tools.Compass;
 import zero.ucamaps.tts.TTSManager;
+import zero.ucamaps.util.DialogFavoriteRoute;
+import zero.ucamaps.util.GlobalPoints;
 import zero.ucamaps.util.TaskExecutor;
 
 import com.esri.core.geometry.Envelope;
@@ -786,7 +783,8 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	 */
 	@SuppressWarnings("unchecked")
 	private void executeRoutingTask(String start, String end) {
-		// Create a list of start end point params
+
+        // Create a list of start end point params
 		LocatorFindParameters routeStartParams = new LocatorFindParameters(start);
 		LocatorFindParameters routeEndParams = new LocatorFindParameters(end);
 		List<LocatorFindParameters> routeParams = new ArrayList<LocatorFindParameters>();
@@ -795,7 +793,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		routeParams.add(routeStartParams);
 		routeParams.add(routeEndParams);
 
-		// Execute async task to do the routing
+        // Execute async task to do the routing
 		RouteAsyncTask routeTask = new RouteAsyncTask();
 		routeTask.execute(routeParams);
 		mPendingTask = routeTask;
@@ -927,6 +925,18 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			}
 		});
 
+		ImageView iv_save = (ImageView) mSearchResult.findViewById(R.id.imageView4);
+		iv_save.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+				DialogFragment newFragment = new DialogFavoriteRoute();
+				newFragment.show(getFragmentManager(),"Favorites");
+
+			}
+		});
+
 		// Set up the listener for the "Show Directions" icon
 		ImageView iv_directions = (ImageView) mSearchResult.findViewById(R.id.imageView2);
 		iv_directions.setOnClickListener(new OnClickListener() {
@@ -1046,7 +1056,11 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			// Perform routing request on background thread
 			mException = null;
 
-			// Define route objects
+            //Declarando clase global
+            final GlobalPoints globalVariable;
+            globalVariable = (GlobalPoints) getActivity().getApplicationContext();
+
+            // Define route objects
 			List<LocatorGeocodeResult> geocodeStartResult = null;
 			List<LocatorGeocodeResult> geocodeEndResult = null;
 			Point startPoint = null;
@@ -1081,6 +1095,10 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 					endPoint = geocodeEndResult.get(0).getLocation();
 					mEndLocation = geocodeEndResult.get(0).getAddress();
 				}
+
+                //Guardando puntos
+                globalVariable.setLongitude( startPoint.getX());
+                globalVariable.setLatitude( endPoint.getY());
 
 			} catch (Exception e) {
 				mException = e;
