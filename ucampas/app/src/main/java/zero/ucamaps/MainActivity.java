@@ -302,9 +302,6 @@ public class MainActivity extends ActionBarActivity {
 
                 DialogFragment favFrag = new DialogFavoriteList();
                 favFrag.show(getFragmentManager(),"Favorite Routes");
-
-
-
             }
 
         });
