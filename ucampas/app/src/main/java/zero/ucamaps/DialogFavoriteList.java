@@ -25,7 +25,7 @@ import zero.ucamaps.R;
  * Created by alf on 23/04/2016.
  */
 public class DialogFavoriteList extends DialogFragment {
-
+    
     @Override
 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -44,18 +44,20 @@ public class DialogFavoriteList extends DialogFragment {
             //No habian rutas
             Toast.makeText(getActivity(), "No hay rutas guardadas como favoritas", Toast.LENGTH_SHORT).show();
             //builder.setMessage("No hay rutas marcadas como favoritas");
-            return builder.create();
+            return null;
         }
         else{
-            builder.setView(inflater.inflate(R.layout.favorites, null))
-                    .setTitle("Rutas Favoritas")
-                    .setItems(listaRutas, new DialogInterface.OnClickListener() {
+
+                builder.setView(inflater.inflate(R.layout.favorites, null))
+                        .setTitle("Rutas Favoritas")
+                        .setItems(listaRutas, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             ;
                         }
                     });
                 return builder.create();
+
         }
     }
 

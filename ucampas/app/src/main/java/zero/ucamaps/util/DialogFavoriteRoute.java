@@ -21,6 +21,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
+import zero.ucamaps.DialogFavoriteList;
+import zero.ucamaps.DialogReplaceFavorite;
 import zero.ucamaps.R;
 
 /**
@@ -49,7 +51,7 @@ public class DialogFavoriteRoute extends DialogFragment {
                         // Get name and email from global/application context
                         final double latitude = globalVariable.getLatitude();
                         final double longitude = globalVariable.getLongitude();
-
+                        final String ruta_cambio = nombre_ruta + "_" + latitude + "_" + longitude + "\n";
                         try {
                             //verificamos si llegamos a las 10 rutas limite
                             int lineas = calcular_longitud();
@@ -60,7 +62,11 @@ public class DialogFavoriteRoute extends DialogFragment {
                                         .setMessage("Ya tiene 10 rutas favoritas, para guardar una nueva, debe borrar una antigua, ¿desea continuar?")
                                         .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
-                                                // continue with delete
+                                                DialogFragment reemplazarDia = new DialogReplaceFavorite();
+
+                                                reemplazarDia.show(getFragmentManager(), "Seleccione la Ruta");
+
+                                                Toast.makeText(getActivity(), "Ruta Cambiada Exitosamente", Toast.LENGTH_SHORT).show();
                                             }
                                         })
                                         .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -132,5 +138,11 @@ public class DialogFavoriteRoute extends DialogFragment {
         return longitud;
         }else
             return 0;
+    }
+
+
+    private void reemplazar_ruta(String ruta){
+        Toast.makeText(getActivity(), "creando ventana", Toast.LENGTH_SHORT).show();
+
     }
 }
