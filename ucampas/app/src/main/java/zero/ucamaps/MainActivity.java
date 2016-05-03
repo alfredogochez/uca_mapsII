@@ -36,6 +36,7 @@ import java.util.Map;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import zero.ucamaps.basemaps.BasemapsDialogFragment;
+import zero.ucamaps.beans.FavoriteRoute;
 import zero.ucamaps.dialogs.AboutDialog;
 import zero.ucamaps.util.DialogFavoriteRoute;
 
@@ -300,8 +301,18 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick() {
 
+
                 DialogFragment favFrag = new DialogFavoriteList();
-                favFrag.show(getFragmentManager(),"Favorite Routes");
+                DialogFavoriteList list = (DialogFavoriteList) favFrag;
+                List<FavoriteRoute> recuperar = list.recuperar();
+                if(!recuperar.isEmpty()){
+                    favFrag.show(getFragmentManager(),"Favorite Routes");
+                }
+                else{
+
+                    Toast.makeText(getApplicationContext(),"No hay rutas favoritas", Toast.LENGTH_SHORT).show();
+                }
+
             }
 
         });

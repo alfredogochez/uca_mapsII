@@ -87,6 +87,7 @@ public class DialogFavoriteRoute extends DialogFragment {
                                     FileOutputStream fos = new FileOutputStream(file);
                                     OutputStreamWriter osw = new OutputStreamWriter(fos);
                                     osw.write(nombre_ruta + "_" + latitude + "_" + longitude + "\n");
+
                                     osw.flush();
                                     osw.close();
                                     fos.close();

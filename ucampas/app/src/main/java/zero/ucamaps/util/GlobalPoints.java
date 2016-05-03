@@ -6,6 +6,10 @@ package zero.ucamaps.util;
 
 import android.app.Application;
 
+import java.util.List;
+
+import zero.ucamaps.beans.FavoriteRoute;
+
 public class GlobalPoints extends Application{
 
     private double latitude;
@@ -25,5 +29,15 @@ public class GlobalPoints extends Application{
 
     public void setLatitude(double latitude) {
         this.latitude = latitude;
+    }
+
+    private List<FavoriteRoute> listaRutas;
+
+    public List<FavoriteRoute> getListaRutas() {
+        return listaRutas;
+    }
+
+    public void setListaRutas(List<FavoriteRoute> listaRutas) {
+        this.listaRutas = listaRutas;
     }
 }
