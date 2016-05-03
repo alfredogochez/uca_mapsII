@@ -15,7 +15,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import zero.ucamaps.beans.FavoriteRoute;
@@ -69,37 +71,30 @@ public class DialogFavoriteList extends DialogFragment {
 
     public List<FavoriteRoute> recuperar(){
         String nombrearchivo = "favorites_routes";
-        List<FavoriteRoute> listaFavoritos = new ArrayList<>();
+        List<FavoriteRoute> listaFavoritos = new LinkedList<FavoriteRoute>();
         int i = 0;
         File tarjeta = Environment.getExternalStorageDirectory();
         File file = new File(tarjeta.getAbsolutePath(), nombrearchivo);
+        ObjectInputStream objectinputstream = null;
+        FileInputStream streamIn = null;
         try {
-
             if(file != null) {
-                FileInputStream fIn = new FileInputStream(file);
-                InputStreamReader archivo = new InputStreamReader(fIn);
-                BufferedReader br = new BufferedReader(archivo);
-                String linea = br.readLine();
-                String todo = "";
-                String lista[] = new String[5];
-
-                while (linea != null && i < 10) {
-                    lista = linea.split("_");
-
-                    FavoriteRoute favorite = new FavoriteRoute();
-                    favorite.setName(lista[0]);
-                    favorite.setLatitud(Double.parseDouble(lista[1]));
-                    favorite.setLongitud(Double.parseDouble(lista[2]));
-
-                    listaFavoritos.add(favorite);
-                    i += 1;
-                    linea = br.readLine();
+                try {
+                    streamIn = new FileInputStream(file);
+                    objectinputstream = new ObjectInputStream(streamIn);
+                    listaFavoritos = (List<FavoriteRoute>) objectinputstream.readObject();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (objectinputstream != null) {
+                        objectinputstream.close();
+                    }
+                    if (streamIn != null) {
+                        streamIn.close();
+                    }
                 }
-                br.close();
-                archivo.close();
             }
             return listaFavoritos;
-
         } catch (IOException e) {
             e.printStackTrace();
             }

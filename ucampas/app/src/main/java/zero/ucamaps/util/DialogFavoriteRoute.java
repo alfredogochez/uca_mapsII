@@ -15,15 +15,21 @@ import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
+import java.util.LinkedList;
+import java.util.List;
 
 import zero.ucamaps.DialogFavoriteList;
 import zero.ucamaps.DialogReplaceFavorite;
 import zero.ucamaps.R;
+import zero.ucamaps.beans.FavoriteRoute;
 
 /**
  * Created by francisco herrera on 22/04/2016.
@@ -84,21 +90,54 @@ public class DialogFavoriteRoute extends DialogFragment {
                                 if (file.createNewFile()) {
                                     Toast.makeText(getActivity(), "no habia archivo", Toast.LENGTH_SHORT).show();
                                     //si la condicion da true, es por que el archivo no existia, y se creo, por ende, esta es la primera ruta creada
-                                    FileOutputStream fos = new FileOutputStream(file);
-                                    OutputStreamWriter osw = new OutputStreamWriter(fos);
-                                    osw.write(nombre_ruta + "_" + latitude + "_" + longitude + "\n");
+                                    ObjectOutputStream oos = null;
+                                    List<FavoriteRoute> listaRutas = new LinkedList<FavoriteRoute>();
+                                    listaRutas.add(new FavoriteRoute(nombre_ruta, longitude, latitude));
+                                    FileOutputStream fout = null;
+                                    try {
+                                        fout = new FileOutputStream(file);
+                                        oos = new ObjectOutputStream(fout);
+                                        oos.writeObject(listaRutas);
+                                        Toast.makeText(getActivity(), "Ruta Guardada Exitosamente", Toast.LENGTH_SHORT).show();
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    } finally {
+                                        if (oos != null) {
+                                            oos.close();
+                                        }
+                                        if (fout != null) {
+                                            oos.close();
+                                        }
+                                    }
 
-                                    osw.flush();
-                                    osw.close();
-                                    fos.close();
-                                    Toast.makeText(getActivity(), "Ruta Guardada Exitosamente", Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(getActivity(), "si habia archivo", Toast.LENGTH_SHORT).show();
                                     //si la consdicion da false, es por que el archivo ya existe, por ende se usa el filewrite
-                                    FileWriter fw = new FileWriter(file, true);
-                                    fw.write(nombre_ruta + "_" + latitude + "_" + longitude + "\n");
-                                    fw.close();
-                                    Toast.makeText(getActivity(), "Ruta Guardada Exitosamente", Toast.LENGTH_SHORT).show();
+                                    ObjectInputStream objectinputstream = null;
+                                    ObjectOutputStream oos = null;
+                                    FileOutputStream fout = null;
+                                    try {
+                                        FileInputStream streamIn = new FileInputStream(file);
+                                        objectinputstream = new ObjectInputStream(streamIn);
+                                        List<FavoriteRoute> listaRutas = (List<FavoriteRoute>) objectinputstream.readObject();
+                                        listaRutas.add(new FavoriteRoute(nombre_ruta, longitude, latitude));
+                                        fout = new FileOutputStream(file);
+                                        oos = new ObjectOutputStream(fout);
+                                        oos.writeObject(listaRutas);
+                                        Toast.makeText(getActivity(), "Ruta Guardada Exitosamente", Toast.LENGTH_SHORT).show();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    } finally {
+                                        if (objectinputstream != null) {
+                                            objectinputstream.close();
+                                        }
+                                        if (oos != null) {
+                                            oos.close();
+                                        }
+                                        if (fout != null) {
+                                            oos.close();
+                                        }
+                                    }
                                 }
                             }
                         } catch (IOException ioe) {
@@ -121,22 +160,21 @@ public class DialogFavoriteRoute extends DialogFragment {
         //cuenta las lineas del archivo para que no se pase de 10 rutas favoritas
         File tarjeta = Environment.getExternalStorageDirectory();
         File file = new File(tarjeta.getAbsolutePath(), "favorites_routes");
+        ObjectInputStream objectinputstream = null;
         if(file.exists()){
-        FileReader fr = new FileReader(file);
-        BufferedReader br = new BufferedReader(fr);
-        String s;
-        int longitud = 0;
-        //leemos el archivo hasta el final, y aumentamos en 1 las lineas
-        while((s = br.readLine()) != null)
-            longitud++;
-
-        br.close();
-        br = null;      // Libera memoria
-        fr.close();
-        fr = null;      // Libera memoria
-        file = null; // Libera memoria
-         Toast.makeText(getActivity(), "ya conte las rutas", Toast.LENGTH_SHORT).show();
-        return longitud;
+            try {
+                FileInputStream streamIn = new FileInputStream(file);
+                objectinputstream = new ObjectInputStream(streamIn);
+                List<FavoriteRoute> listaRutas = (List<FavoriteRoute>) objectinputstream.readObject();
+                return listaRutas.size();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (objectinputstream != null) {
+                    objectinputstream.close();
+                }
+            }
+            return 0;
         }else
             return 0;
     }
