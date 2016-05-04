@@ -776,6 +776,15 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		return true;
 	}
 
+	@Override
+	public boolean onGetRouteFavorite(String startname,String endName,double startLatitud, double startLongitud, double endLatitud, double endLongitud) {
+		// Remove any previous graphics and routes
+		//resetGraphicsLayers();
+		// Do the routing
+		executeRoutingTask(startname, endName,startLatitud,startLongitud,endLatitud,endLongitud);
+		return true;
+	}
+
 	/**
 	 * Set up Route Parameters to execute RouteTask
 	 * @param start
@@ -794,6 +803,30 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		routeParams.add(routeEndParams);
 
         // Execute async task to do the routing
+		RouteAsyncTask routeTask = new RouteAsyncTask();
+		routeTask.execute(routeParams);
+		mPendingTask = routeTask;
+	}
+
+	private void executeRoutingTask(String start, String end,double startLatitud, double startLongitud, double endLatitud, double endLongitud) {
+
+		// Create a list of start end point params
+		LocatorFindParameters routeStartParams = new LocatorFindParameters(start);
+		LocatorFindParameters routeEndParams = new LocatorFindParameters(end);
+		List<LocatorFindParameters> routeParams = new ArrayList<LocatorFindParameters>();
+		Point puntoIncio = new Point();
+		puntoIncio.setXY(startLongitud,startLatitud);
+
+		Point puntoFin = new Point();
+		puntoFin.setXY(endLongitud,endLatitud);
+
+		routeStartParams.setLocation(puntoIncio,mWm);
+		routeEndParams.setLocation(puntoFin,mWm);
+		// Add params to list
+		routeParams.add(routeStartParams);
+		routeParams.add(routeEndParams);
+
+		// Execute async task to do the routing
 		RouteAsyncTask routeTask = new RouteAsyncTask();
 		routeTask.execute(routeParams);
 		mPendingTask = routeTask;
@@ -1072,28 +1105,47 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			try {
 				// Geocode start position, or use My Location (from GPS)
 				LocatorFindParameters startParam = params[0].get(0);
-				if (startParam.getText().equals(getString(R.string.my_location))) {
-					mStartLocation = getString(R.string.my_location);
-					startPoint = (Point) GeometryEngine.project(mLocation, mWm,mEgs);
-				} else {
-					geocodeStartResult = locator.find(startParam);
-					startPoint = geocodeStartResult.get(0).getLocation();
-					mStartLocation = geocodeStartResult.get(0).getAddress();
 
-					if (isCancelled()) {
-						return null;
+				Point puntoInicio = startParam.getLocation();
+
+
+				if(puntoInicio == null){
+					if (startParam.getText().equals(getString(R.string.my_location))) {
+						mStartLocation = getString(R.string.my_location);
+						startPoint = (Point) GeometryEngine.project(mLocation, mWm,mEgs);
+
+					} else {
+						geocodeStartResult = locator.find(startParam);
+						startPoint = geocodeStartResult.get(0).getLocation();
+						mStartLocation = geocodeStartResult.get(0).getAddress();
+
+						if (isCancelled()) {
+							return null;
+						}
 					}
+
+				}else{
+					mStartLocation = startParam.getText();
+					startPoint = puntoInicio;
 				}
 
 				// Geocode the destination
 				LocatorFindParameters endParam = params[0].get(1);
-				if (endParam.getText().equals(getString(R.string.my_location))) {
-					mEndLocation = getString(R.string.my_location);
-					endPoint = (Point) GeometryEngine.project(mLocation, mWm,mEgs);
-				} else {
-					geocodeEndResult = locator.find(endParam);
-					endPoint = geocodeEndResult.get(0).getLocation();
-					mEndLocation = geocodeEndResult.get(0).getAddress();
+				Point puntofinal = endParam.getLocation();
+
+				if(puntofinal == null){
+					if (endParam.getText().equals(getString(R.string.my_location))) {
+						mEndLocation = getString(R.string.my_location);
+						endPoint = (Point) GeometryEngine.project(mLocation, mWm,mEgs);
+					} else {
+						geocodeEndResult = locator.find(endParam);
+						endPoint = geocodeEndResult.get(0).getLocation();
+						mEndLocation = geocodeEndResult.get(0).getAddress();
+					}
+				}
+				else{
+					mEndLocation = endParam.getText();
+					endPoint = puntofinal;
 				}
 
                 //Guardando puntos

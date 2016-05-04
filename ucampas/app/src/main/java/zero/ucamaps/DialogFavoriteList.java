@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import zero.ucamaps.beans.FavoriteRoute;
+import zero.ucamaps.location.RoutingDialogFragment;
 import zero.ucamaps.util.GlobalPoints;
 
 /**
@@ -61,6 +62,11 @@ public class DialogFavoriteList extends DialogFragment {
                             GlobalPoints globalListRoute = (GlobalPoints) getActivity().getApplicationContext() ;
 
                             List<FavoriteRoute> listaRutas = globalListRoute.getListaRutas();
+                            FavoriteRoute favorito = listaRutas.get(which);
+                            MapFragment fragment = new MapFragment();
+                            fragment.onGetRouteFavorite("Origen","Destino",favorito.getStartlatitud(),favorito.getStartlongitud(),
+                                    favorito.getEndLatitud(),favorito.getEndLongitud());
+
 
                         }
                     });

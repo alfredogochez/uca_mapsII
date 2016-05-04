@@ -43,6 +43,7 @@ public class RoutingDialogFragment extends DialogFragment {
 		 *         explanatory Toast to the user before returning.
 		 */
 		public boolean onGetRoute(String startPoint, String endPoint);
+		public boolean onGetRouteFavorite(String startname,String endName,double startLatitud, double startLongitud,double endLatitud, double endLongitud);
 	}
 
 	// Mandatory empty constructor for fragment manager to recreate fragment
