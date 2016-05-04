@@ -302,7 +302,8 @@ public class MainActivity extends ActionBarActivity {
             public void onClick() {
 
 
-                DialogFragment favFrag = new DialogFavoriteList();
+                DialogFavoriteList favFrag = new DialogFavoriteList();
+                favFrag.setRoutingDialogListener(mapFragment);
                 DialogFavoriteList list = (DialogFavoriteList) favFrag;
                 List<FavoriteRoute> recuperar = list.recuperar();
                 if(!recuperar.isEmpty()){

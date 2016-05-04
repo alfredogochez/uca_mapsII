@@ -779,7 +779,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	@Override
 	public boolean onGetRouteFavorite(String startname,String endName,double startLatitud, double startLongitud, double endLatitud, double endLongitud) {
 		// Remove any previous graphics and routes
-		//resetGraphicsLayers();
+		resetGraphicsLayers();
 		// Do the routing
 		executeRoutingTask(startname, endName,startLatitud,startLongitud,endLatitud,endLongitud);
 		return true;

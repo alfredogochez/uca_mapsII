@@ -29,7 +29,13 @@ import zero.ucamaps.util.GlobalPoints;
  * Created by alf on 23/04/2016.
  */
 public class DialogFavoriteList extends DialogFragment {
-    
+
+    private RoutingDialogFragment.RoutingDialogListener mRoutingDialogListener;
+
+    public void setRoutingDialogListener(RoutingDialogFragment.RoutingDialogListener dialogListener){
+        this.mRoutingDialogListener = dialogListener;
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -63,8 +69,8 @@ public class DialogFavoriteList extends DialogFragment {
 
                             List<FavoriteRoute> listaRutas = globalListRoute.getListaRutas();
                             FavoriteRoute favorito = listaRutas.get(which);
-                            MapFragment fragment = new MapFragment();
-                            fragment.onGetRouteFavorite("Origen","Destino",favorito.getStartlatitud(),favorito.getStartlongitud(),
+                            //MapFragment fragment = new MapFragment();
+                            mRoutingDialogListener.onGetRouteFavorite("Origen","Destino",favorito.getStartlatitud(),favorito.getStartlongitud(),
                                     favorito.getEndLatitud(),favorito.getEndLongitud());
 
 
