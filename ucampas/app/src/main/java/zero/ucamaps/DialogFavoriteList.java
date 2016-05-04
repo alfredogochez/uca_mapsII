@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
@@ -58,7 +59,9 @@ public class DialogFavoriteList extends DialogFragment {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             GlobalPoints globalListRoute = (GlobalPoints) getActivity().getApplicationContext() ;
-                            Toast.makeText(getActivity(), globalListRoute.getListaRutas().get(which).returnLine(), Toast.LENGTH_SHORT).show();
+
+                            List<FavoriteRoute> listaRutas = globalListRoute.getListaRutas();
+
                         }
                     });
 

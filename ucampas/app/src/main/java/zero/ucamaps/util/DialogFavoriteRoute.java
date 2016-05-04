@@ -53,11 +53,13 @@ public class DialogFavoriteRoute extends DialogFragment {
                         EditText et1 = (EditText) getDialog().findViewById(R.id.nombre_ruta_favorita);
                         String nombre_ruta = et1.getText().toString();
 
-                        final GlobalPoints globalVariable = (GlobalPoints) getActivity().getApplicationContext();
+                        GlobalPoints globalVariable = (GlobalPoints) getActivity().getApplicationContext();
                         // Get name and email from global/application context
-                        final double latitude = globalVariable.getLatitude();
-                        final double longitude = globalVariable.getLongitude();
-                        final String ruta_cambio = nombre_ruta + "_" + latitude + "_" + longitude + "\n";
+                        double startlatitude = globalVariable.getStartLatitud();
+                        double startlongitude = globalVariable.getStartLongitude();
+                        double endLongitude = globalVariable.getEndLongitude();
+                        double endLatitud = globalVariable.getEndLatitude();
+
                         try {
                             //verificamos si llegamos a las 10 rutas limite
                             int lineas = calcular_longitud();
@@ -92,7 +94,7 @@ public class DialogFavoriteRoute extends DialogFragment {
                                     //si la condicion da true, es por que el archivo no existia, y se creo, por ende, esta es la primera ruta creada
                                     ObjectOutputStream oos = null;
                                     List<FavoriteRoute> listaRutas = new LinkedList<FavoriteRoute>();
-                                    listaRutas.add(new FavoriteRoute(nombre_ruta, longitude, latitude));
+                                    listaRutas.add(new FavoriteRoute(nombre_ruta, startlatitude, startlongitude, endLatitud, endLongitude));
                                     FileOutputStream fout = null;
                                     try {
                                         fout = new FileOutputStream(file);
@@ -120,7 +122,7 @@ public class DialogFavoriteRoute extends DialogFragment {
                                         FileInputStream streamIn = new FileInputStream(file);
                                         objectinputstream = new ObjectInputStream(streamIn);
                                         List<FavoriteRoute> listaRutas = (List<FavoriteRoute>) objectinputstream.readObject();
-                                        listaRutas.add(new FavoriteRoute(nombre_ruta, longitude, latitude));
+                                        listaRutas.add(new FavoriteRoute(nombre_ruta, startlatitude, startlongitude, endLatitud, endLongitude));
                                         fout = new FileOutputStream(file);
                                         oos = new ObjectOutputStream(fout);
                                         oos.writeObject(listaRutas);

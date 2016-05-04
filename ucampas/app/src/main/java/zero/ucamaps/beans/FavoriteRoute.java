@@ -8,12 +8,10 @@ import java.io.Serializable;
 public class FavoriteRoute implements Serializable {
 
     private String name;
-    private double longitud;
-    private double latitud;
-
-    public double getLatitud() {
-        return latitud;
-    }
+    private double startlongitud;
+    private double startlatitud;
+    private double endLatitud;
+    private double endLongitud;
 
     public String getName() {
         return name;
@@ -23,22 +21,44 @@ public class FavoriteRoute implements Serializable {
         this.name = name;
     }
 
-    public double getLongitud() {
-        return longitud;
+    public double getStartlongitud() {
+        return startlongitud;
     }
 
-    public void setLongitud(double longitud) {
-        this.longitud = longitud;
+    public void setStartlongitud(double startlongitud) {
+        this.startlongitud = startlongitud;
     }
 
-    public void setLatitud(double latitud) {
-        this.latitud = latitud;
+    public double getStartlatitud() {
+        return startlatitud;
     }
 
-    public FavoriteRoute(String name,double longitud,double latitud){
+    public void setStartlatitud(double startlatitud) {
+        this.startlatitud = startlatitud;
+    }
+
+    public double getEndLatitud() {
+        return endLatitud;
+    }
+
+    public void setEndLatitud(double endLatitud) {
+        this.endLatitud = endLatitud;
+    }
+
+    public double getEndLongitud() {
+        return endLongitud;
+    }
+
+    public void setEndLongitud(double endLongitud) {
+        this.endLongitud = endLongitud;
+    }
+
+    public FavoriteRoute(String name, double startlatitud, double startlongitud, double endLatitud, double endLongitud){
         this.setName(name);
-        this.setLongitud(longitud);
-        this.setLatitud(latitud);
+        this.setStartlatitud(startlatitud);
+        this.setStartlongitud(startlongitud);
+        this.setEndLatitud(endLatitud);
+        this.setEndLongitud(endLongitud);
     }
 
     public FavoriteRoute(){
@@ -47,7 +67,7 @@ public class FavoriteRoute implements Serializable {
 
     public String returnLine(){
 
-        String linea = name + "_" + latitud + "_" + longitud ;
+        String linea = name ;
 
         return linea;
     }

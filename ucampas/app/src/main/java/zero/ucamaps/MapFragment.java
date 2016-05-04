@@ -1097,8 +1097,10 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				}
 
                 //Guardando puntos
-                globalVariable.setLongitude( startPoint.getX());
-                globalVariable.setLatitude( endPoint.getY());
+                globalVariable.setStartLongitude(startPoint.getX());
+                globalVariable.setStartLatitud(startPoint.getY());
+				globalVariable.setEndLongitude(endPoint.getX());
+				globalVariable.setEndLatitude(endPoint.getY());
 
 			} catch (Exception e) {
 				mException = e;
@@ -1162,7 +1164,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			Route route = result.getRoutes().get(0);
 
 			// Create polyline graphic of the full route
-			SimpleLineSymbol lineSymbol = new SimpleLineSymbol(Color.BLACK, 2,STYLE.SOLID);
+			SimpleLineSymbol lineSymbol = new SimpleLineSymbol(Color.BLACK, 2,STYLE.DASH);
 			Graphic routeGraphic = new Graphic(route.getRouteGraphic().getGeometry(), lineSymbol);
 
 			// Create point graphic to mark start of route
