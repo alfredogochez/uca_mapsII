@@ -1,5 +1,6 @@
 package zero.ucamaps.util;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -7,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -28,6 +30,7 @@ import java.util.List;
 
 import zero.ucamaps.DialogFavoriteList;
 import zero.ucamaps.DialogReplaceFavorite;
+import zero.ucamaps.MainActivity;
 import zero.ucamaps.R;
 import zero.ucamaps.beans.FavoriteRoute;
 
@@ -35,7 +38,9 @@ import zero.ucamaps.beans.FavoriteRoute;
  * Created by francisco herrera on 22/04/2016.
  */
 public class DialogFavoriteRoute extends DialogFragment {
+
     @Override
+
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
@@ -51,46 +56,62 @@ public class DialogFavoriteRoute extends DialogFragment {
                         //Guardar Ruta
                         // Calling Application class (see application tag in AndroidManifest.xml)
                         EditText et1 = (EditText) getDialog().findViewById(R.id.nombre_ruta_favorita);
-                        String nombre_ruta = et1.getText().toString();
+                        final String nombre_ruta = et1.getText().toString();
 
                         GlobalPoints globalVariable = (GlobalPoints) getActivity().getApplicationContext();
                         // Get name and email from global/application context
-                        double startlatitude = globalVariable.getStartLatitud();
-                        double startlongitude = globalVariable.getStartLongitude();
-                        double endLongitude = globalVariable.getEndLongitude();
-                        double endLatitud = globalVariable.getEndLatitude();
+                        final double startlatitude = globalVariable.getStartLatitud();
+                        final double startlongitude = globalVariable.getStartLongitude();
+                        final double endLongitude = globalVariable.getEndLongitude();
+                        final double endLatitud = globalVariable.getEndLatitude();
 
-                        try {
+                        try {//Esta toast es para cuando se va a reemplazar una ruta
+                            final Toast tostada= Toast.makeText(getActivity(), "Ruta Modificada Exitosamente", Toast.LENGTH_SHORT);
                             //verificamos si llegamos a las 10 rutas limite
                             int lineas = calcular_longitud();
                             if (lineas >= 10) {
+                                DialogFavoriteList dfl = new DialogFavoriteList();
+                                List<FavoriteRoute> listaRutas = dfl.recuperar();
+                                String[] listaRutasString = new String[listaRutas.size()];
+                                for (int j = 0; j < listaRutas.size(); j++) {
+                                    listaRutasString[j] = listaRutas.get(j).getName();
+                                }
+                                AlertDialog.Builder listDia = new AlertDialog.Builder(getActivity());
+                                listDia.setTitle("Seleccione la Ruta");
+                                listDia.setItems(listaRutasString, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int item) {
+                                        reemplazar_ruta(item, nombre_ruta, startlatitude, startlongitude, endLatitud, endLongitude,tostada);
 
-                                new AlertDialog.Builder(getActivity())
-                                        .setTitle("Advertencia")
-                                        .setMessage("Ya tiene 10 rutas favoritas, para guardar una nueva, debe borrar una antigua, ¿desea continuar?")
-                                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                DialogFragment reemplazarDia = new DialogReplaceFavorite();
+                                    }
+                                });
+                                final AlertDialog listAlert = listDia.create();
 
-                                                reemplazarDia.show(getFragmentManager(), "Seleccione la Ruta");
 
-                                                Toast.makeText(getActivity(), "Ruta Cambiada Exitosamente", Toast.LENGTH_SHORT).show();
-                                            }
-                                        })
-                                        .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                // do nothing
-                                            }
-                                        })
-                                        .setIcon(android.R.drawable.ic_dialog_alert)
-                                        .show();
+                                AlertDialog.Builder alertReemplazar = new AlertDialog.Builder(getActivity());
+                                alertReemplazar.setTitle("Advertencia");
+                                alertReemplazar.setMessage("Ya tiene 10 rutas guardadas, para guardar una ruta nueva, debe borrar una antigua. ¿Desea Continuar?");
+                                alertReemplazar.setIcon(android.R.drawable.ic_dialog_alert);
+                                alertReemplazar.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        listAlert.show();
+
+                                    }
+                                });
+                                alertReemplazar.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                                AlertDialog replaceAlert = alertReemplazar.create();
+                                replaceAlert.show();
+
 
                             } else {
                                 File tarjeta = Environment.getExternalStorageDirectory();
                                 File file = new File(tarjeta.getAbsolutePath(), "favorites_routes");
                                 //verificamos si el archivo existe
                                 if (file.createNewFile()) {
-                                    Toast.makeText(getActivity(), "no habia archivo", Toast.LENGTH_SHORT).show();
                                     //si la condicion da true, es por que el archivo no existia, y se creo, por ende, esta es la primera ruta creada
                                     ObjectOutputStream oos = null;
                                     List<FavoriteRoute> listaRutas = new LinkedList<FavoriteRoute>();
@@ -113,7 +134,6 @@ public class DialogFavoriteRoute extends DialogFragment {
                                     }
 
                                 } else {
-                                    Toast.makeText(getActivity(), "si habia archivo", Toast.LENGTH_SHORT).show();
                                     //si la consdicion da false, es por que el archivo ya existe, por ende se usa el filewrite
                                     ObjectInputStream objectinputstream = null;
                                     ObjectOutputStream oos = null;
@@ -145,7 +165,6 @@ public class DialogFavoriteRoute extends DialogFragment {
                         } catch (IOException ioe) {
                             ioe.printStackTrace();
                         }
-
                     }
                 })
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -163,7 +182,7 @@ public class DialogFavoriteRoute extends DialogFragment {
         File tarjeta = Environment.getExternalStorageDirectory();
         File file = new File(tarjeta.getAbsolutePath(), "favorites_routes");
         ObjectInputStream objectinputstream = null;
-        if(file.exists()){
+        if (file.exists()) {
             try {
                 FileInputStream streamIn = new FileInputStream(file);
                 objectinputstream = new ObjectInputStream(streamIn);
@@ -177,13 +196,31 @@ public class DialogFavoriteRoute extends DialogFragment {
                 }
             }
             return 0;
-        }else
+        } else
             return 0;
     }
 
 
-    private void reemplazar_ruta(String ruta){
-        Toast.makeText(getActivity(), "creando ventana", Toast.LENGTH_SHORT).show();
+    private void reemplazar_ruta(int index_ruta,String nombre_ruta,double startlatitude,double startlongitude, double endLatitud, double endLongitude,Toast tostada) {
+        DialogFavoriteList dfl = new DialogFavoriteList();
+        List<FavoriteRoute> rutas = dfl.recuperar();
+        ObjectInputStream objectinputstream = null;
+        ObjectOutputStream oos = null;
+        FileOutputStream fout = null;
+        File tarjeta = Environment.getExternalStorageDirectory();
+        File file = new File(tarjeta.getAbsolutePath(), "favorites_routes");
+        FavoriteRoute rutaNueva = new FavoriteRoute(nombre_ruta, startlatitude, startlongitude, endLatitud, endLongitude);
+        rutas.set(index_ruta, rutaNueva);
+        try {
+            FileInputStream streamIn = new FileInputStream(file);
+            objectinputstream = new ObjectInputStream(streamIn);
+            fout = new FileOutputStream(file);
+            oos = new ObjectOutputStream(fout);
+            oos.writeObject(rutas);
+            tostada.show();
+            } catch (Exception e) {
+                e.printStackTrace();
+        }
 
     }
 }
