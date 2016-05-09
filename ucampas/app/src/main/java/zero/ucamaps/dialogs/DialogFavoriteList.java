@@ -1,4 +1,4 @@
-package zero.ucamaps;
+package zero.ucamaps.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import zero.ucamaps.R;
 import zero.ucamaps.beans.FavoriteRoute;
 import zero.ucamaps.location.RoutingDialogFragment;
 import zero.ucamaps.util.GlobalPoints;
@@ -46,11 +47,10 @@ public class DialogFavoriteList extends DialogFragment {
         String[] listaRutasString = new String[listaRutas.size()];
 
 
-        //lista = (ListView) getActivity().findViewById(R.id.lista_favoritos);
-        //adaptador = new ArrayAdapter<String>(getActivity(),R.layout.favorites, listaRutas);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        //adaptador = new ArrayAdapter<String>(getActivity().getApplicationContext(), R.layout.favorites, listaRutas);
+
 
         GlobalPoints globalListRoute = (GlobalPoints) getActivity().getApplicationContext();
         globalListRoute.setListaRutas(listaRutas);
@@ -72,6 +72,7 @@ public class DialogFavoriteList extends DialogFragment {
                             //MapFragment fragment = new MapFragment();
                             mRoutingDialogListener.onGetRouteFavorite("Origen","Destino",favorito.getStartlatitud(),favorito.getStartlongitud(),
                                     favorito.getEndLatitud(),favorito.getEndLongitud());
+
 
 
                         }
