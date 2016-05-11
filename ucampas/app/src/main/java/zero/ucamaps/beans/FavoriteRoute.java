@@ -12,6 +12,24 @@ public class FavoriteRoute implements Serializable {
     private double startlatitud;
     private double endLatitud;
     private double endLongitud;
+    private String startName;
+    private String endName;
+
+    public String getStartName() {
+        return startName;
+    }
+
+    public void setStartName(String startName) {
+        this.startName = startName;
+    }
+
+    public String getEndName() {
+        return endName;
+    }
+
+    public void setEndName(String endName) {
+        this.endName = endName;
+    }
 
     public String getName() {
         return name;
@@ -53,12 +71,14 @@ public class FavoriteRoute implements Serializable {
         this.endLongitud = endLongitud;
     }
 
-    public FavoriteRoute(String name, double startlatitud, double startlongitud, double endLatitud, double endLongitud){
+    public FavoriteRoute(String name, double startlatitud, double startlongitud, double endLatitud, double endLongitud,String startName, String endName){
         this.setName(name);
         this.setStartlatitud(startlatitud);
         this.setStartlongitud(startlongitud);
         this.setEndLatitud(endLatitud);
         this.setEndLongitud(endLongitud);
+        this.setStartName(startName);
+        this.setEndName(endName);
     }
 
     public FavoriteRoute(){

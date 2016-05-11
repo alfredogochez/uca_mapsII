@@ -17,6 +17,24 @@ public class GlobalPoints extends Application{
     private double startLatitud;
     private double startLongitude;
     private List<FavoriteRoute> listaRutas;
+    private String startName;
+    private String endName;
+
+    public String getStartName() {
+        return startName;
+    }
+
+    public void setStartName(String startName) {
+        this.startName = startName;
+    }
+
+    public String getEndName() {
+        return endName;
+    }
+
+    public void setEndName(String endName) {
+        this.endName = endName;
+    }
 
     public double getEndLatitude() {
         return endLatitude;

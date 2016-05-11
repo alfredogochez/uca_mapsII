@@ -70,7 +70,7 @@ public class DialogFavoriteList extends DialogFragment {
                             List<FavoriteRoute> listaRutas = globalListRoute.getListaRutas();
                             FavoriteRoute favorito = listaRutas.get(which);
                             //MapFragment fragment = new MapFragment();
-                            mRoutingDialogListener.onGetRouteFavorite("Origen","Destino",favorito.getStartlatitud(),favorito.getStartlongitud(),
+                            mRoutingDialogListener.onGetRouteFavorite(favorito.getStartName(),favorito.getEndName(),favorito.getStartlatitud(),favorito.getStartlongitud(),
                                     favorito.getEndLatitud(),favorito.getEndLongitud());
 
 

@@ -1149,6 +1149,18 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				}
 
                 //Guardando puntos
+				if(mStartLocation.equals(getString(R.string.my_location))){
+					globalVariable.setStartName("Origen");
+
+				}else{
+					globalVariable.setStartName(mStartLocation);
+
+				}
+				if(mEndLocation.equals(getString(R.string.my_location))){
+					globalVariable.setEndName("Destino");
+				}else{
+					globalVariable.setEndName(mEndLocation);
+				}
                 globalVariable.setStartLongitude(startPoint.getX());
                 globalVariable.setStartLatitud(startPoint.getY());
 				globalVariable.setEndLongitude(endPoint.getX());

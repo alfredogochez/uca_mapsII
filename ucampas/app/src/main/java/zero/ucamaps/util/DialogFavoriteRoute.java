@@ -53,6 +53,8 @@ public class DialogFavoriteRoute extends DialogFragment {
                         final double startlongitude = globalVariable.getStartLongitude();
                         final double endLongitude = globalVariable.getEndLongitude();
                         final double endLatitud = globalVariable.getEndLatitude();
+                        final String startName = globalVariable.getStartName();
+                        final String endName = globalVariable.getEndName();
 
                         try {//Esta toast es para cuando se va a reemplazar una ruta
                             final Toast tostada= Toast.makeText(getActivity(), "Ruta Modificada Exitosamente", Toast.LENGTH_SHORT);
@@ -71,7 +73,7 @@ public class DialogFavoriteRoute extends DialogFragment {
                                 listDia.setItems(listaRutasString, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int item) {
                                         //una vez la ruta a reemplazar se seleccione, llamamos al metodo reemplazar_ruta con todo lo necesario
-                                        reemplazar_ruta(item, nombre_ruta, startlatitude, startlongitude, endLatitud, endLongitude,tostada);
+                                        reemplazar_ruta(item, nombre_ruta, startlatitude, startlongitude, endLatitud, endLongitude,tostada,startName,endName);
 
                                     }
                                 });
@@ -106,7 +108,7 @@ public class DialogFavoriteRoute extends DialogFragment {
                                     //si la condicion da true, es por que el archivo no existia, y se creo, por ende, esta es la primera ruta creada
                                     ObjectOutputStream oos = null;
                                     List<FavoriteRoute> listaRutas = new LinkedList<FavoriteRoute>();
-                                    listaRutas.add(new FavoriteRoute(nombre_ruta, startlatitude, startlongitude, endLatitud, endLongitude));
+                                    listaRutas.add(new FavoriteRoute(nombre_ruta, startlatitude, startlongitude, endLatitud, endLongitude,startName,endName));
                                     FileOutputStream fout = null;
                                     try {
                                         fout = new FileOutputStream(file);
@@ -133,7 +135,7 @@ public class DialogFavoriteRoute extends DialogFragment {
                                         FileInputStream streamIn = new FileInputStream(file);
                                         objectinputstream = new ObjectInputStream(streamIn);
                                         List<FavoriteRoute> listaRutas = (List<FavoriteRoute>) objectinputstream.readObject();
-                                        listaRutas.add(new FavoriteRoute(nombre_ruta, startlatitude, startlongitude, endLatitud, endLongitude));
+                                        listaRutas.add(new FavoriteRoute(nombre_ruta, startlatitude, startlongitude, endLatitud, endLongitude,startName,endName));
                                         fout = new FileOutputStream(file);
                                         oos = new ObjectOutputStream(fout);
                                         oos.writeObject(listaRutas);
@@ -192,7 +194,7 @@ public class DialogFavoriteRoute extends DialogFragment {
     }
 
 
-    private void reemplazar_ruta(int index_ruta,String nombre_ruta,double startlatitude,double startlongitude, double endLatitud, double endLongitude,Toast tostada) {
+    private void reemplazar_ruta(int index_ruta,String nombre_ruta,double startlatitude,double startlongitude, double endLatitud, double endLongitude,Toast tostada,String startname, String endname) {
         DialogFavoriteList dfl = new DialogFavoriteList();
         List<FavoriteRoute> rutas = dfl.recuperar();
         ObjectInputStream objectinputstream = null;
@@ -200,7 +202,7 @@ public class DialogFavoriteRoute extends DialogFragment {
         FileOutputStream fout = null;
         File tarjeta = Environment.getExternalStorageDirectory();
         File file = new File(tarjeta.getAbsolutePath(), "favorites_routes");
-        FavoriteRoute rutaNueva = new FavoriteRoute(nombre_ruta, startlatitude, startlongitude, endLatitud, endLongitude);
+        FavoriteRoute rutaNueva = new FavoriteRoute(nombre_ruta, startlatitude, startlongitude, endLatitud, endLongitude,startname,endname);
         rutas.set(index_ruta, rutaNueva);
         try {
             FileInputStream streamIn = new FileInputStream(file);
