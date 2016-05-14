@@ -28,8 +28,19 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
-        android:src="@drawable/ic_loc_directions" 
+        android:src="@drawable/ic_loc_directions"
         android:contentDescription="@string/icon_for_directions_and_routing"/>
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="5dp"
+        android:layout_weight="1"
+        android:src="@drawable/ic_info_black_24dp"
+        android:contentDescription="@string/icon_cancel" />
+
 
     <ImageView
         android:id="@+id/imageView3"
