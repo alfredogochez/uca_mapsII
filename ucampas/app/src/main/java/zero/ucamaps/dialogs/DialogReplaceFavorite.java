@@ -1,4 +1,4 @@
-package zero.ucamaps;
+package zero.ucamaps.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -16,6 +16,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
+import zero.ucamaps.R;
 
 /**
  * Created by alf on 01/05/2016.

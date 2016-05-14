@@ -1,7 +1,5 @@
 package zero.ucamaps;
 
-import android.app.DialogFragment;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -15,8 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterViewAnimator;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -31,14 +27,13 @@ import com.google.zxing.client.android.CaptureActivity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import zero.ucamaps.basemaps.BasemapsDialogFragment;
 import zero.ucamaps.beans.FavoriteRoute;
 import zero.ucamaps.dialogs.AboutDialog;
-import zero.ucamaps.util.DialogFavoriteRoute;
+import zero.ucamaps.dialogs.DialogFavoriteList;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -313,7 +308,7 @@ public class MainActivity extends ActionBarActivity {
 
                     Toast.makeText(getApplicationContext(),"No hay rutas favoritas", Toast.LENGTH_SHORT).show();
                 }
-
+                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             }
 
         });
