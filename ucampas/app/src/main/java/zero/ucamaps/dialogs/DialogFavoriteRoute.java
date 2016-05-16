@@ -1,4 +1,4 @@
-package zero.ucamaps.util;
+package zero.ucamaps.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -22,6 +22,7 @@ import java.util.List;
 import zero.ucamaps.dialogs.DialogFavoriteList;
 import zero.ucamaps.R;
 import zero.ucamaps.beans.FavoriteRoute;
+import zero.ucamaps.util.GlobalPoints;
 
 /**
  * Created by francisco herrera on 22/04/2016.
@@ -82,7 +83,7 @@ public class DialogFavoriteRoute extends DialogFragment {
 
                                 AlertDialog.Builder alertReemplazar = new AlertDialog.Builder(getActivity());
                                 alertReemplazar.setTitle("Advertencia");
-                                alertReemplazar.setMessage("Ya tiene 10 rutas guardadas, para guardar una ruta nueva, debe borrar una antigua. ¿Desea Continuar?");
+                                alertReemplazar.setMessage("Ya tiene 10 rutas favoritas. Si desea guardar una ruta nueva, debe reemplazarla por una ruta antigua. ¿Desea Continuar?");
                                 alertReemplazar.setIcon(android.R.drawable.ic_dialog_alert);
                                 alertReemplazar.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
