@@ -40,7 +40,7 @@
         android:layout_weight="1"
         android:src="@drawable/ic_info_black_24dp"
         android:contentDescription="@string/icon_cancel"
-        android:visibility="invisible" />
+        android:visibility="visible" />
 
 
     <ImageView

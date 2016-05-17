@@ -1,6 +1,7 @@
 package zero.ucamaps.util;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,7 +16,7 @@ import zero.ucamaps.R;
 public class DialogInfoPlaces extends DialogFragment {
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -32,8 +33,8 @@ public class DialogInfoPlaces extends DialogFragment {
         titulo_edificio.setText("Soy un edificio",null);
         info_edificio.setText("Yo soy la descripcion del edificio", null);
 
+        return builder.create();
 
-
-        super.onCreate(savedInstanceState);
+        //super.onCreate(savedInstanceState);
     }
 }
