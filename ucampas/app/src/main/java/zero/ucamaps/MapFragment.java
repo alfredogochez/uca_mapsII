@@ -461,6 +461,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 					mLongPressEvent = null;
 					// Remove any previous graphics
 					resetGraphicsLayers();
+
 				}
 				return super.onDragPointerUp(from, to);
 			}
