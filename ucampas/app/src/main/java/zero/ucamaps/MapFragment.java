@@ -53,7 +53,7 @@ import zero.ucamaps.location.RoutingDialogFragment;
 import zero.ucamaps.location.RoutingDialogFragment.RoutingDialogListener;
 import zero.ucamaps.tools.Compass;
 import zero.ucamaps.tts.TTSManager;
-import zero.ucamaps.util.DialogFavoriteRoute;
+import zero.ucamaps.dialogs.DialogFavoriteRoute;
 import zero.ucamaps.util.GlobalPoints;
 import zero.ucamaps.util.TaskExecutor;
 

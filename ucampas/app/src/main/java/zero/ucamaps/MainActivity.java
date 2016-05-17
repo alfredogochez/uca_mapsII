@@ -34,6 +34,7 @@ import zero.ucamaps.basemaps.BasemapsDialogFragment;
 import zero.ucamaps.beans.FavoriteRoute;
 import zero.ucamaps.dialogs.AboutDialog;
 import zero.ucamaps.dialogs.DialogFavoriteList;
+import zero.ucamaps.dialogs.DialogSpecialRoutes;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -315,30 +316,38 @@ public class MainActivity extends ActionBarActivity {
 
         mDrawerItems.add(item);
 
-/*      // Adding the Favorites item in the Drawer
-        LinearLayout view_favorite = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
-        TextView text_drawer_favorite = (TextView) view_favorite.findViewById(R.id.drawer_item_textview);
-        ImageView icon_drawer_favorite = (ImageView) view_favorite.findViewById(R.id.drawer_item_icon);
+        // añandiendo el item de rutas Especiales
+        LinearLayout specials = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
+        TextView text_specials = (TextView) specials.findViewById(R.id.drawer_item_textview);
+        ImageView icon_specials = (ImageView) specials.findViewById(R.id.drawer_item_icon);
 
-        text_drawer_favorite.setText("Favoritas");
-        icon_drawer_favorite.setImageResource(R.drawable.action_qr_code);
-        item = new DrawerItem(view_favorite, new DrawerItem.OnClickListener() {
+        text_specials.setText("Special Routes");
+        icon_specials.setImageResource(R.drawable.ic_business_black_24dp);
+        item = new DrawerItem(specials, new DrawerItem.OnClickListener() {
 
             @Override
             public void onClick() {
 
-                Intent myIntent= new Intent(MainActivity.this,CaptureActivity.class);
-                startActivityForResult(myIntent, 1);
-                //Close and lock the drawer
+
+                DialogSpecialRoutes specFrag = new DialogSpecialRoutes();
+                specFrag.setRoutingDialogListener(mapFragment);
+                DialogSpecialRoutes list = (DialogSpecialRoutes) specFrag;
+                List<FavoriteRoute> recuperar = list.recuperar();
+                if(!recuperar.isEmpty()){
+                    specFrag.show(getFragmentManager(),"Usando lista de favoritas por el momento");
+                }
+                else{
+
+                    Toast.makeText(getApplicationContext(),"No hay rutas especiales", Toast.LENGTH_SHORT).show();
+                }
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-
-                DialogFragment newFragment = new DialogFavoriteRoute();
-                newFragment.show(getFragmentManager(),"Favorites");
-
             }
+
         });
+
         mDrawerItems.add(item);
-         */
+
+
 
 
         BaseAdapter adapter = (BaseAdapter) mDrawerList.getAdapter();
