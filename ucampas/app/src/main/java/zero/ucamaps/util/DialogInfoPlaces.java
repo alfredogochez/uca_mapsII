@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,9 +17,20 @@ import zero.ucamaps.R;
  */
 public class DialogInfoPlaces extends DialogFragment {
 
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public static DialogInfoPlaces newInstance(int num) {
+        DialogInfoPlaces f = new DialogInfoPlaces();
 
+        // Supply num input as an argument.
+        Bundle args = new Bundle();
+        args.putInt("num", num);
+        f.setArguments(args);
+
+        return f;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        /*
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -25,16 +38,36 @@ public class DialogInfoPlaces extends DialogFragment {
         builder.setView(inflater.inflate(R.layout.dialog_info_places, null));
 
         //Variables para los controles
-        TextView titulo_edificio = (TextView) getDialog().findViewById(R.id.titulo_edificio);
-        ImageView foto_edificio = (ImageView) getDialog().findViewById(R.id.foto_edificio);
-        TextView info_edificio = (TextView) getDialog().findViewById(R.id.info_edificio);
 
-        //Aqui deberia traer la info desde la BD, pero no se como aún, asi que voy a poner cosas random
-        titulo_edificio.setText("Soy un edificio",null);
-        info_edificio.setText("Yo soy la descripcion del edificio", null);
+        try{
+            TextView titulo_edificio = (TextView) getDialog().findViewById(R.id.titulo_edificio);
+            ImageView foto_edificio = (ImageView) getDialog().findViewById(R.id.foto_edificio);
+            TextView info_edificio = (TextView) getDialog().findViewById(R.id.info_edificio);
 
-        return builder.create();
+            //Aqui deberia traer la info desde la BD, pero no se como aún, asi que voy a poner cosas random
+            titulo_edificio.setText("Soy un edificio",null);
+            info_edificio.setText("Yo soy la descripcion del edificio", null);
+        }
+        catch (Exception ex){
+            String error = ex.getMessage();
+        }
+        */
+        //return builder.create();
 
-        //super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
     }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View vista = inflater.inflate(R.layout.dialog_info_places,container, false);
+        //View v = inflater.inflate(R.layout.fragment_dialog, container, false);
+        View titulo_edificio = vista.findViewById(R.id.info_edificio);
+        ((TextView)titulo_edificio).setText("Soy un edificio");
+
+        return vista;
+    }
+
+
+
 }
