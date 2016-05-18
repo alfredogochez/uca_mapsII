@@ -901,14 +901,15 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
             @Override
             public void onClick(View v) {
-                if(TheresAPlace) {
+                //if(TheresAPlace) {
                     //DialogFragment newFragment = new DialogInfoPlaces();
                     //newFragment.show(getFragmentManager(), "Información");
 
-                    DialogFragment newFragment = DialogInfoPlaces.newInstance(0);
+					TextView barra_busqueda = (TextView) getActivity().findViewById(R.id.textView1);
+                    DialogFragment newFragment = DialogInfoPlaces.newInstance(barra_busqueda.getText().toString());
                     newFragment.show(getFragmentManager(), "Nombre");
 
-                }
+                //}
 
             }
         });

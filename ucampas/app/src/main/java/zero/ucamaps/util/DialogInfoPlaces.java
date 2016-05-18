@@ -17,12 +17,12 @@ import zero.ucamaps.R;
  */
 public class DialogInfoPlaces extends DialogFragment {
 
-    public static DialogInfoPlaces newInstance(int num) {
+    public static DialogInfoPlaces newInstance(String titulo) {
         DialogInfoPlaces f = new DialogInfoPlaces();
 
         // Supply num input as an argument.
         Bundle args = new Bundle();
-        args.putInt("num", num);
+        args.putString("titulo", titulo);
         f.setArguments(args);
 
         return f;
@@ -62,8 +62,11 @@ public class DialogInfoPlaces extends DialogFragment {
                              Bundle savedInstanceState) {
         View vista = inflater.inflate(R.layout.dialog_info_places,container, false);
         //View v = inflater.inflate(R.layout.fragment_dialog, container, false);
-        View titulo_edificio = vista.findViewById(R.id.info_edificio);
-        ((TextView)titulo_edificio).setText("Soy un edificio");
+        View titulo_edificio = vista.findViewById(R.id.titulo_edificio);
+        View info_edificio = vista.findViewById(R.id.info_edificio);
+        ((TextView)titulo_edificio).setText(getArguments().getString("titulo"));
+        ((TextView)info_edificio).setText("Admiren mi edificiosidad :v");
+
 
         return vista;
     }
