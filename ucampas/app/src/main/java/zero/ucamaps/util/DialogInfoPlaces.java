@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -67,6 +68,7 @@ public class DialogInfoPlaces extends DialogFragment {
         ((TextView)titulo_edificio).setText(getArguments().getString("titulo"));
         ((TextView)info_edificio).setText("Admiren mi edificiosidad :v");
 
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
         return vista;
     }
