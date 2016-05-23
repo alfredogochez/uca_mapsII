@@ -14,15 +14,23 @@
         android:textSize="30dp" />
 
     <ImageView
-        android:layout_width="315dp"
+        android:layout_width="match_parent"
         android:layout_height="205dp"
         android:id="@+id/foto_edificio"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:layout_weight="0.39" />
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="153dp"
+        android:layout_height="104dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/info_edificio" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ver mas..."
+        android:id="@+id/see_more_button"
+        android:layout_weight="0.17" />
 
 </LinearLayout>
