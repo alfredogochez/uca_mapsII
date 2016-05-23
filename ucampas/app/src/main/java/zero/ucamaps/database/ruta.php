@@ -1,8 +1,8 @@
 <?php
 
-require 'databaseTest.php';
+require 'database.php';
 
-class Meta
+class Ruta
 {
     function __construct()
     {
@@ -29,4 +29,29 @@ class Meta
             return false;
         }
     }
+	
+	public static function insert(
+	$nombre,
+	$descripcion,
+	$puntos
+	)
+	{//sentencia para insert
+	$comando = "INSERT INTO rutaespecial ( ".
+	"NOMBRE,".
+	"DESCRIPCION,".
+	"PUNTOS)".
+	"VALUES(?,?,?)";
+	$sentencia = Database::getInstance()->getDb()->prepare($comando);
+	return $sentencia->execute(
+	array(
+		$nombre,
+		$descripcion,
+		$puntos
+		)
+		);
+	}
+		
+		
+	
 }
+?>

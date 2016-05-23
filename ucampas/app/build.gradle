@@ -30,11 +30,14 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     // android support libraries
+    compile 'com.android.support:recyclerview-v7:+'
     compile 'com.android.support:appcompat-v7:21.0.0'
     compile 'com.esri.arcgis.android:arcgis-android:10.2.6-2'
     //adding the butter knife library
     compile 'com.jakewharton:butterknife:6.0.0'
     compile 'com.google.android.gms:play-services-appindexing:8.1.0'
     compile 'com.android.volley:volley:1.0.0'
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.3.1'
+
 
 }
