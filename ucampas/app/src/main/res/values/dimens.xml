@@ -65,8 +65,8 @@
     <dimen name="place_callout_max_width">400dp</dimen>
     <dimen name="place_callout_max_height">600dp</dimen>
     <dimen name="place_callout_corner_curve">5dp</dimen>
-    
-  <dimen name="standard_padding">8dip</dimen>
-  <dimen name="half_padding">4dip</dimen>
+
+    <dimen name="standard_padding">8dip</dimen>
+    <dimen name="half_padding">4dip</dimen>
 
 </resources>
