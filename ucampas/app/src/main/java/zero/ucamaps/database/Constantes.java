@@ -1,7 +1,7 @@
 package zero.ucamaps.database;
 
 /**
- * Created by alf on 18/05/2016.
+ * Created by alf on 24/05/2016.
  */
 public class Constantes {
 
@@ -15,5 +15,6 @@ public class Constantes {
      * URLs del Web Service
      */
     public static final String GET = IP + PUERTO_HOST + "/ucamaps/get_rutas.php";
-    public static final String INSERT = IP + PUERTO_HOST + "/ucamaps/insert_ruta.php";
+    public static final String INSERT = IP + PUERTO_HOST + "/I%20Wish/insert_ruta.php";
+
 }
