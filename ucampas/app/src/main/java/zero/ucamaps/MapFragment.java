@@ -1123,12 +1123,15 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			List<LocatorGeocodeResult> geocodeEndResult = null;
 			Point startPoint = null;
 			Point endPoint = null;
+			Point puntoMedio = new Point();
+			Point puntoMedio2 = new Point();
 
 			// Create a new locator to geocode start/end points; by default uses ArcGIS online world geocoding service
 			Locator locator = Locator.createOnlineLocator(getString(R.string.geocodeservice_url));
 
 			try {
 				// Geocode start position, or use My Location (from GPS)
+				Log.d("Debug","Este es el tamano de los parametros: "+ params[0].size());
 				LocatorFindParameters startParam = params[0].get(0);
 
 				Point puntoInicio = startParam.getLocation();
@@ -1190,6 +1193,11 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
                 globalVariable.setStartLatitud(startPoint.getY());
 				globalVariable.setEndLongitude(endPoint.getX());
 				globalVariable.setEndLatitude(endPoint.getY());
+				Log.d("Debug","Punto X: "+startPoint.getX()+"\n Punto Y: "+startPoint.getY());
+
+
+				puntoMedio.setXY(-9933748.624396378,1537640.150194445);
+				puntoMedio2.setXY(-9933650.585406138,1537625.2813013557);
 
 			} catch (Exception e) {
 				mException = e;
@@ -1217,8 +1225,10 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			// Customize the route parameters
 			NAFeaturesAsFeature routeFAF = new NAFeaturesAsFeature();
 			StopGraphic sgStart = new StopGraphic(startPoint);
+			StopGraphic medium = new StopGraphic(puntoMedio);
+			StopGraphic medium2 = new StopGraphic(puntoMedio2);
 			StopGraphic sgEnd = new StopGraphic(endPoint);
-			routeFAF.setFeatures(new Graphic[] { sgStart, sgEnd });
+			routeFAF.setFeatures(new Graphic[] { sgStart,medium,medium2, sgEnd });
 			routeFAF.setCompressedRequest(true);
 			routeParams.setStops(routeFAF);
 			//noinspection ResourceType
@@ -1253,7 +1263,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			Route route = result.getRoutes().get(0);
 
 			// Create polyline graphic of the full route
-			SimpleLineSymbol lineSymbol = new SimpleLineSymbol(Color.BLACK, 2,STYLE.DASH);
+			SimpleLineSymbol lineSymbol = new SimpleLineSymbol(Color.BLACK, 2,STYLE.DOT);
 			Graphic routeGraphic = new Graphic(route.getRouteGraphic().getGeometry(), lineSymbol);
 
 			// Create point graphic to mark start of route

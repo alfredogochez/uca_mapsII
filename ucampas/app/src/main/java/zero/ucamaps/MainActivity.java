@@ -260,31 +260,6 @@ public class MainActivity extends ActionBarActivity {
         mDrawerItems.add(item);
 
 
-        // Adding the about item
-        LinearLayout view_about = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
-        TextView text_drawer_about = (TextView) view_about.findViewById(R.id.drawer_item_textview);
-        ImageView icon_drawer_about = (ImageView) view_about.findViewById(R.id.drawer_item_icon);
-
-        text_drawer_about.setText(getString(R.string.action_about));
-        icon_drawer_about.setImageResource(R.drawable.action_about);
-        item = new DrawerItem(view_about, new DrawerItem.OnClickListener() {
-
-            @Override
-            public void onClick() {
-
-                AboutDialog about = new AboutDialog(MainActivity.this);
-                about.setTitle("About this app");
-                about.show();
-
-                //Close and lock the drawer
-                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-            }
-
-        });
-
-        mDrawerItems.add(item);
-
-
         // añandiendo el item de rutas favoritas
         LinearLayout favorites = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
         TextView text_favorites = (TextView) favorites.findViewById(R.id.drawer_item_textview);
@@ -347,6 +322,29 @@ public class MainActivity extends ActionBarActivity {
 
         mDrawerItems.add(item);
 
+        // Adding the about item
+        LinearLayout view_about = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
+        TextView text_drawer_about = (TextView) view_about.findViewById(R.id.drawer_item_textview);
+        ImageView icon_drawer_about = (ImageView) view_about.findViewById(R.id.drawer_item_icon);
+
+        text_drawer_about.setText(getString(R.string.action_about));
+        icon_drawer_about.setImageResource(R.drawable.action_about);
+        item = new DrawerItem(view_about, new DrawerItem.OnClickListener() {
+
+            @Override
+            public void onClick() {
+
+                AboutDialog about = new AboutDialog(MainActivity.this);
+                about.setTitle("About this app");
+                about.show();
+
+                //Close and lock the drawer
+                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            }
+
+        });
+
+        mDrawerItems.add(item);
 
 
 
