@@ -3,17 +3,17 @@
  * Obtiene todas las metas de la base de datos
  */
 
-require 'prueba.php';
+require 'ruta.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
     // Manejar petición GET
-    $metas = Meta::getAll();
+    $rutas = Ruta::getAll();
 
-    if ($metas) {
+    if ($rutas) {
 
         $datos["estado"] = 1;
-        $datos["metas"] = $metas;
+        $datos["rutas"] = $rutas;
 
         print json_encode($datos);
     } else {
@@ -23,3 +23,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         ));
     }
 }
+?>

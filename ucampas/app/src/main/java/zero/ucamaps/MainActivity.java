@@ -9,6 +9,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,9 +33,9 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import zero.ucamaps.basemaps.BasemapsDialogFragment;
 import zero.ucamaps.beans.FavoriteRoute;
+import zero.ucamaps.database.CargaAsinc;
 import zero.ucamaps.dialogs.AboutDialog;
 import zero.ucamaps.dialogs.DialogFavoriteList;
-import zero.ucamaps.dialogs.DialogSpecialRoutes;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -42,7 +43,7 @@ public class MainActivity extends ActionBarActivity {
     public static DrawerLayout mDrawerLayout;
     private String changeSound = "";
     private String baseColor = "";
-
+    public CargaAsinc ca = new CargaAsinc();
 
 
 
@@ -73,6 +74,8 @@ public class MainActivity extends ActionBarActivity {
         ButterKnife.inject(this);
         setupDrawer();
         setView();
+
+
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -275,7 +278,7 @@ public class MainActivity extends ActionBarActivity {
 
                 DialogFavoriteList favFrag = new DialogFavoriteList();
                 favFrag.setRoutingDialogListener(mapFragment);
-                DialogFavoriteList list = (DialogFavoriteList) favFrag;
+                DialogFavoriteList list = favFrag;
                 List<FavoriteRoute> recuperar = list.recuperar();
                 if(!recuperar.isEmpty()){
                     favFrag.show(getFragmentManager(),"Favorite Routes");
@@ -303,18 +306,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick() {
 
-
-                DialogSpecialRoutes specFrag = new DialogSpecialRoutes();
-                specFrag.setRoutingDialogListener(mapFragment);
-                DialogSpecialRoutes list = (DialogSpecialRoutes) specFrag;
-                List<FavoriteRoute> recuperar = list.recuperar();
-                if(!recuperar.isEmpty()){
-                    specFrag.show(getFragmentManager(),"Usando lista de favoritas por el momento");
-                }
-                else{
-
-                    Toast.makeText(getApplicationContext(),"No hay rutas especiales", Toast.LENGTH_SHORT).show();
-                }
+                ca.dsr.show(getFragmentManager(),"Usando Base de datos");
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             }
 
@@ -362,6 +354,9 @@ public class MainActivity extends ActionBarActivity {
     public void onStart() {
         super.onStart();
 
+        ca.execute(MainActivity.this);
+        ca.dsr.setRoutingDialogListener(mapFragment);
+        Log.d("ESTOY AL INICIO DEL ENCENDIDO", "YA CARGUE LAS COSAS EN LA BASE DE DATOS " );
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client.connect();
