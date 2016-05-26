@@ -6,5 +6,5 @@
 define("HOSTNAME", "localhost");// Nombre del host
 define("DATABASE", "ucamaps"); // Nombre de la base de datos
 define("USERNAME", "root"); // Nombre del usuario
-define("PASSWORD", "root"); // Nombre de la constraseña
+define("PASSWORD", "esmuydivertido"); // Nombre de la constraseña
 ?>

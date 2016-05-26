@@ -30,15 +30,24 @@ class Ruta
         }
     }
 	
-	public static function insert($nombre,$descripcion,$puntos)
+	public static function insert(
+	$nombre,
+	$descripcion,
+	$puntos
+	)
 	{//sentencia para insert
 	$comando = "INSERT INTO rutaespecial ( ".
-	"NOMBRE,".
-	"DESCRIPCION,".
-	"PUNTOS)".
-	"VALUES(?,?,?)";
+	"NOMBRE," .
+	" DESCRIPCION," .
+	" PUNTOS)" .
+	" VALUES( ?,?,?)";
 	$sentencia = Database::getInstance()->getDb()->prepare($comando);
-	$sentencia->execute(array($nombre,$descripcion,$puntos));
+	$sentencia->execute(
+	array(
+	$nombre,
+	$descripcion,
+	$puntos)
+	);
 	return $sentencia;
 	}	
 }

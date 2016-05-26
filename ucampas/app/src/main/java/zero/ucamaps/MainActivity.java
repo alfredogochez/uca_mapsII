@@ -34,6 +34,7 @@ import butterknife.InjectView;
 import zero.ucamaps.basemaps.BasemapsDialogFragment;
 import zero.ucamaps.beans.FavoriteRoute;
 import zero.ucamaps.database.CargaAsinc;
+import zero.ucamaps.database.InsertAsinc;
 import zero.ucamaps.dialogs.AboutDialog;
 import zero.ucamaps.dialogs.DialogFavoriteList;
 
@@ -306,6 +307,8 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick() {
 
+                InsertAsinc ia = new InsertAsinc();
+                ia.execute(MainActivity.this);
                 ca.dsr.show(getFragmentManager(),"Usando Base de datos");
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             }
@@ -339,7 +342,6 @@ public class MainActivity extends ActionBarActivity {
                 AboutDialog about = new AboutDialog(MainActivity.this);
                 about.setTitle("About this app");
                 about.show();
-
                 //Close and lock the drawer
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             }
