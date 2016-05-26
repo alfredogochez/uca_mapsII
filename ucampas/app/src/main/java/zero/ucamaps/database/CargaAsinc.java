@@ -3,7 +3,7 @@ package zero.ucamaps.database;
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -11,7 +11,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.google.zxing.client.android.LocaleManager;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,50 +20,52 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import zero.ucamaps.R;
+
 import zero.ucamaps.dialogs.DialogSpecialRoutes;
 
 
 /**
  * Created by alf on 23/05/2016.
  */
-public class CargaAsinc extends AsyncTask<Activity,Void,List<RutaEspecial>> {
+public class CargaAsinc extends AsyncTask<Activity,Void,Context> {
     private VolleySingleton volley;
     private RequestQueue requestQueue;
-    private static final String TAG = CargaAsinc.class.getSimpleName();
-    private List<RutaEspecial> listaRutas = new ArrayList<RutaEspecial>();
+    private List<RutaEspecial> listaRutas = new ArrayList<>();
     public DialogSpecialRoutes dsr = new DialogSpecialRoutes();
+    private Context contexto ;
 
     @Override
-    protected List<RutaEspecial>  doInBackground(Activity... activities) {
-
+    protected Context  doInBackground(Activity... activities) {
+        //asignamos valores al volley y a la queue.
         volley = VolleySingleton.getInstance(activities[0].getApplicationContext());
         requestQueue = volley.getRequestQueue();
-
-        cargarAdaptador();
-        return listaRutas;
+        contexto = activities[0].getApplicationContext();
+        //llamamos a select ruta, la cual se encarga de obtener la lista de rutas, y setearla
+        selectRuta();
+        return contexto;
     }
 
     @Override
-    protected void onPostExecute(List<RutaEspecial> rutas){
-        Log.d(TAG,"se termino de ejecutar esto, ya esta la lista");
-
+    protected void onPostExecute(Context contexto){
+        //hacemos un toast indicando que ya se termino de cargar la data del servidor
+        Toast.makeText(contexto,"Se han cargado las rutas especiales",Toast.LENGTH_SHORT).show();
     }
 
-    public void cargarAdaptador() {
+    public void selectRuta() {
         // Petición GET
         String url = Constantes.GET;
-
+        //creamos un object request, y lo añadimos a la cola
         JsonObjectRequest request = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        //cuando obtenemos una respuesta, la procesamos
                         procesarRespuesta(response);
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, "estoy cargando el adaptador, esto pasa: " + error.toString());
+                        Toast.makeText(contexto,"Se produjo un error: "+ error,Toast.LENGTH_LONG).show();
                     }
                 });
         addtoQueue(request);
@@ -73,33 +75,35 @@ public class CargaAsinc extends AsyncTask<Activity,Void,List<RutaEspecial>> {
         try {
             // Obtener atributo "estado"
             String estado = response.getString("estado");
-            Log.d(TAG,"esta es la respuesta actual: "+response);
             switch (estado) {
                 case "1": // EXITO
                     // Obtener array "rutas" Json
                     JSONArray arrayRutas = response.getJSONArray("rutas");
                     // Parsear
                     for (int i = 0; i < arrayRutas.length(); i++) {
+                        //como se obtiene un arreglo de rutas, se añade cada ruta a una lista
                         JSONObject ruta = (JSONObject) arrayRutas.get(i);
                         String idRuta = ruta.getString("idRUTAESPECIAL");
                         String nombre = ruta.getString("NOMBRE");
                         String descripcion = ruta.getString("DESCRIPCION");
                         String puntos = ruta.getString("PUNTOS");
+                        //creamos una ruta auxiliar
                         RutaEspecial rutaEspecialAux = new RutaEspecial();
+                        //la llenamos
                         rutaEspecialAux.setNOMBRE(nombre);
                         rutaEspecialAux.setDESCRIPCION(descripcion);
                         rutaEspecialAux.setIdRUTAESPECIAL(idRuta);
                         rutaEspecialAux.setPUNTOS(puntos);
+                        //y la añadimos a la lista global
                         listaRutas.add(rutaEspecialAux);
-                        Log.d(TAG, "tengo esta lista " + listaRutas);
+
                     }
-                    Log.d(TAG, "dentro del procesado de la respues, cargue esta lista " + listaRutas);
+                    //una vez salimos del bucle de llenado, le asignamos la lista al Display de rutas especiales
                     dsr.setListaRutas(listaRutas);
-                    Log.d(TAG, "el dialog tiene esta lista " + dsr.getListaRutas());
                     break;
                 case "2": // FALLIDO
                     String mensaje2 = response.getString("mensaje");
-                    Log.d(TAG, "tengo este error " + mensaje2.toString());
+                    Toast.makeText(contexto,"Se produjo un error: "+ mensaje2,Toast.LENGTH_LONG).show();
                     break;
             }
 

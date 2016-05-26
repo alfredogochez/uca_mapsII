@@ -10,11 +10,11 @@ public class Constantes {
     /**
      * Dirección IP del servidor
      */
-    private static final String IP = "http://192.168.0.29:";
+    private static final String IP = "http://192.241.247.212/:";
     /**
      * URLs del Web Service
      */
     public static final String GET = IP + PUERTO_HOST + "/ucamaps/get_rutas.php";
-    public static final String INSERT = IP + PUERTO_HOST + "/I%20Wish/insert_ruta.php";
+    public static final String INSERT = IP + PUERTO_HOST + "/ucamaps/insert_ruta.php";
 
 }
