@@ -20,8 +20,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import zero.ucamaps.R;
 import zero.ucamaps.dialogs.DialogSpecialRoutes;
-import zero.ucamaps.location.RoutingDialogFragment;
+
 
 /**
  * Created by alf on 23/05/2016.
@@ -32,8 +33,6 @@ public class CargaAsinc extends AsyncTask<Activity,Void,List<RutaEspecial>> {
     private static final String TAG = CargaAsinc.class.getSimpleName();
     private List<RutaEspecial> listaRutas = new ArrayList<RutaEspecial>();
     public DialogSpecialRoutes dsr = new DialogSpecialRoutes();
-
-
 
     @Override
     protected List<RutaEspecial>  doInBackground(Activity... activities) {
@@ -54,6 +53,7 @@ public class CargaAsinc extends AsyncTask<Activity,Void,List<RutaEspecial>> {
     public void cargarAdaptador() {
         // Petición GET
         String url = Constantes.GET;
+
         JsonObjectRequest request = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                     @Override

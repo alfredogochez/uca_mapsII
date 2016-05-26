@@ -323,6 +323,16 @@ public class MainActivity extends ActionBarActivity {
         icon_drawer_about.setImageResource(R.drawable.action_about);
         item = new DrawerItem(view_about, new DrawerItem.OnClickListener() {
 
+//        // añandiendo el item de insertar rutas
+//        LinearLayout insert = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
+//        TextView text_insert = (TextView) insert.findViewById(R.id.drawer_item_textview);
+//        ImageView icon_insert = (ImageView) insert.findViewById(R.id.drawer_item_icon);
+
+//        text_insert.setText("boton de insert");
+//        icon_insert.setImageResource(R.drawable.ic_business_black_24dp);
+//        item = new DrawerItem(insert, new DrawerItem.OnClickListener() {
+
+
             @Override
             public void onClick() {
 
@@ -337,7 +347,6 @@ public class MainActivity extends ActionBarActivity {
         });
 
         mDrawerItems.add(item);
-
 
 
         BaseAdapter adapter = (BaseAdapter) mDrawerList.getAdapter();
@@ -356,7 +365,7 @@ public class MainActivity extends ActionBarActivity {
 
         ca.execute(MainActivity.this);
         ca.dsr.setRoutingDialogListener(mapFragment);
-        Log.d("ESTOY AL INICIO DEL ENCENDIDO", "YA CARGUE LAS COSAS EN LA BASE DE DATOS " );
+        Log.d("ESTOY EN ENCENDIDO", "YA CARGUE LAS COSAS EN LA BASE DE DATOS " );
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client.connect();

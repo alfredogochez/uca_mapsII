@@ -3,37 +3,18 @@ package zero.ucamaps.dialogs;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.DownloadManager;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-
-import org.codehaus.jackson.annotate.JsonPropertyOrder;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import zero.ucamaps.R;
-import zero.ucamaps.database.CargaAsinc;
-import zero.ucamaps.database.Constantes;
 import zero.ucamaps.database.RutaEspecial;
-import zero.ucamaps.database.VolleySingleton;
 import zero.ucamaps.location.RoutingDialogFragment;
 
 /**
@@ -67,7 +48,7 @@ public class DialogSpecialRoutes extends DialogFragment{
         if(listaRutas.size()< 1){
             Toast.makeText(
                     getActivity(),
-                    "Tengo null",
+                    "Ocurrió un error, intente de nuevo mas tarde",
                     Toast.LENGTH_LONG).show();
             getActivity().finish();
         }else {

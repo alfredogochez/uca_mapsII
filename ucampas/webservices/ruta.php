@@ -16,7 +16,7 @@ class Ruta
      */
     public static function getAll()
     {
-        $consulta = "SELECT * FROM meta";
+        $consulta = "SELECT * FROM rutaespecial";
         try {
             // Preparar sentencia
             $comando = Database::getInstance()->getDb()->prepare($consulta);
@@ -30,11 +30,7 @@ class Ruta
         }
     }
 	
-	public static function insert(
-	$nombre,
-	$descripcion,
-	$puntos
-	)
+	public static function insert($nombre,$descripcion,$puntos)
 	{//sentencia para insert
 	$comando = "INSERT INTO rutaespecial ( ".
 	"NOMBRE,".
@@ -42,16 +38,8 @@ class Ruta
 	"PUNTOS)".
 	"VALUES(?,?,?)";
 	$sentencia = Database::getInstance()->getDb()->prepare($comando);
-	return $sentencia->execute(
-	array(
-		$nombre,
-		$descripcion,
-		$puntos
-		)
-		);
-	}
-		
-		
-	
+	$sentencia->execute(array($nombre,$descripcion,$puntos));
+	return $sentencia;
+	}	
 }
 ?>
