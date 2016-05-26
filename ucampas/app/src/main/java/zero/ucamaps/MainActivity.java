@@ -307,10 +307,28 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick() {
 
-                InsertAsinc ia = new InsertAsinc();
-                ia.execute(MainActivity.this);
                 ca.dsr.show(getFragmentManager(),"Usando Base de datos");
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            }
+
+        });
+
+        mDrawerItems.add(item);
+
+        // añandiendo el item de insertar rutas
+        LinearLayout insert = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
+        TextView text_insert = (TextView) insert.findViewById(R.id.drawer_item_textview);
+        ImageView icon_insert = (ImageView) insert.findViewById(R.id.drawer_item_icon);
+
+        text_insert.setText("boton de insert");
+        icon_insert.setImageResource(R.drawable.ic_business_black_24dp);
+        item = new DrawerItem(insert, new DrawerItem.OnClickListener() {
+
+            @Override
+            public void onClick() {
+                InsertAsinc ia = new InsertAsinc();
+                ia.execute(MainActivity.this);
+
             }
 
         });
@@ -325,16 +343,6 @@ public class MainActivity extends ActionBarActivity {
         text_drawer_about.setText(getString(R.string.action_about));
         icon_drawer_about.setImageResource(R.drawable.action_about);
         item = new DrawerItem(view_about, new DrawerItem.OnClickListener() {
-
-//        // añandiendo el item de insertar rutas
-//        LinearLayout insert = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
-//        TextView text_insert = (TextView) insert.findViewById(R.id.drawer_item_textview);
-//        ImageView icon_insert = (ImageView) insert.findViewById(R.id.drawer_item_icon);
-
-//        text_insert.setText("boton de insert");
-//        icon_insert.setImageResource(R.drawable.ic_business_black_24dp);
-//        item = new DrawerItem(insert, new DrawerItem.OnClickListener() {
-
 
             @Override
             public void onClick() {

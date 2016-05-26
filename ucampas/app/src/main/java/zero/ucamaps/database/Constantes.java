@@ -10,7 +10,7 @@ public class Constantes {
     /**
      * Dirección IP del servidor
      */
-    private static final String IP = "http://192.241.247.212/:";
+    private static final String IP = "http://192.241.247.212:";
     /**
      * URLs del Web Service
      */
