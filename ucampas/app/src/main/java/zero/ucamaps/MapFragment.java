@@ -46,6 +46,7 @@ import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnPinchListener;
 import com.esri.android.map.event.OnStatusChangedListener;
 
+import zero.ucamaps.database.RutaEspecial;
 import zero.ucamaps.dialogs.DialogFavoriteRoute;
 import zero.ucamaps.dialogs.ProgressDialogFragment;
 import zero.ucamaps.location.DirectionsDialogFragment;
@@ -69,9 +70,11 @@ import com.esri.core.map.Graphic;
 import com.esri.core.portal.BaseMap;
 import com.esri.core.portal.Portal;
 import com.esri.core.portal.WebMap;
+import com.esri.core.symbol.FontStyle;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.core.symbol.SimpleLineSymbol.STYLE;
+import com.esri.core.symbol.TextSymbol;
 import com.esri.core.tasks.geocode.Locator;
 import com.esri.core.tasks.geocode.LocatorFindParameters;
 import com.esri.core.tasks.geocode.LocatorGeocodeResult;
@@ -792,6 +795,15 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		return true;
 	}
 
+	@Override
+	public boolean onGetRouteMultiple(RutaEspecial ruta){
+		// Remove any previous graphics and routes
+		resetGraphicsLayers();
+		// Do the routing
+		executeMultipleRoutingTask(ruta);
+		return true;
+	}
+
 	/**
 	 * Set up Route Parameters to execute RouteTask
 	 * @param start
@@ -837,6 +849,29 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		RouteAsyncTask routeTask = new RouteAsyncTask();
 		routeTask.execute(routeParams);
 		mPendingTask = routeTask;
+	}
+
+	private void executeMultipleRoutingTask(RutaEspecial ruta){
+		List<LocatorFindParameters> routeParams = new ArrayList<LocatorFindParameters>();
+
+		String [] puntosString = ruta.getPUNTOS().split("/");
+
+		for(String cadena: puntosString){
+			String[] puntoInformacion = cadena.split(",");
+			LocatorFindParameters param = new LocatorFindParameters(puntoInformacion[0]);
+			Point punto = new Point();
+			double x = Double.parseDouble(puntoInformacion[1]);
+			double y = Double.parseDouble(puntoInformacion[2]);
+			punto.setXY(x,y);
+			param.setLocation(punto,mWm);
+			routeParams.add(param);
+		}
+
+		RouteAsyncTask routeTask = new RouteAsyncTask();
+		routeTask.execute(routeParams);
+		mPendingTask = routeTask;
+
+
 	}
 
 	@Override
@@ -1098,6 +1133,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		private static final String TAG_ROUTE_SEARCH_PROGRESS_DIALOG = "TAG_ROUTE_SEARCH_PROGRESS_DIALOG";
 		private Exception mException;
 		private ProgressDialogFragment mProgressDialog;
+		private List<Point> puntosGlobales;
 		public RouteAsyncTask() {
 		}
 
@@ -1119,61 +1155,61 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
             globalVariable = (GlobalPoints) getActivity().getApplicationContext();
 
             // Define route objects
-			List<LocatorGeocodeResult> geocodeStartResult = null;
-			List<LocatorGeocodeResult> geocodeEndResult = null;
-			Point startPoint = null;
-			Point endPoint = null;
-			Point puntoMedio = new Point();
-			Point puntoMedio2 = new Point();
+			List<Point> puntos = new ArrayList<Point>();
 
 			// Create a new locator to geocode start/end points; by default uses ArcGIS online world geocoding service
 			Locator locator = Locator.createOnlineLocator(getString(R.string.geocodeservice_url));
 
 			try {
 				// Geocode start position, or use My Location (from GPS)
-				Log.d("Debug","Este es el tamano de los parametros: "+ params[0].size());
 				LocatorFindParameters startParam = params[0].get(0);
 
-				Point puntoInicio = startParam.getLocation();
+				int cantidadPuntos = params[0].size();
+
+				for(int i = 0;i < cantidadPuntos ; i++){
+
+					LocatorFindParameters paramLocator = params[0].get(i);
+					Point punto = paramLocator.getLocation();
+					List<LocatorGeocodeResult> geocodeResults = null;
+
+					if(punto == null){
+						if (paramLocator.getText().equals(getString(R.string.my_location))) {
+							if(i == 0){
+								mStartLocation = getString(R.string.my_location);
+							}
+							else if((i+1) == cantidadPuntos){
+								mEndLocation = getString(R.string.my_location);
+							}
+
+							punto = (Point) GeometryEngine.project(mLocation, mWm,mEgs);
+
+						} else {
+
+							geocodeResults = locator.find(paramLocator);
+							punto = geocodeResults.get(0).getLocation();
+							if(i==0){
+								mStartLocation = geocodeResults.get(0).getAddress();
+							}else if((i+1) == cantidadPuntos){
+								mEndLocation = geocodeResults.get(0).getAddress();
+							}
 
 
-				if(puntoInicio == null){
-					if (startParam.getText().equals(getString(R.string.my_location))) {
-						mStartLocation = getString(R.string.my_location);
-						startPoint = (Point) GeometryEngine.project(mLocation, mWm,mEgs);
 
-					} else {
-						geocodeStartResult = locator.find(startParam);
-						startPoint = geocodeStartResult.get(0).getLocation();
-						mStartLocation = geocodeStartResult.get(0).getAddress();
+							if (isCancelled()) {
+								return null;
+							}
+						}
 
-						if (isCancelled()) {
-							return null;
+					}else{
+						if(i==0){
+							mStartLocation = paramLocator.getText();
+						}else if((i+1) == cantidadPuntos){
+							mEndLocation = paramLocator.getText();
 						}
 					}
 
-				}else{
-					mStartLocation = startParam.getText();
-					startPoint = puntoInicio;
-				}
+					puntos.add(punto);
 
-				// Geocode the destination
-				LocatorFindParameters endParam = params[0].get(1);
-				Point puntofinal = endParam.getLocation();
-
-				if(puntofinal == null){
-					if (endParam.getText().equals(getString(R.string.my_location))) {
-						mEndLocation = getString(R.string.my_location);
-						endPoint = (Point) GeometryEngine.project(mLocation, mWm,mEgs);
-					} else {
-						geocodeEndResult = locator.find(endParam);
-						endPoint = geocodeEndResult.get(0).getLocation();
-						mEndLocation = geocodeEndResult.get(0).getAddress();
-					}
-				}
-				else{
-					mEndLocation = endParam.getText();
-					endPoint = puntofinal;
 				}
 
                 //Guardando puntos
@@ -1189,15 +1225,15 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				}else{
 					globalVariable.setEndName(mEndLocation);
 				}
-                globalVariable.setStartLongitude(startPoint.getX());
-                globalVariable.setStartLatitud(startPoint.getY());
-				globalVariable.setEndLongitude(endPoint.getX());
-				globalVariable.setEndLatitude(endPoint.getY());
-				Log.d("Debug","Punto X: "+startPoint.getX()+"\n Punto Y: "+startPoint.getY());
 
+                globalVariable.setStartLongitude(puntos.get(0).getX());
+                globalVariable.setStartLatitud(puntos.get(0).getY());
+				globalVariable.setEndLongitude(puntos.get(puntos.size() - 1).getX());
+				globalVariable.setEndLatitude(puntos.get(puntos.size() - 1).getY());
+				Log.d("Punto Inicio","Nombre: " + mStartLocation + "\nPuntoX: " + puntos.get(0).getX() + "\nPuntoY: " + puntos.get(0).getY());
+				Log.d("Punto Fin","Nombre: " + mEndLocation + "\nPuntoX: " + puntos.get(puntos.size() - 1).getX() + "\nPuntoY: " + puntos.get(puntos.size() - 1).getY());
 
-				puntoMedio.setXY(-9933748.624396378,1537640.150194445);
-				puntoMedio2.setXY(-9933650.585406138,1537625.2813013557);
+				puntosGlobales = puntos;
 
 			} catch (Exception e) {
 				mException = e;
@@ -1224,11 +1260,14 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 			// Customize the route parameters
 			NAFeaturesAsFeature routeFAF = new NAFeaturesAsFeature();
-			StopGraphic sgStart = new StopGraphic(startPoint);
-			StopGraphic medium = new StopGraphic(puntoMedio);
-			StopGraphic medium2 = new StopGraphic(puntoMedio2);
-			StopGraphic sgEnd = new StopGraphic(endPoint);
-			routeFAF.setFeatures(new Graphic[] { sgStart,medium,medium2, sgEnd });
+			List<StopGraphic> stopGraphics = new ArrayList<StopGraphic>();
+			for (Point p : puntos){
+				StopGraphic sg = new StopGraphic(p);
+				stopGraphics.add(sg);
+			}
+			Graphic[] graphics = stopGraphics.toArray(new Graphic[stopGraphics.size()]);
+
+			routeFAF.setFeatures(graphics);
 			routeFAF.setCompressedRequest(true);
 			routeParams.setStops(routeFAF);
 			//noinspection ResourceType
@@ -1262,21 +1301,37 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			// Get first item in list of routes provided by server
 			Route route = result.getRoutes().get(0);
 
+
 			// Create polyline graphic of the full route
-			SimpleLineSymbol lineSymbol = new SimpleLineSymbol(Color.BLACK, 2,STYLE.DOT);
+			SimpleLineSymbol lineSymbol = new SimpleLineSymbol(Color.rgb(106,0,143), 2,STYLE.SOLID);
 			Graphic routeGraphic = new Graphic(route.getRouteGraphic().getGeometry(), lineSymbol);
 
 			// Create point graphic to mark start of route
 			Point startPoint = ((Polyline) routeGraphic.getGeometry()).getPoint(0);
-			Graphic startGraphic = createMarkerGraphic(startPoint, false);
+			Graphic startGraphic = createMarkerGraphic(startPoint, 0);
+
+			List<Graphic> graphics = new ArrayList<Graphic>();
+			graphics.add(routeGraphic);
+			graphics.add(startGraphic);
+
+			for(int i = 1;i < puntosGlobales.size() - 1 ;i++){
+
+				graphics.add(createMarkerGraphic(puntosGlobales.get(i),1));
+				TextSymbol text = new TextSymbol(FontStyle.NORMAL.name(),"prueba1",Color.BLACK);
+				graphics.add(new Graphic(puntosGlobales.get(i),text));
+			}
+
+
 
 			// Create point graphic to mark end of route
 			int endPointIndex = ((Polyline) routeGraphic.getGeometry()).getPointCount() - 1;
 			Point endPoint = ((Polyline) routeGraphic.getGeometry()).getPoint(endPointIndex);
-			Graphic endGraphic = createMarkerGraphic(endPoint, true);
+			Graphic endGraphic = createMarkerGraphic(endPoint, 2);
+
+			graphics.add(endGraphic);
 
 			// Add these graphics to route layer
-			mRouteLayer.addGraphics(new Graphic[] { routeGraphic, startGraphic,endGraphic });
+			mRouteLayer.addGraphics(graphics.toArray(new Graphic [graphics.size()] ));
 
 			// Zoom to the extent of the entire route with a padding
 			mMapView.setExtent(route.getEnvelope(),100);
@@ -1289,17 +1344,26 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 		}
 
-		Graphic createMarkerGraphic(Point point, boolean endPoint) {
-			Drawable marker = getResources().getDrawable(
-					endPoint ? R.drawable.pin_circle_blue
-							: R.drawable.pin_circle_red);
+		Graphic createMarkerGraphic(Point point, int pointType) {
+			Drawable marker = null;
+			if(pointType == 0){
+				marker = getResources().getDrawable(R.drawable.pin_circle_red);
+			} else if(pointType == 1) {
+				marker = getResources().getDrawable(R.drawable.ic_place_white_24dp);
+			} else if(pointType == 2){
+				marker = getResources().getDrawable(R.drawable.pin_circle_blue);
+			}
+
 			PictureMarkerSymbol destinationSymbol = new PictureMarkerSymbol(
 					mMapView.getContext(), marker);
-			// NOTE: marker's bounds not set till marker is used to create destinationSymbol
+
+
 			float offsetY = convertPixelsToDp(getActivity(), marker.getBounds().bottom);
 			destinationSymbol.setOffsetY(offsetY);
+
 			return new Graphic(point, destinationSymbol);
 		}
+
 	}
 
 	/**

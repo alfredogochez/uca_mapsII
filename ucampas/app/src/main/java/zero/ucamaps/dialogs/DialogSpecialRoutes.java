@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zero.ucamaps.R;
+import zero.ucamaps.beans.FavoriteRoute;
 import zero.ucamaps.database.RutaEspecial;
 import zero.ucamaps.location.RoutingDialogFragment;
 
@@ -66,8 +67,9 @@ public class DialogSpecialRoutes extends DialogFragment{
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
+                            RutaEspecial rutaEspecial = listaRutas.get(which);
 
-                            //Espacio para implementar el metodo para llamar las rutas especiales
+                            mRoutingDialogListener.onGetRouteMultiple(rutaEspecial);
 
                         }
                     });

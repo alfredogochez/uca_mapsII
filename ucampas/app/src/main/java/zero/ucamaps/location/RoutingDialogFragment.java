@@ -12,6 +12,7 @@ import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 
 import zero.ucamaps.R;
+import zero.ucamaps.database.RutaEspecial;
 
 public class RoutingDialogFragment extends DialogFragment {
 	public static final String ARG_END_POINT_DEFAULT = "EndPointDefault";
@@ -44,6 +45,7 @@ public class RoutingDialogFragment extends DialogFragment {
 		 */
 		public boolean onGetRoute(String startPoint, String endPoint);
 		public boolean onGetRouteFavorite(String startname,String endName,double startLatitud, double startLongitud,double endLatitud, double endLongitud);
+		public boolean onGetRouteMultiple(RutaEspecial ruta);
 	}
 
 	// Mandatory empty constructor for fragment manager to recreate fragment

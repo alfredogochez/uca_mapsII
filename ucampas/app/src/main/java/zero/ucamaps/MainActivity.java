@@ -373,6 +373,7 @@ public class MainActivity extends ActionBarActivity {
     public void onStart() {
         super.onStart();
 
+
         ca.execute(MainActivity.this);
         ca.dsr.setRoutingDialogListener(mapFragment);
         Log.d("ESTOY EN ENCENDIDO", "YA CARGUE LAS COSAS EN LA BASE DE DATOS " );
