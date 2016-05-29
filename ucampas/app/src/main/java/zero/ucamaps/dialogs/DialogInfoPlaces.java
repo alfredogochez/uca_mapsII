@@ -9,6 +9,7 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,8 +53,10 @@ public class DialogInfoPlaces extends DialogFragment implements View.OnClickList
         //View v = inflater.inflate(R.layout.fragment_dialog, container, false);
         View titulo_edificio = vista.findViewById(R.id.titulo_edificio);
         View info_edificio = vista.findViewById(R.id.info_edificio);
+        ImageView imagen_edificio = (ImageView) vista.findViewById(R.id.foto_edificio);
         ((TextView)titulo_edificio).setText(getArguments().getString("titulo"));
         ((TextView)info_edificio).setText("Admiren mi edificiosidad :v");
+        imagen_edificio.setImageResource(R.drawable.parking);
 
         View ver_mas = vista.findViewById(R.id.see_more_button);
         ((Button) ver_mas).setOnClickListener(this);
