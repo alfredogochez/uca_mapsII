@@ -31,6 +31,8 @@
         android:layout_height="wrap_content"
         android:text="Ver mas..."
         android:id="@+id/see_more_button"
-        android:layout_weight="0.17" />
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_weight="0.17"
+        android:textColor="@color/link_text_material_light" />
 
 </LinearLayout>
