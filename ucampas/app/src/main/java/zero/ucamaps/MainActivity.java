@@ -4,6 +4,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -86,6 +87,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("ESTOY RESUMIENDO", ca.getStatus().toString());
         updateDrawer();
     }
 
@@ -372,11 +374,13 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onStart() {
         super.onStart();
-
-
+        Log.d("ANTES DE ENCENDER", ca.getStatus().toString());
+        if (ca.getStatus() == AsyncTask.Status.FINISHED);
+        else{
         ca.execute(MainActivity.this);
         ca.dsr.setRoutingDialogListener(mapFragment);
-        Log.d("ESTOY EN ENCENDIDO", "YA CARGUE LAS COSAS EN LA BASE DE DATOS " );
+        }
+        Log.d("Despues de encender", ca.getStatus().toString() );
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client.connect();
