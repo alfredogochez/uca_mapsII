@@ -1134,6 +1134,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		private Exception mException;
 		private ProgressDialogFragment mProgressDialog;
 		private List<Point> puntosGlobales;
+		private List<String> nombrePuntosGlobales;
 		public RouteAsyncTask() {
 		}
 
@@ -1156,6 +1157,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
             // Define route objects
 			List<Point> puntos = new ArrayList<Point>();
+			List<String> nombrePuntos = new ArrayList<String>();
 
 			// Create a new locator to geocode start/end points; by default uses ArcGIS online world geocoding service
 			Locator locator = Locator.createOnlineLocator(getString(R.string.geocodeservice_url));
@@ -1208,7 +1210,9 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 						}
 					}
 
+
 					puntos.add(punto);
+					nombrePuntos.add(paramLocator.getText());
 
 				}
 
@@ -1234,6 +1238,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				Log.d("Punto Fin","Nombre: " + mEndLocation + "\nPuntoX: " + puntos.get(puntos.size() - 1).getX() + "\nPuntoY: " + puntos.get(puntos.size() - 1).getY());
 
 				puntosGlobales = puntos;
+				nombrePuntosGlobales = nombrePuntos;
 
 			} catch (Exception e) {
 				mException = e;
@@ -1317,7 +1322,10 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			for(int i = 1;i < puntosGlobales.size() - 1 ;i++){
 
 				graphics.add(createMarkerGraphic(puntosGlobales.get(i),1));
-				TextSymbol text = new TextSymbol(FontStyle.NORMAL.name(),"prueba1",Color.BLACK);
+
+				TextSymbol text = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(i),Color.BLACK);
+				text.setSize(15);
+				text.setOffsetY(10);
 				graphics.add(new Graphic(puntosGlobales.get(i),text));
 			}
 

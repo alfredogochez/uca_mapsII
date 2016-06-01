@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -62,6 +63,7 @@ public class InsertAsinc extends AsyncTask<Activity,Void,Context> {
         //y se crea un objeto JSON, basado en el mapa
         JSONObject jsOb = new JSONObject(mapa);
         //luego hacemos un request de insercion
+        Log.d("JSON", jsOb.toString());
         JsonObjectRequest request = new JsonObjectRequest
                 (Request.Method.POST,Constantes.INSERT,jsOb,new Response.Listener<JSONObject>() {
                             @Override
