@@ -1,6 +1,7 @@
 package zero.ucamaps;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -135,6 +136,12 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	public static MapView mMapView;
 	private String mMapViewState;
 
+	Point center = new Point(0,0);
+	Boolean ignoreTap = false;
+	boolean tap = false;
+	boolean dragged = false;
+
+	static boolean editMode = false;
 	// GPS location tracking
 	private boolean mIsLocationTracking;
 	private Point mLocation = null;
@@ -310,36 +317,36 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
         TaskExecutor.getInstance().getThreadPool().submit(new Callable<Void>() {
 
-            @Override
-            public Void call() throws Exception {
+			@Override
+			public Void call() throws Exception {
 
-                // load a WebMap instance from the portal item
-                final WebMap webmap = WebMap.newInstance(basemapPortalItemId, portal);
+				// load a WebMap instance from the portal item
+				final WebMap webmap = WebMap.newInstance(basemapPortalItemId, portal);
 
-                // load the WebMap that represents the basemap if one was specified
-                WebMap basemapWebMap = null;
-                if (basemapPortalItemId != null && !basemapPortalItemId.isEmpty()) {
-                    basemapWebMap = WebMap.newInstance(basemapPortalItemId, portal);
-                }
-                final BaseMap basemap = basemapWebMap != null ? basemapWebMap.getBaseMap() : null;
+				// load the WebMap that represents the basemap if one was specified
+				WebMap basemapWebMap = null;
+				if (basemapPortalItemId != null && !basemapPortalItemId.isEmpty()) {
+					basemapWebMap = WebMap.newInstance(basemapPortalItemId, portal);
+				}
+				final BaseMap basemap = basemapWebMap != null ? basemapWebMap.getBaseMap() : null;
 
-                if (webmap != null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            MapView mapView = new MapView(getActivity(), webmap, basemap, null, null);
+				if (webmap != null) {
+					getActivity().runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							MapView mapView = new MapView(getActivity(), webmap, basemap, null, null);
 
-                            setMapView(mapView);
-                            mapView.zoomin();
+							setMapView(mapView);
+							mapView.zoomin();
 
-                        }
-                    });
-                } else {
-                    throw new Exception("Failed to load web map.");
-                }
-                return null;
-            }
-        });
+						}
+					});
+				} else {
+					throw new Exception("Failed to load web map.");
+				}
+				return null;
+			}
+		});
     }
 
 
@@ -434,18 +441,60 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		mMapView.setShowMagnifierOnLongPress(true);
 		mLongPressEvent = null;
 
+
 		// Setup OnTouchListener to detect and act on long-press
 		mMapView.setOnTouchListener(new MapOnTouchListener(getActivity(),
                 mMapView) {
 
+			private static final int MAX_CLICK_DURATION = 100;
+			private long startClickTime;
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                     // Start of a new gesture. Make sure mLongPressEvent is cleared.
                     mLongPressEvent = null;
+					tap = false;
+					center = mapView.getCenter();
+					ignoreTap = false;
+					dragged = false;
+					startClickTime = Calendar.getInstance().getTimeInMillis();
                 }
+				if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+					tap = true;
+					long clickDuration = Calendar.getInstance().getTimeInMillis() - startClickTime;
+					if(clickDuration > MAX_CLICK_DURATION) {
+						dragged = true;
+					}
+				}
+				if (event.getActionMasked() == MotionEvent.ACTION_POINTER_UP) {
+					if (center != mapView.getCenter())
+						ignoreTap = true;
+				}
+
+				if(tap){
+					System.out.println("Tap esta activo");
+				}else{
+					System.out.println("Tap no esta activo");
+				}
+
+				if(dragged){
+					System.out.println("Dragged esta activo");
+				}else{
+					System.out.println("Dragged no esta activo");
+				}
+				if(mLongPressEvent == null && !ignoreTap && event.getPointerCount() == 1 && tap && !dragged && editMode){
+					Point mapPoint = mMapView.toMapPoint(event.getX(), event.getY());
+					Drawable drawable = getActivity().getResources().getDrawable(R.drawable.pin_circle_purple);
+					PictureMarkerSymbol resultSymbol = new PictureMarkerSymbol(getActivity(), drawable);
+					// create graphic object for resulting location
+					Graphic resultLocGraphic = new Graphic(mapPoint,resultSymbol);
+					// add graphic to location layer
+					mLocationLayer.addGraphic(resultLocGraphic);
+					tap = false;
+				}
                 return super.onTouch(v, event);
             }
+
 
             @Override
             public void onLongPress(MotionEvent point) {
@@ -455,9 +504,11 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
             }
 
+
+
             @Override
             public boolean onDragPointerUp(MotionEvent from, final MotionEvent to) {
-                if (mLongPressEvent != null) {
+                if (mLongPressEvent != null && !editMode) {
                     // This is the end of a long-press that will have displayed the magnifier.
                     // Perform reverse-geocoding of the point that was pressed
                     Point mapPoint = mMapView.toMapPoint(to.getX(), to.getY());
@@ -1234,8 +1285,8 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
                 globalVariable.setStartLatitud(puntos.get(0).getY());
 				globalVariable.setEndLongitude(puntos.get(puntos.size() - 1).getX());
 				globalVariable.setEndLatitude(puntos.get(puntos.size() - 1).getY());
-				Log.d("Punto Inicio","Nombre: " + mStartLocation + "\nPuntoX: " + puntos.get(0).getX() + "\nPuntoY: " + puntos.get(0).getY());
-				Log.d("Punto Fin","Nombre: " + mEndLocation + "\nPuntoX: " + puntos.get(puntos.size() - 1).getX() + "\nPuntoY: " + puntos.get(puntos.size() - 1).getY());
+				Log.d("Punto Inicio", "Nombre: " + mStartLocation + "\nPuntoX: " + puntos.get(0).getX() + "\nPuntoY: " + puntos.get(0).getY());
+				Log.d("Punto Fin", "Nombre: " + mEndLocation + "\nPuntoX: " + puntos.get(puntos.size() - 1).getX() + "\nPuntoY: " + puntos.get(puntos.size() - 1).getY());
 
 				puntosGlobales = puntos;
 				nombrePuntosGlobales = nombrePuntos;
