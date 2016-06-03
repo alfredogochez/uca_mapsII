@@ -87,7 +87,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("ESTOY RESUMIENDO", ca.getStatus().toString());
+
         updateDrawer();
     }
 
@@ -374,13 +374,13 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onStart() {
         super.onStart();
-        Log.d("ANTES DE ENCENDER", ca.getStatus().toString());
+
         if (ca.getStatus() == AsyncTask.Status.FINISHED);
         else{
         ca.execute(MainActivity.this);
         ca.dsr.setRoutingDialogListener(mapFragment);
         }
-        Log.d("Despues de encender", ca.getStatus().toString() );
+
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client.connect();

@@ -15,7 +15,7 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="205dp"
+        android:layout_height="200dp"
         android:id="@+id/foto_edificio"
         android:textAlignment="center"
         android:layout_weight="0.39" />

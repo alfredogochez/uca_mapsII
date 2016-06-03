@@ -8,43 +8,43 @@ public class RutaEspecial {
     /*
            Atributos
             */
-    private String idRUTAESPECIAL;
-    private String NOMBRE;
-    private String DESCRIPCION;
-    private String PUNTOS;
+    private String idRutaEspecial;
+    private String nombre;
+    private String descripcion;
+    private String puntos;
 
     public RutaEspecial() {
     }
 
-    public String getIdRUTAESPECIAL() {
-        return idRUTAESPECIAL;
+    public String getIdRutaEspecial() {
+        return idRutaEspecial;
     }
 
-    public void setIdRUTAESPECIAL(String idRUTAESPECIAL) {
-        this.idRUTAESPECIAL = idRUTAESPECIAL;
+    public void setIdRutaEspecial(String idRutaEspecial) {
+        this.idRutaEspecial = idRutaEspecial;
     }
 
-    public String getNOMBRE() {
-        return NOMBRE;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setNOMBRE(String NOMBRE) {
-        this.NOMBRE = NOMBRE;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
-    public String getDESCRIPCION() {
-        return DESCRIPCION;
+    public String getDescripcion() {
+        return descripcion;
     }
 
-    public void setDESCRIPCION(String DESCRIPCION) {
-        this.DESCRIPCION = DESCRIPCION;
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
-    public String getPUNTOS() {
-        return PUNTOS;
+    public String getPuntos() {
+        return puntos;
     }
 
-    public void setPUNTOS(String PUNTOS) {
-        this.PUNTOS = PUNTOS;
+    public void setPuntos(String puntos) {
+        this.puntos = puntos;
     }
 }

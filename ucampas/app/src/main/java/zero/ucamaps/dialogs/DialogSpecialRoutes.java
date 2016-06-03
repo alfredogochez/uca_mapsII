@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zero.ucamaps.R;
-import zero.ucamaps.beans.FavoriteRoute;
 import zero.ucamaps.database.RutaEspecial;
 import zero.ucamaps.location.RoutingDialogFragment;
 
@@ -57,7 +56,7 @@ public class DialogSpecialRoutes extends DialogFragment{
 
 
             for (int i = 0; i < listaRutas.size(); i++) {
-                listaRutasString[i] = listaRutas.get(i).getNOMBRE();
+                listaRutasString[i] = listaRutas.get(i).getNombre();
             }
 
             ListView lv = (ListView) getActivity().findViewById(R.id.lista_favoritos);

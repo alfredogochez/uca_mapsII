@@ -8,12 +8,7 @@ class Ruta
     {
     }
 
-    /**
-     * Retorna en la fila especificada de la tabla 'meta'
-     *
-     * @param $idMeta Identificador del registro
-     * @return array Datos del registro
-     */
+   
     public static function getAll()
     {
         $consulta = "SELECT * FROM rutaespecial";

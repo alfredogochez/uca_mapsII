@@ -46,6 +46,8 @@ import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnPinchListener;
 import com.esri.android.map.event.OnStatusChangedListener;
 
+import zero.ucamaps.database.CargaAsinc;
+import zero.ucamaps.database.CargaDetalles;
 import zero.ucamaps.database.RutaEspecial;
 import zero.ucamaps.dialogs.DialogFavoriteRoute;
 import zero.ucamaps.dialogs.ProgressDialogFragment;
@@ -854,7 +856,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	private void executeMultipleRoutingTask(RutaEspecial ruta){
 		List<LocatorFindParameters> routeParams = new ArrayList<LocatorFindParameters>();
 
-		String [] puntosString = ruta.getPUNTOS().split("/");
+		String [] puntosString = ruta.getPuntos().split("/");
 
 		for(String cadena: puntosString){
 			String[] puntoInformacion = cadena.split(",");
@@ -939,12 +941,13 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
                 //if(TheresAPlace) {
                     //DialogFragment newFragment = new DialogInfoPlaces();
                     //newFragment.show(getFragmentManager(), "Información");
-
-					TextView barra_busqueda = (TextView) getActivity().findViewById(R.id.textView1);
-                    DialogFragment newFragment = DialogInfoPlaces.newInstance(barra_busqueda.getText().toString());
-                    newFragment.show(getFragmentManager(), "Nombre");
-
-                //}
+                TextView barra_busqueda = (TextView) getActivity().findViewById(R.id.textView1);
+				CargaDetalles cd = new CargaDetalles();
+                cd.fm = getFragmentManager();
+				cd.setNombreEdificio(barra_busqueda.getText().toString());
+				Log.d("Esto tiene la barra",barra_busqueda.getText().toString());
+                Toast.makeText(getActivity(),"Cargando Informacion...",Toast.LENGTH_SHORT).show();
+                cd.execute(getActivity());
 
             }
         });
