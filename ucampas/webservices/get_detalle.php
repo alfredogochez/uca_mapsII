@@ -20,11 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         if ($retorno) {
 
             $detalle["estado"] = "1";
-            $detalle["detalle"] = $retorno;
+            $detalle["detalles"] = $retorno;
+			//$retorno;
             // Enviar objeto json de la meta
-			print $detalle["estado"];
-			//print $detalle["detalle"];
-           // print json_encode($detalle);
+            print json_encode($detalle);
         } else {
             // Enviar respuesta de error general
             print json_encode(
