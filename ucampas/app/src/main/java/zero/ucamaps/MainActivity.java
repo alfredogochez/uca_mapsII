@@ -284,7 +284,7 @@ public class MainActivity extends ActionBarActivity {
                 DialogFavoriteList list = favFrag;
                 List<FavoriteRoute> recuperar = list.recuperar();
                 if(!recuperar.isEmpty()){
-                    favFrag.show(getFragmentManager(),"Favorite Routes");
+                    favFrag.show(getFragmentManager(), "Favorite Routes");
                 }
                 else{
 
@@ -360,7 +360,24 @@ public class MainActivity extends ActionBarActivity {
 
         mDrawerItems.add(item);
 
+        LinearLayout view_edit = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
+        TextView text_drawer_edit = (TextView) view_edit.findViewById(R.id.drawer_item_textview);
+        ImageView icon_drawer_edit = (ImageView) view_edit.findViewById(R.id.drawer_item_icon);
 
+        text_drawer_edit.setText(getString(R.string.edit_mode_option));
+        icon_drawer_edit.setImageResource(R.drawable.ic_create_black_24dp);
+        item = new DrawerItem(view_edit, new DrawerItem.OnClickListener() {
+
+            @Override
+            public void onClick() {
+
+                MapFragment.editMode = !MapFragment.editMode;
+                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            }
+
+        });
+
+        mDrawerItems.add(item);
         BaseAdapter adapter = (BaseAdapter) mDrawerList.getAdapter();
         if (adapter == null) {
             adapter = new DrawerItemListAdapter();
@@ -380,7 +397,6 @@ public class MainActivity extends ActionBarActivity {
         ca.execute(MainActivity.this);
         ca.dsr.setRoutingDialogListener(mapFragment);
         }
-
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client.connect();
