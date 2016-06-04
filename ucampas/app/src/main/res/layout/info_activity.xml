@@ -12,12 +12,16 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Nombre Edificio"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_weight="0.17"
         android:id="@+id/info_titulo"
-        android:layout_alignParentTop="true"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        android:gravity="center_vertical|center_horizontal"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textSize="30dp" />
+        android:textSize="30dp"
+        android:layout_alignParentTop="true" />
 
     <ImageView
         android:layout_width="match_parent"
@@ -30,10 +34,12 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Descripcion... bla bla"
         android:id="@+id/info_descripcion"
+        android:textStyle="normal|italic"
         android:layout_below="@+id/info_imagen"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textSize="20dp" />
+        android:textSize="22dp"
+        android:layout_alignParentBottom="true"
+        android:textColor="#010101" />
 </RelativeLayout>

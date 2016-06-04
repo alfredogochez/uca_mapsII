@@ -57,13 +57,17 @@ public class DialogInfoPlaces extends DialogFragment implements View.OnClickList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        //Creo las VIEWS
         View vista = inflater.inflate(R.layout.dialog_info_places, container, false);
-        //View v = inflater.inflate(R.layout.fragment_dialog, container, false);
         View titulo_edificio = vista.findViewById(R.id.titulo_edificio);
         View info_edificio = vista.findViewById(R.id.info_edificio);
+        //Set VIEWS
         ImageView imagen_edificio = (ImageView) vista.findViewById(R.id.foto_edificio);
         ((TextView)titulo_edificio).setText(detalles.getNombre());
-        String desc_corta = detalles.getDescripcion().substring(0,12) + "...";
+        String desc_corta = detalles.getDescripcion();
+        if(desc_corta.length()>=100){
+            desc_corta = desc_corta.substring(0,97) + "...";
+        }
         ((TextView)info_edificio).setText(desc_corta);
         imagen_edificio.setImageBitmap(Bitmap.createScaledBitmap(detalles.getImagen(), 250, 200, false));
 
