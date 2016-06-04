@@ -202,4 +202,6 @@
     <string name="title_activity_info_">Informacion</string>
     <string name="title_activity_info">Información</string>
 
+    <!-- Edit Mode -->
+    <string name="edit_mode_option">Edit Mode</string>
 </resources>

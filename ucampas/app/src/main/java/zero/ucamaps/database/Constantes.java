@@ -14,7 +14,9 @@ public class Constantes {
     /**
      * URLs del Web Service
      */
+    public static final String BASE = IP + PUERTO_HOST;
     public static final String GET = IP + PUERTO_HOST + "/ucamaps/get_rutas.php";
     public static final String INSERT = IP + PUERTO_HOST + "/ucamaps/insert_ruta.php";
+    public static final String GET_BY_NOMBRE = IP + PUERTO_HOST + "/ucamaps/get_detalle.php";
 
 }

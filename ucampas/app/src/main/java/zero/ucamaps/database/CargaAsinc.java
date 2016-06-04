@@ -36,6 +36,7 @@ public class CargaAsinc extends AsyncTask<Activity,Void,Context> {
 
     @Override
     protected Context  doInBackground(Activity... activities) {
+
         //asignamos valores al volley y a la queue.
         volley = VolleySingleton.getInstance(activities[0].getApplicationContext());
         requestQueue = volley.getRequestQueue();
@@ -82,6 +83,7 @@ public class CargaAsinc extends AsyncTask<Activity,Void,Context> {
                     // Parsear
                     for (int i = 0; i < arrayRutas.length(); i++) {
                         //como se obtiene un arreglo de rutas, se añade cada ruta a una lista
+
                         JSONObject ruta = (JSONObject) arrayRutas.get(i);
                         String idRuta = ruta.getString("idRUTAESPECIAL");
                         String nombre = ruta.getString("NOMBRE");
@@ -90,10 +92,10 @@ public class CargaAsinc extends AsyncTask<Activity,Void,Context> {
                         //creamos una ruta auxiliar
                         RutaEspecial rutaEspecialAux = new RutaEspecial();
                         //la llenamos
-                        rutaEspecialAux.setNOMBRE(nombre);
-                        rutaEspecialAux.setDESCRIPCION(descripcion);
-                        rutaEspecialAux.setIdRUTAESPECIAL(idRuta);
-                        rutaEspecialAux.setPUNTOS(puntos);
+                        rutaEspecialAux.setNombre(nombre);
+                        rutaEspecialAux.setDescripcion(descripcion);
+                        rutaEspecialAux.setIdRutaEspecial(idRuta);
+                        rutaEspecialAux.setPuntos(puntos);
                         //y la añadimos a la lista global
                         listaRutas.add(rutaEspecialAux);
 
