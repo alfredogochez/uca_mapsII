@@ -2,6 +2,8 @@ package zero.ucamaps;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -73,7 +75,9 @@ import com.esri.core.map.Graphic;
 import com.esri.core.portal.BaseMap;
 import com.esri.core.portal.Portal;
 import com.esri.core.portal.WebMap;
+import com.esri.core.symbol.FontDecoration;
 import com.esri.core.symbol.FontStyle;
+import com.esri.core.symbol.FontWeight;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.core.symbol.SimpleLineSymbol.STYLE;
@@ -165,6 +169,12 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	Compass mCompass;
 	LayoutParams compassFrameParams;
 	private MotionEvent mLongPressEvent;
+
+	private View mEditMenu;
+	private HashMap<String,Point> editPointList = new HashMap<String,Point>();
+	private int editPoints = 0;
+	private List<Integer> editMarkers = new LinkedList<Integer>();
+	private List<Integer> editMarkerNames = new LinkedList<Integer>();
 
 	@SuppressWarnings("rawtypes")
 	// - using this only to cancel pending tasks in a generic way
@@ -381,63 +391,63 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		showSearchBoxLayout();
 
 		mMapView.setOnPinchListener(new OnPinchListener() {
-            /**
-             * Default value
-             */
-            private static final long serialVersionUID = 1L;
+			/**
+			 * Default value
+			 */
+			private static final long serialVersionUID = 1L;
 
-            @Override
-            public void postPointersDown(float x1, float y1, float x2, float y2, double factor) {
-            }
+			@Override
+			public void postPointersDown(float x1, float y1, float x2, float y2, double factor) {
+			}
 
-            @Override
-            public void postPointersMove(float x1, float y1, float x2, float y2, double factor) {
-            }
+			@Override
+			public void postPointersMove(float x1, float y1, float x2, float y2, double factor) {
+			}
 
-            @Override
-            public void postPointersUp(float x1, float y1, float x2, float y2, double factor) {
-            }
+			@Override
+			public void postPointersUp(float x1, float y1, float x2, float y2, double factor) {
+			}
 
-            @Override
-            public void prePointersDown(float x1, float y1, float x2, float y2, double factor) {
-            }
+			@Override
+			public void prePointersDown(float x1, float y1, float x2, float y2, double factor) {
+			}
 
-            @Override
-            public void prePointersMove(float x1, float y1, float x2, float y2, double factor) {
-                if (mMapView.getRotationAngle() > 5 || mMapView.getRotationAngle() < -5) {
-                    mCompass.setVisibility(View.VISIBLE);
-                    mCompass.sensorManager.unregisterListener(mCompass.sensorEventListener);
-                    mCompass.setRotationAngle(mMapView.getRotationAngle());
-                }
-            }
+			@Override
+			public void prePointersMove(float x1, float y1, float x2, float y2, double factor) {
+				if (mMapView.getRotationAngle() > 5 || mMapView.getRotationAngle() < -5) {
+					mCompass.setVisibility(View.VISIBLE);
+					mCompass.sensorManager.unregisterListener(mCompass.sensorEventListener);
+					mCompass.setRotationAngle(mMapView.getRotationAngle());
+				}
+			}
 
-            @Override
-            public void prePointersUp(float x1, float y1, float x2, float y2, double factor) {
-            }
+			@Override
+			public void prePointersUp(float x1, float y1, float x2, float y2, double factor) {
+			}
 
-        });
+		});
 
 		// Setup listener for map initialized
 		mMapView.setOnStatusChangedListener(new OnStatusChangedListener() {
 
-            private static final long serialVersionUID = 1L;
+			private static final long serialVersionUID = 1L;
 
-            @Override
-            public void onStatusChanged(Object source, STATUS status) {
+			@Override
+			public void onStatusChanged(Object source, STATUS status) {
 
-                if (source == mMapView && status == STATUS.INITIALIZED) {
-                    if (mMapViewState == null) {
-                        // Starting location tracking will cause zoom to My Location
-                        startLocationTracking();
-                    } else {
-                        mMapView.restoreState(mMapViewState);
-                    }
-                    // add search and routing layers
-                    addGraphicLayers();
-                }
-            }
+				if (source == mMapView && status == STATUS.INITIALIZED) {
+					if (mMapViewState == null) {
+						// Starting location tracking will cause zoom to My Location
+						startLocationTracking();
+					} else {
+						mMapView.restoreState(mMapViewState);
+					}
+					// add search and routing layers
+					addGraphicLayers();
+				}
+			}
 
-        });
+		});
 
 		// Setup use of magnifier on a long press on the map
 		mMapView.setShowMagnifierOnLongPress(true);
@@ -446,25 +456,26 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 		// Setup OnTouchListener to detect and act on long-press
 		mMapView.setOnTouchListener(new MapOnTouchListener(getActivity(),
-                mMapView) {
+				mMapView) {
 
 			private static final int MAX_CLICK_DURATION = 100;
 			private long startClickTime;
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                    // Start of a new gesture. Make sure mLongPressEvent is cleared.
-                    mLongPressEvent = null;
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+					// Start of a new gesture. Make sure mLongPressEvent is cleared.
+					mLongPressEvent = null;
 					tap = false;
 					center = mapView.getCenter();
 					ignoreTap = false;
 					dragged = false;
 					startClickTime = Calendar.getInstance().getTimeInMillis();
-                }
+				}
 				if (event.getActionMasked() == MotionEvent.ACTION_UP) {
 					tap = true;
 					long clickDuration = Calendar.getInstance().getTimeInMillis() - startClickTime;
-					if(clickDuration > MAX_CLICK_DURATION) {
+					if (clickDuration > MAX_CLICK_DURATION) {
 						dragged = true;
 					}
 				}
@@ -473,62 +484,71 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 						ignoreTap = true;
 				}
 
-				if(tap){
+				if (tap) {
 					System.out.println("Tap esta activo");
-				}else{
+				} else {
 					System.out.println("Tap no esta activo");
 				}
 
-				if(dragged){
+				if (dragged) {
 					System.out.println("Dragged esta activo");
-				}else{
+				} else {
 					System.out.println("Dragged no esta activo");
 				}
-				if(mLongPressEvent == null && !ignoreTap && event.getPointerCount() == 1 && tap && !dragged && editMode){
+				if (mLongPressEvent == null && !ignoreTap && event.getPointerCount() == 1 && tap && !dragged && editMode) {
 					Point mapPoint = mMapView.toMapPoint(event.getX(), event.getY());
 					Drawable drawable = getActivity().getResources().getDrawable(R.drawable.pin_circle_purple);
 					PictureMarkerSymbol resultSymbol = new PictureMarkerSymbol(getActivity(), drawable);
 					// create graphic object for resulting location
-					Graphic resultLocGraphic = new Graphic(mapPoint,resultSymbol);
+					Graphic resultLocGraphic = new Graphic(mapPoint, resultSymbol);
 					// add graphic to location layer
-					mLocationLayer.addGraphic(resultLocGraphic);
+					editMarkers.add(mLocationLayer.addGraphic(resultLocGraphic));
+					editPoints++;
+					TextSymbol text = new TextSymbol(FontStyle.ITALIC.name(), Integer.toString(editPoints), Color.BLACK);
+					text.setHorizontalAlignment(TextSymbol.HorizontalAlignment.CENTER);
+					//text.setFontDecoration(FontDecoration.LINE_THROUGH);
+					//text.setColor(255);
+					text.setFontWeight(FontWeight.BOLD);
+					text.setSize(25);
+					text.setOffsetY(15);
+					editMarkerNames.add(mLocationLayer.addGraphic(new Graphic(mapPoint, text)));
+					editPointList.put(Integer.toString(editPoints), mapPoint);
 					tap = false;
 				}
-                return super.onTouch(v, event);
-            }
+				return super.onTouch(v, event);
+			}
 
 
-            @Override
-            public void onLongPress(MotionEvent point) {
-                // Set mLongPressEvent to indicate we are processing a long-press
-                mLongPressEvent = point;
-                super.onLongPress(point);
+			@Override
+			public void onLongPress(MotionEvent point) {
+				// Set mLongPressEvent to indicate we are processing a long-press
+				mLongPressEvent = point;
+				super.onLongPress(point);
 
-            }
+			}
 
 
+			@Override
+			public boolean onDragPointerUp(MotionEvent from, final MotionEvent to) {
+				if (mLongPressEvent != null && !editMode) {
+					// This is the end of a long-press that will have displayed the magnifier.
+					// Perform reverse-geocoding of the point that was pressed
+					Point mapPoint = mMapView.toMapPoint(to.getX(), to.getY());
+					ReverseGeocodingAsyncTask reverseGeocodeTask = new ReverseGeocodingAsyncTask();
+					reverseGeocodeTask.execute(mapPoint);
+					mPendingTask = reverseGeocodeTask;
+					mLongPressEvent = null;
+					TheresAPlace = true;
+					// Remove any previous graphics
+					resetGraphicsLayers();
 
-            @Override
-            public boolean onDragPointerUp(MotionEvent from, final MotionEvent to) {
-                if (mLongPressEvent != null && !editMode) {
-                    // This is the end of a long-press that will have displayed the magnifier.
-                    // Perform reverse-geocoding of the point that was pressed
-                    Point mapPoint = mMapView.toMapPoint(to.getX(), to.getY());
-                    ReverseGeocodingAsyncTask reverseGeocodeTask = new ReverseGeocodingAsyncTask();
-                    reverseGeocodeTask.execute(mapPoint);
-                    mPendingTask = reverseGeocodeTask;
-                    mLongPressEvent = null;
-                    TheresAPlace = true;
-                    // Remove any previous graphics
-                    resetGraphicsLayers();
+				} else {
+					TheresAPlace = false;
+				}
+				return super.onDragPointerUp(from, to);
+			}
 
-                } else {
-                    TheresAPlace = false;
-                }
-                return super.onDragPointerUp(from, to);
-            }
-
-        });
+		});
 
 	}
 
@@ -610,23 +630,23 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		final DirectionsDialogFragment frag = new DirectionsDialogFragment();
 
 		frag.setRoutingDirections(mRoutingDirections,
-                new DirectionsDialogListener() {
+				new DirectionsDialogListener() {
 
-                    @Override
-                    public void onDirectionSelected(int position) {
-                        // User has selected a particular direction dismiss the dialog and zoom to the selected direction
-                        frag.dismiss();
-                        RouteDirection direction = mRoutingDirections.get(position);
-                        String text = mRoutingDirections.get(position).getText(); //getting the direction
-                        mMapView.setExtent(direction.getGeometry());
-                        //Reads the direction with sound
-                        if (mSoundActive.equals("Sound On")) {
-                            Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
-                            ttsManager.initQueue(text);
-                        }
-                    }
+					@Override
+					public void onDirectionSelected(int position) {
+						// User has selected a particular direction dismiss the dialog and zoom to the selected direction
+						frag.dismiss();
+						RouteDirection direction = mRoutingDirections.get(position);
+						String text = mRoutingDirections.get(position).getText(); //getting the direction
+						mMapView.setExtent(direction.getGeometry());
+						//Reads the direction with sound
+						if (mSoundActive.equals("Sound On")) {
+							Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
+							ttsManager.initQueue(text);
+						}
+					}
 
-                });
+				});
 		getFragmentManager().beginTransaction().add(frag, null).commit();
 	}
 
@@ -735,38 +755,38 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 		locDispMgr.setLocationListener(new LocationListener() {
 
-            boolean locationChanged = false;
+			boolean locationChanged = false;
 
-            // Zooms to the current location when first GPS fix arrives
-            @Override
-            public void onLocationChanged(Location loc) {
-                double locy = loc.getLatitude();
-                double locx = loc.getLongitude();
-                Point wgspoint = new Point(locx, locy);
-                mLocation = (Point) GeometryEngine.project(wgspoint, SpatialReference.create(4326), mMapView.getSpatialReference());
-                if (!locationChanged) {
-                    locationChanged = true;
-                    Unit mapUnit = mMapView.getSpatialReference().getUnit();
-                    double zoomWidth = Unit.convertUnits(SEARCH_RADIUS, Unit.create(LinearUnit.Code.METER), mapUnit);
-                    Envelope zoomExtent = new Envelope(mLocation, zoomWidth / 10, zoomWidth / 10);
-                    mMapView.setExtent(zoomExtent);
-                }
-            }
+			// Zooms to the current location when first GPS fix arrives
+			@Override
+			public void onLocationChanged(Location loc) {
+				double locy = loc.getLatitude();
+				double locx = loc.getLongitude();
+				Point wgspoint = new Point(locx, locy);
+				mLocation = (Point) GeometryEngine.project(wgspoint, SpatialReference.create(4326), mMapView.getSpatialReference());
+				if (!locationChanged) {
+					locationChanged = true;
+					Unit mapUnit = mMapView.getSpatialReference().getUnit();
+					double zoomWidth = Unit.convertUnits(SEARCH_RADIUS, Unit.create(LinearUnit.Code.METER), mapUnit);
+					Envelope zoomExtent = new Envelope(mLocation, zoomWidth / 10, zoomWidth / 10);
+					mMapView.setExtent(zoomExtent);
+				}
+			}
 
-            @Override
-            public void onProviderDisabled(String arg0) {
-                Toast.makeText(getActivity(), "GPS turned off", Toast.LENGTH_SHORT).show();
-            }
+			@Override
+			public void onProviderDisabled(String arg0) {
+				Toast.makeText(getActivity(), "GPS turned off", Toast.LENGTH_SHORT).show();
+			}
 
-            @Override
-            public void onProviderEnabled(String arg0) {
-                Toast.makeText(getActivity(), "GPS turned on", Toast.LENGTH_SHORT).show();
-            }
+			@Override
+			public void onProviderEnabled(String arg0) {
+				Toast.makeText(getActivity(), "GPS turned on", Toast.LENGTH_SHORT).show();
+			}
 
-            @Override
-            public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-            }
-        });
+			@Override
+			public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
+			}
+		});
 		locDispMgr.start();
 		mIsLocationTracking = true;
 	}
@@ -844,7 +864,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		// Remove any previous graphics and routes
 		resetGraphicsLayers();
 		// Do the routing
-		executeRoutingTask(startname, endName,startLatitud,startLongitud,endLatitud,endLongitud);
+		executeRoutingTask(startname, endName, startLatitud, startLongitud, endLatitud, endLongitud);
 		return true;
 	}
 
@@ -935,6 +955,95 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		}
 	}
 
+	public void showEditionMenu(){
+		mMapContainer.removeView(mSearchBox);
+		mMapContainer.removeView(mSearchResult);
+
+		mEditMenu = mInflater.inflate(R.layout.multi_point_actions,null);
+		mEditMenu.setLayoutParams(mlayoutParams);
+		ImageView iv_cancel = (ImageView) mEditMenu.findViewById(R.id.imageQuit);
+
+		iv_cancel.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// Remove the search result view
+				mMapContainer.removeView(mEditMenu);
+				// Add the search box view
+				showSearchBoxLayout();
+				// Remove all graphics from the map
+				editMarkers.clear();
+				editMarkerNames.clear();
+				editPointList.clear();
+				editPoints=0;
+				editMode=false;
+				resetGraphicsLayers();
+
+			}
+		});
+
+		ImageView iv_return = (ImageView) mEditMenu.findViewById(R.id.imageReturn);
+
+		iv_return.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// Remove the search result view
+				if(editPoints >= 1){
+					mLocationLayer.removeGraphic(editMarkers.get(editMarkers.size() - 1));
+					mLocationLayer.removeGraphic(editMarkerNames.get(editMarkerNames.size() - 1));
+					editPointList.remove(Integer.toString(editPoints));
+					editMarkers.remove(editMarkers.size() - 1);
+					editMarkerNames.remove(editMarkerNames.size() - 1);
+					editPoints--;
+				}else{
+					Toast.makeText(getActivity(),"No hay ningún punto colocado.",Toast.LENGTH_SHORT).show();
+				}
+
+				//resetGraphicsLayers();
+
+			}
+		});
+
+		ImageView iv_route = (ImageView) mEditMenu.findViewById(R.id.imageSave);
+
+		iv_route.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// Remove the search result view
+				editMarkers.clear();
+				editMarkerNames.clear();
+				editMode=false;
+				resetGraphicsLayers();
+
+				RutaEspecial rutaMultiple = new RutaEspecial();
+				rutaMultiple.setDescripcion("ruta multiple");
+				rutaMultiple.setIdRutaEspecial("42");
+				rutaMultiple.setNombre("Ruta Multiple Generada");
+				rutaMultiple.setPuntos("");
+				boolean ultima=false;
+				for(int i=0;i<editPointList.size();i++){
+					if(i+1 == editPointList.size()){
+						ultima = true;
+					}
+					Point punto = editPointList.get(Integer.toString(i+1));
+					rutaMultiple.setPuntos(rutaMultiple.getPuntos()+"Punto "+(i+1)+","+punto.getX()+","+punto.getY());
+					if(!ultima){
+						rutaMultiple.setPuntos(rutaMultiple.getPuntos()+"/");
+					}
+				}
+
+				editPointList.clear();
+				editPoints=0;
+
+				onGetRouteMultiple(rutaMultiple);
+			}
+		});
+
+		mMapContainer.addView(mEditMenu);
+	}
+
 	/**
 	 * Shows the search result in the layout after successful geocoding and reverse geocoding
 	 */
@@ -997,7 +1106,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
                 cd.fm = getFragmentManager();
 				cd.setNombreEdificio(barra_busqueda.getText().toString());
 				Log.d("Esto tiene la barra",barra_busqueda.getText().toString());
-                Toast.makeText(getActivity(),"Cargando Informacion...",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Cargando Informacion...",Toast.LENGTH_SHORT).show();
                 cd.execute(getActivity());
 
             }

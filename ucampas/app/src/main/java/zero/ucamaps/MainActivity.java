@@ -372,6 +372,7 @@ public class MainActivity extends ActionBarActivity {
             public void onClick() {
 
                 MapFragment.editMode = !MapFragment.editMode;
+                mapFragment.showEditionMenu();
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             }
 
