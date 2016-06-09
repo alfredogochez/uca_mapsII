@@ -68,9 +68,8 @@ public class CargaDetalles extends AsyncTask<Activity,Void,Context> {
     public void selectEdificio() {
         // Petición GET
         String paramEncode = null;
-        try{
-            paramEncode = URLEncoder.encode(nombreEdificio.substring(0,nombreEdificio.length()-1),"UTF-8");
-        }catch(UnsupportedEncodingException ignore){}
+            paramEncode = nombreEdificio.replaceAll(" ","+");
+
         String url = Constantes.GET_BY_NOMBRE + "?nombre=" + paramEncode;
         Log.d("Esta es la URL",url);
         //creamos un object request, y lo añadimos a la cola
