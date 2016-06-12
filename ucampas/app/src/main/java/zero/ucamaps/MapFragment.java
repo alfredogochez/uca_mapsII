@@ -64,6 +64,7 @@ import zero.ucamaps.dialogs.DialogInfoPlaces;
 import zero.ucamaps.util.GlobalPoints;
 import zero.ucamaps.util.TaskExecutor;
 
+import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.LinearUnit;
@@ -224,6 +225,10 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+		//probando el licenciamiento gratuito
+		ArcGISRuntime.setClientId("eACA1B4bnlmT8rPm");
+
+
 
         mMapContainer = (FrameLayout) inflater.inflate(R.layout.map_fragment_layout,container,false);
 
