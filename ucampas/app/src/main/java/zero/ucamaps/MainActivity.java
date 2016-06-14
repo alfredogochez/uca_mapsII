@@ -3,6 +3,7 @@ package zero.ucamaps;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.view.GravityCompat;
@@ -108,12 +109,13 @@ public class MainActivity extends ActionBarActivity {
     private void setupDrawer() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.uca_maps_activity_drawer_layout);
 
+        //mDrawerLayout.setScrimColor(Color.TRANSPARENT);
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // set a custom shadow that overlays the main content when the drawer
         // opens
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        //mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
 
         //ActionBar actionBar = getSupportActionBar();

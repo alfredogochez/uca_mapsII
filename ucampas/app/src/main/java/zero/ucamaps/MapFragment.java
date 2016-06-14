@@ -76,6 +76,7 @@ import com.esri.core.map.Graphic;
 import com.esri.core.portal.BaseMap;
 import com.esri.core.portal.Portal;
 import com.esri.core.portal.WebMap;
+import com.esri.core.symbol.CompositeSymbol;
 import com.esri.core.symbol.FontDecoration;
 import com.esri.core.symbol.FontStyle;
 import com.esri.core.symbol.FontWeight;
@@ -1476,35 +1477,44 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 
 			// Create polyline graphic of the full route
-			SimpleLineSymbol lineSymbol = new SimpleLineSymbol(Color.rgb(106,0,143), 2,STYLE.SOLID);
+			SimpleLineSymbol lineSymbol = new SimpleLineSymbol(Color.rgb(106,0,143), 2,STYLE.DASH);
+
 			Graphic routeGraphic = new Graphic(route.getRouteGraphic().getGeometry(), lineSymbol);
 
 			// Create point graphic to mark start of route
 			Point startPoint = ((Polyline) routeGraphic.getGeometry()).getPoint(0);
 			Graphic startGraphic = createMarkerGraphic(startPoint, 0);
 
+			TextSymbol textoInicial = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(0),Color.BLACK);
+			textoInicial.setSize(10);
+			textoInicial.setOffsetY(-10);
+
+
 			List<Graphic> graphics = new ArrayList<Graphic>();
 			graphics.add(routeGraphic);
 			graphics.add(startGraphic);
+			graphics.add(new Graphic(puntosGlobales.get(0),textoInicial));
 
 			for(int i = 1;i < puntosGlobales.size() - 1 ;i++){
 
 				graphics.add(createMarkerGraphic(puntosGlobales.get(i),1));
 
 				TextSymbol text = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(i),Color.BLACK);
-				text.setSize(15);
-				text.setOffsetY(10);
+				text.setSize(10);
+				text.setOffsetY(-10);
 				graphics.add(new Graphic(puntosGlobales.get(i),text));
 			}
-
-
 
 			// Create point graphic to mark end of route
 			int endPointIndex = ((Polyline) routeGraphic.getGeometry()).getPointCount() - 1;
 			Point endPoint = ((Polyline) routeGraphic.getGeometry()).getPoint(endPointIndex);
 			Graphic endGraphic = createMarkerGraphic(endPoint, 2);
 
+			TextSymbol textoFinal = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(nombrePuntosGlobales.size() -1),Color.BLACK);
+			textoInicial.setSize(10);
+			textoInicial.setOffsetY(-10);
 			graphics.add(endGraphic);
+			graphics.add(new Graphic(puntosGlobales.get(puntosGlobales.size() - 1),textoFinal));
 
 			// Add these graphics to route layer
 			mRouteLayer.addGraphics(graphics.toArray(new Graphic [graphics.size()] ));
@@ -1525,7 +1535,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			if(pointType == 0){
 				marker = getResources().getDrawable(R.drawable.pin_circle_red);
 			} else if(pointType == 1) {
-				marker = getResources().getDrawable(R.drawable.ic_place_white_24dp);
+				marker = getResources().getDrawable(R.drawable.pin_circle_yellow);
 			} else if(pointType == 2){
 				marker = getResources().getDrawable(R.drawable.pin_circle_blue);
 			}
