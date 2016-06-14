@@ -55,8 +55,8 @@ public class DialogInfoPlaces extends DialogFragment implements View.OnClickList
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
         //Creo las VIEWS
         View vista = inflater.inflate(R.layout.dialog_info_places, container, false);
         View titulo_edificio = vista.findViewById(R.id.titulo_edificio);

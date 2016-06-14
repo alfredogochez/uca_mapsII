@@ -38,6 +38,7 @@ import zero.ucamaps.database.CargaAsinc;
 import zero.ucamaps.database.InsertAsinc;
 import zero.ucamaps.dialogs.AboutDialog;
 import zero.ucamaps.dialogs.DialogFavoriteList;
+import zero.ucamaps.dialogs.DialogSearchForm;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -317,8 +318,29 @@ public class MainActivity extends ActionBarActivity {
 
         mDrawerItems.add(item);
 
-        // añandiendo el item de insertar rutas
-        LinearLayout insert = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
+        // añandiendo el item de busqueda avanzada
+        LinearLayout advanced_search = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
+        TextView text_search = (TextView) advanced_search.findViewById(R.id.drawer_item_textview);
+        ImageView icon_search = (ImageView) advanced_search.findViewById(R.id.drawer_item_icon);
+
+        text_search.setText("Advanced Search");
+        icon_search.setImageResource(R.drawable.ic_find_in_page_black_24dp);
+        item = new DrawerItem(advanced_search, new DrawerItem.OnClickListener() {
+
+            @Override
+            public void onClick() {
+                DialogSearchForm diaSEFO = new DialogSearchForm();
+                diaSEFO.show(getFragmentManager(),"Dialog Search");
+                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            }
+
+        });
+
+        mDrawerItems.add(item);
+
+
+        // Item para añadir rutas al servidor, para comprobar si funciona
+        /*LinearLayout insert = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
         TextView text_insert = (TextView) insert.findViewById(R.id.drawer_item_textview);
         ImageView icon_insert = (ImageView) insert.findViewById(R.id.drawer_item_icon);
 
@@ -331,6 +353,27 @@ public class MainActivity extends ActionBarActivity {
                 InsertAsinc ia = new InsertAsinc();
                 ia.execute(MainActivity.this);
 
+            }
+
+        });
+
+        mDrawerItems.add(item);*/
+
+        //añadiendo el item de modo de edicion
+        LinearLayout view_edit = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
+        TextView text_drawer_edit = (TextView) view_edit.findViewById(R.id.drawer_item_textview);
+        ImageView icon_drawer_edit = (ImageView) view_edit.findViewById(R.id.drawer_item_icon);
+
+        text_drawer_edit.setText(getString(R.string.edit_mode_option));
+        icon_drawer_edit.setImageResource(R.drawable.ic_create_black_24dp);
+        item = new DrawerItem(view_edit, new DrawerItem.OnClickListener() {
+
+            @Override
+            public void onClick() {
+
+                MapFragment.editMode = !MapFragment.editMode;
+                mapFragment.showEditionMenu();
+                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             }
 
         });
@@ -360,25 +403,6 @@ public class MainActivity extends ActionBarActivity {
 
         mDrawerItems.add(item);
 
-        LinearLayout view_edit = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
-        TextView text_drawer_edit = (TextView) view_edit.findViewById(R.id.drawer_item_textview);
-        ImageView icon_drawer_edit = (ImageView) view_edit.findViewById(R.id.drawer_item_icon);
-
-        text_drawer_edit.setText(getString(R.string.edit_mode_option));
-        icon_drawer_edit.setImageResource(R.drawable.ic_create_black_24dp);
-        item = new DrawerItem(view_edit, new DrawerItem.OnClickListener() {
-
-            @Override
-            public void onClick() {
-
-                MapFragment.editMode = !MapFragment.editMode;
-                mapFragment.showEditionMenu();
-                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-            }
-
-        });
-
-        mDrawerItems.add(item);
         BaseAdapter adapter = (BaseAdapter) mDrawerList.getAdapter();
         if (adapter == null) {
             adapter = new DrawerItemListAdapter();

@@ -59,7 +59,7 @@ public class DialogFavoriteList extends DialogFragment {
                 listaRutasString[i] =  listaRutas.get(i).getName();
          }
 
-            ListView lv = (ListView) getActivity().findViewById(R.id.lista_favoritos);
+
                 builder.setView(inflater.inflate(R.layout.favorites, null))
                         .setTitle("Rutas Favoritas")
                         .setItems(listaRutasString, new DialogInterface.OnClickListener() {
@@ -69,7 +69,6 @@ public class DialogFavoriteList extends DialogFragment {
 
                             List<FavoriteRoute> listaRutas = globalListRoute.getListaRutas();
                             FavoriteRoute favorito = listaRutas.get(which);
-                            //MapFragment fragment = new MapFragment();
                             mRoutingDialogListener.onGetRouteFavorite(favorito.getStartName(),favorito.getEndName(),favorito.getStartlatitud(),favorito.getStartlongitud(),
                                     favorito.getEndLatitud(),favorito.getEndLongitud());
 
