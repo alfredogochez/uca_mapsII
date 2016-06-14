@@ -23,7 +23,8 @@
     <RadioGroup
         android:layout_width="371dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.41">
+        android:layout_weight="0.41"
+        android:id="@+id/rgBotones">
 
         <RadioButton
             android:layout_width="wrap_content"
