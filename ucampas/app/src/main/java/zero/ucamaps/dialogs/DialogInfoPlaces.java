@@ -94,7 +94,7 @@ public class DialogInfoPlaces extends DialogFragment implements View.OnClickList
         }
         catch(Exception ex){
             String error = ex.getMessage();
-            error = error;
+
         }
 
     }

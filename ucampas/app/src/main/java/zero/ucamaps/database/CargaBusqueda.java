@@ -3,9 +3,7 @@ package zero.ucamaps.database;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.nfc.Tag;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -14,18 +12,15 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import zero.ucamaps.dialogs.DialogSearchResult;
-import zero.ucamaps.dialogs.DialogSpecialRoutes;
 
 /**
  * Created by alf on 14/06/2016.
@@ -62,7 +57,6 @@ public class CargaBusqueda extends AsyncTask<Activity,Void,Context> {
         nombre = nombre.replaceAll(" ","+");
         categoria = categoria.toLowerCase();
         String url = Constantes.GET_SITIOS + "?busqueda="+nombre+"&categoria="+categoria;
-        Log.d("En la carga",url);
         //creamos un object request, y lo añadimos a la cola
         JsonObjectRequest request = new JsonObjectRequest
                 (Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
@@ -87,7 +81,7 @@ public class CargaBusqueda extends AsyncTask<Activity,Void,Context> {
             switch (estado) {
                 case "1": // EXITO
                     // Obtener array "sitios" Json
-                    JSONArray arraySitios = response.getJSONArray("rutas");
+                    JSONArray arraySitios = response.getJSONArray("sitios");
                     // Parsear
                     for (int i = 0; i < arraySitios.length(); i++) {
                         //como se obtiene un arreglo, se guarda cada sitio en una lista
@@ -113,10 +107,11 @@ public class CargaBusqueda extends AsyncTask<Activity,Void,Context> {
                     //una vez salimos del bucle de llenado, le asignamos la lista al Display de Sitios
                     dsr.setListaSitio(listaSitios);
                     dsr.show(fm,"Search Results");
+                    dsr.setContexto(contexto);
                     break;
                 case "2": // FALLIDO
                     String mensaje2 = response.getString("mensaje");
-                    Toast.makeText(contexto,"Se produjo un error: "+ mensaje2,Toast.LENGTH_LONG).show();
+                    Toast.makeText(contexto,"Lo sentimos, "+ mensaje2,Toast.LENGTH_LONG).show();
                     break;
             }
 
@@ -141,6 +136,20 @@ public class CargaBusqueda extends AsyncTask<Activity,Void,Context> {
         }
     }
 
+    public String getNombre() {
+        return nombre;
+    }
 
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    public void setFm(FragmentManager fm) {
+        this.fm = fm;
+    }
 }
 

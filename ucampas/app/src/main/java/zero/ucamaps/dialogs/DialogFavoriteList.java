@@ -71,9 +71,6 @@ public class DialogFavoriteList extends DialogFragment {
                             List<RutaEspecial> listaRutas = globalListRoute.getListaRutas();
                             RutaEspecial favorito = listaRutas.get(which);
                             mRoutingDialogListener.onGetRouteMultiple(favorito);
-
-
-
                         }
                     });
 
