@@ -23,6 +23,7 @@ import java.util.List;
 
 import zero.ucamaps.R;
 import zero.ucamaps.beans.FavoriteRoute;
+import zero.ucamaps.database.RutaEspecial;
 import zero.ucamaps.location.RoutingDialogFragment;
 import zero.ucamaps.util.GlobalPoints;
 
@@ -42,7 +43,7 @@ public class DialogFavoriteList extends DialogFragment {
 
 
         //Leer rutas favoritas para ponerlas en la lista
-        List<FavoriteRoute> listaRutas = recuperar();
+        List<RutaEspecial> listaRutas = recuperar();
 
         String[] listaRutasString = new String[listaRutas.size()];
 
@@ -56,7 +57,7 @@ public class DialogFavoriteList extends DialogFragment {
         globalListRoute.setListaRutas(listaRutas);
 
         for(int i = 0;i < listaRutas.size() ;i++){
-                listaRutasString[i] =  listaRutas.get(i).getName();
+                listaRutasString[i] =  listaRutas.get(i).getNombre();
          }
 
 
@@ -67,10 +68,9 @@ public class DialogFavoriteList extends DialogFragment {
                         public void onClick(DialogInterface dialog, int which) {
                             GlobalPoints globalListRoute = (GlobalPoints) getActivity().getApplicationContext() ;
 
-                            List<FavoriteRoute> listaRutas = globalListRoute.getListaRutas();
-                            FavoriteRoute favorito = listaRutas.get(which);
-                            mRoutingDialogListener.onGetRouteFavorite(favorito.getStartName(),favorito.getEndName(),favorito.getStartlatitud(),favorito.getStartlongitud(),
-                                    favorito.getEndLatitud(),favorito.getEndLongitud());
+                            List<RutaEspecial> listaRutas = globalListRoute.getListaRutas();
+                            RutaEspecial favorito = listaRutas.get(which);
+                            mRoutingDialogListener.onGetRouteMultiple(favorito);
 
 
 
@@ -84,9 +84,9 @@ public class DialogFavoriteList extends DialogFragment {
 
     }
 
-    public List<FavoriteRoute> recuperar(){
+    public List<RutaEspecial> recuperar(){
         String nombrearchivo = "favorites_routes";
-        List<FavoriteRoute> listaFavoritos = new LinkedList<FavoriteRoute>();
+        List<RutaEspecial> listaFavoritos = new LinkedList<RutaEspecial>();
         int i = 0;
         File tarjeta = Environment.getExternalStorageDirectory();
         File file = new File(tarjeta.getAbsolutePath(), nombrearchivo);
@@ -97,7 +97,7 @@ public class DialogFavoriteList extends DialogFragment {
                 try {
                     streamIn = new FileInputStream(file);
                     objectinputstream = new ObjectInputStream(streamIn);
-                    listaFavoritos = (List<FavoriteRoute>) objectinputstream.readObject();
+                    listaFavoritos = (List<RutaEspecial>) objectinputstream.readObject();
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {

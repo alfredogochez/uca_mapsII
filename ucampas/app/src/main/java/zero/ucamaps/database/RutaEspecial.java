@@ -1,9 +1,14 @@
 package zero.ucamaps.database;
 
+import java.io.Serializable;
+import java.util.List;
+
+import zero.ucamaps.beans.MapPoint;
+
 /**
  * Created by alf on 18/05/2016.
  */
-public class RutaEspecial {
+public class RutaEspecial implements Serializable {
 
     /*
            Atributos
@@ -14,6 +19,23 @@ public class RutaEspecial {
     private String puntos;
 
     public RutaEspecial() {
+    }
+
+    public RutaEspecial(String nombre,List<MapPoint> listaPuntos){
+        setIdRutaEspecial("0");
+        setNombre(nombre);
+        setDescripcion("Ruta Multiple");
+
+        String ruta = "";
+        for(int i=0;i<listaPuntos.size();i++){
+            ruta += listaPuntos.get(i).getName()+","+listaPuntos.get(i).getStartLatitud()+","+listaPuntos.get(i).getStartLongitud();
+            if(!((i+1)==listaPuntos.size())){
+                ruta += "/";
+            }
+        }
+
+        setPuntos(ruta);
+
     }
 
     public String getIdRutaEspecial() {
