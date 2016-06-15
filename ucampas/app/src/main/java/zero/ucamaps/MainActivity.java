@@ -3,6 +3,7 @@ package zero.ucamaps;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.view.GravityCompat;
@@ -36,6 +37,7 @@ import zero.ucamaps.basemaps.BasemapsDialogFragment;
 import zero.ucamaps.beans.FavoriteRoute;
 import zero.ucamaps.database.CargaAsinc;
 import zero.ucamaps.database.InsertAsinc;
+import zero.ucamaps.database.RutaEspecial;
 import zero.ucamaps.dialogs.AboutDialog;
 import zero.ucamaps.dialogs.DialogFavoriteList;
 import zero.ucamaps.dialogs.DialogSearchForm;
@@ -108,12 +110,13 @@ public class MainActivity extends ActionBarActivity {
     private void setupDrawer() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.uca_maps_activity_drawer_layout);
 
+        //mDrawerLayout.setScrimColor(Color.TRANSPARENT);
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // set a custom shadow that overlays the main content when the drawer
         // opens
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        //mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
 
         //ActionBar actionBar = getSupportActionBar();
@@ -283,7 +286,7 @@ public class MainActivity extends ActionBarActivity {
                 DialogFavoriteList favFrag = new DialogFavoriteList();
                 favFrag.setRoutingDialogListener(mapFragment);
                 DialogFavoriteList list = favFrag;
-                List<FavoriteRoute> recuperar = list.recuperar();
+                List<RutaEspecial> recuperar = list.recuperar();
                 if(!recuperar.isEmpty()){
                     favFrag.show(getFragmentManager(), "Favorite Routes");
                 }

@@ -19,6 +19,9 @@ import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
+import zero.ucamaps.beans.MapPoint;
+import zero.ucamaps.beans.SpecialRoute;
+import zero.ucamaps.database.RutaEspecial;
 import zero.ucamaps.dialogs.DialogFavoriteList;
 import zero.ucamaps.R;
 import zero.ucamaps.beans.FavoriteRoute;
@@ -50,12 +53,8 @@ public class DialogFavoriteRoute extends DialogFragment {
 
                         GlobalPoints globalVariable = (GlobalPoints) getActivity().getApplicationContext();
                         // creamos las variables que almacenan las coordenadas de los puntos de inicio y fin
-                        final double startlatitude = globalVariable.getStartLatitud();
-                        final double startlongitude = globalVariable.getStartLongitude();
-                        final double endLongitude = globalVariable.getEndLongitude();
-                        final double endLatitud = globalVariable.getEndLatitude();
-                        final String startName = globalVariable.getStartName();
-                        final String endName = globalVariable.getEndName();
+                        final List<MapPoint> listaPuntos = globalVariable.getListaPuntos();
+                        //List<RutaEspecial> listaRutas = globalVariable.getListaRutas();
 
                         try {//Esta toast es para cuando se va a reemplazar una ruta
                             final Toast tostada= Toast.makeText(getActivity(), "Ruta Modificada Exitosamente", Toast.LENGTH_SHORT);
@@ -63,10 +62,10 @@ public class DialogFavoriteRoute extends DialogFragment {
                             int lineas = calcular_longitud();
                             if (lineas >= 10) {//si se tienen 10 rutas o mas (mediante manipulacion erronea del archivo) creamos dos dialogs
                                 DialogFavoriteList dfl = new DialogFavoriteList();
-                                List<FavoriteRoute> listaRutas = dfl.recuperar();
+                                List<RutaEspecial> listaRutas = dfl.recuperar();
                                 String[] listaRutasString = new String[listaRutas.size()];
                                 for (int j = 0; j < listaRutas.size(); j++) {
-                                    listaRutasString[j] = listaRutas.get(j).getName();
+                                    listaRutasString[j] = listaRutas.get(j).getNombre();
                                 }
                                 //creamos un List dialog, el cual tendra las rutas favoritas
                                 AlertDialog.Builder listDia = new AlertDialog.Builder(getActivity());
@@ -74,7 +73,7 @@ public class DialogFavoriteRoute extends DialogFragment {
                                 listDia.setItems(listaRutasString, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int item) {
                                         //una vez la ruta a reemplazar se seleccione, llamamos al metodo reemplazar_ruta con todo lo necesario
-                                        reemplazar_ruta(item, nombre_ruta, startlatitude, startlongitude, endLatitud, endLongitude,tostada,startName,endName);
+                                        reemplazar_ruta(item, nombre_ruta,tostada,listaPuntos);
 
                                     }
                                 });
@@ -108,8 +107,8 @@ public class DialogFavoriteRoute extends DialogFragment {
                                 if (file.createNewFile()) {
                                     //si la condicion da true, es por que el archivo no existia, y se creo, por ende, esta es la primera ruta creada
                                     ObjectOutputStream oos = null;
-                                    List<FavoriteRoute> listaRutas = new LinkedList<FavoriteRoute>();
-                                    listaRutas.add(new FavoriteRoute(nombre_ruta, startlatitude, startlongitude, endLatitud, endLongitude,startName,endName));
+                                    List<RutaEspecial> listaRutas = new LinkedList<RutaEspecial>();
+                                    listaRutas.add(new RutaEspecial(nombre_ruta, listaPuntos));
                                     FileOutputStream fout = null;
                                     try {
                                         fout = new FileOutputStream(file);
@@ -135,8 +134,8 @@ public class DialogFavoriteRoute extends DialogFragment {
                                     try {
                                         FileInputStream streamIn = new FileInputStream(file);
                                         objectinputstream = new ObjectInputStream(streamIn);
-                                        List<FavoriteRoute> listaRutas = (List<FavoriteRoute>) objectinputstream.readObject();
-                                        listaRutas.add(new FavoriteRoute(nombre_ruta, startlatitude, startlongitude, endLatitud, endLongitude,startName,endName));
+                                        List<RutaEspecial> listaRutas = (List<RutaEspecial>) objectinputstream.readObject();
+                                        listaRutas.add(new RutaEspecial(nombre_ruta, listaPuntos));
                                         fout = new FileOutputStream(file);
                                         oos = new ObjectOutputStream(fout);
                                         oos.writeObject(listaRutas);
@@ -180,7 +179,7 @@ public class DialogFavoriteRoute extends DialogFragment {
             try {
                 FileInputStream streamIn = new FileInputStream(file);
                 objectinputstream = new ObjectInputStream(streamIn);
-                List<FavoriteRoute> listaRutas = (List<FavoriteRoute>) objectinputstream.readObject();
+                List<RutaEspecial> listaRutas = (List<RutaEspecial>) objectinputstream.readObject();
                 return listaRutas.size();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -195,15 +194,15 @@ public class DialogFavoriteRoute extends DialogFragment {
     }
 
 
-    private void reemplazar_ruta(int index_ruta,String nombre_ruta,double startlatitude,double startlongitude, double endLatitud, double endLongitude,Toast tostada,String startname, String endname) {
+    private void reemplazar_ruta(int index_ruta,String nombre_ruta,Toast tostada,List<MapPoint> listaPuntos) {
         DialogFavoriteList dfl = new DialogFavoriteList();
-        List<FavoriteRoute> rutas = dfl.recuperar();
+        List<RutaEspecial> rutas = dfl.recuperar();
         ObjectInputStream objectinputstream = null;
         ObjectOutputStream oos = null;
         FileOutputStream fout = null;
         File tarjeta = Environment.getExternalStorageDirectory();
         File file = new File(tarjeta.getAbsolutePath(), "favorites_routes");
-        FavoriteRoute rutaNueva = new FavoriteRoute(nombre_ruta, startlatitude, startlongitude, endLatitud, endLongitude,startname,endname);
+        RutaEspecial rutaNueva = new RutaEspecial(nombre_ruta, listaPuntos);
         rutas.set(index_ruta, rutaNueva);
         try {
             FileInputStream streamIn = new FileInputStream(file);

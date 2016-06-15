@@ -8,7 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Formulario de busqueda"
         android:id="@+id/titulo_formulario"
         android:layout_weight="0.1" />
 

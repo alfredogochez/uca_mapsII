@@ -32,7 +32,7 @@
         android:layout_height="94dp"
         android:id="@+id/info_edificio"
         android:maxLength="100"
-        android:textStyle="normal|italic"
+        android:textStyle="normal"
         android:textAlignment="viewEnd"
         android:singleLine="false"
         android:textSize="18sp"

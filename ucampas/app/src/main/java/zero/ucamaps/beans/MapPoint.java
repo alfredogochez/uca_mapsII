@@ -9,6 +9,16 @@ public class MapPoint {
     private String name;
     private int order;
 
+    public MapPoint(){
+
+    }
+
+    public MapPoint(String name, double lat, double lon){
+        setName(name);
+        setStartLatitud(lat);
+        setStartLongitud(lon);
+    }
+
     public String getName() {
         return name;
     }

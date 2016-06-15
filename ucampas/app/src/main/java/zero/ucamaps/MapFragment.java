@@ -49,6 +49,7 @@ import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnPinchListener;
 import com.esri.android.map.event.OnStatusChangedListener;
 
+import zero.ucamaps.beans.MapPoint;
 import zero.ucamaps.database.CargaAsinc;
 import zero.ucamaps.database.CargaDetalles;
 import zero.ucamaps.database.RutaEspecial;
@@ -76,6 +77,7 @@ import com.esri.core.map.Graphic;
 import com.esri.core.portal.BaseMap;
 import com.esri.core.portal.Portal;
 import com.esri.core.portal.WebMap;
+import com.esri.core.symbol.CompositeSymbol;
 import com.esri.core.symbol.FontDecoration;
 import com.esri.core.symbol.FontStyle;
 import com.esri.core.symbol.FontWeight;
@@ -131,6 +133,10 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	// The circle area specified by search_radius and input lat/lon serves searching purpose.
 	// It is also used to construct the extent which map zooms to after the first GPS fix is retrieved.
 	private final static double SEARCH_RADIUS = 5;
+
+	private static final String DAY_MAP="2161ba8a41114947bc7c533a24bdb150";
+	private static final String NIGHT_MAP="b454f8d950054d419e053dde0c9269ba";
+	private static final String ALT_MAP="9f5aa3cc27c24447bd46a11ec586c904";
 
     private String mBasemapPortalItemId;
 
@@ -239,7 +245,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			// show the default map
 			String defaultBaseMapURL = getString(R.string.default_basemap_url);
 			MapView mapView = new MapView(getActivity(), defaultBaseMapURL,"", "");
-
+			mBasemapPortalItemId = defaultBaseMapURL.substring(defaultBaseMapURL.indexOf("id=")+3);
 			// Set the MapView
 			setMapView(mapView);
 			mapView.zoomin();
@@ -488,7 +494,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 					if (center != mapView.getCenter())
 						ignoreTap = true;
 				}
-
+				/*
 				if (tap) {
 					System.out.println("Tap esta activo");
 				} else {
@@ -499,17 +505,32 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 					System.out.println("Dragged esta activo");
 				} else {
 					System.out.println("Dragged no esta activo");
-				}
+				}*/
 				if (mLongPressEvent == null && !ignoreTap && event.getPointerCount() == 1 && tap && !dragged && editMode) {
 					Point mapPoint = mMapView.toMapPoint(event.getX(), event.getY());
-					Drawable drawable = getActivity().getResources().getDrawable(R.drawable.pin_circle_purple);
+					int icono,letra;
+					if(DAY_MAP.equals(mBasemapPortalItemId)){
+						icono = R.drawable.pin_circle_purple;
+						letra = Color.BLACK;
+					}else if(NIGHT_MAP.equals(mBasemapPortalItemId) ){
+						icono = R.drawable.pin_circle_yellow;
+						letra = Color.WHITE;
+					}else if(ALT_MAP.equals(mBasemapPortalItemId)){
+						icono = R.drawable.pin_circle_yellow;
+						letra = Color.WHITE;
+					}else{
+						icono = R.drawable.pin_circle_purple;
+						letra = Color.BLACK;
+					}
+					Drawable drawable = getActivity().getResources().getDrawable(icono);
 					PictureMarkerSymbol resultSymbol = new PictureMarkerSymbol(getActivity(), drawable);
 					// create graphic object for resulting location
 					Graphic resultLocGraphic = new Graphic(mapPoint, resultSymbol);
 					// add graphic to location layer
 					editMarkers.add(mLocationLayer.addGraphic(resultLocGraphic));
 					editPoints++;
-					TextSymbol text = new TextSymbol(FontStyle.ITALIC.name(), Integer.toString(editPoints), Color.BLACK);
+
+					TextSymbol text = new TextSymbol(FontStyle.ITALIC.name(), Integer.toString(editPoints), letra);
 					text.setHorizontalAlignment(TextSymbol.HorizontalAlignment.CENTER);
 					//text.setFontDecoration(FontDecoration.LINE_THROUGH);
 					//text.setColor(255);
@@ -1016,33 +1037,37 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 			@Override
 			public void onClick(View v) {
-				// Remove the search result view
-				editMarkers.clear();
-				editMarkerNames.clear();
-				editMode=false;
-				resetGraphicsLayers();
+				if(editPoints >= 2) {
+					// Remove the search result view
+					editMarkers.clear();
+					editMarkerNames.clear();
+					editMode = false;
+					resetGraphicsLayers();
 
-				RutaEspecial rutaMultiple = new RutaEspecial();
-				rutaMultiple.setDescripcion("ruta multiple");
-				rutaMultiple.setIdRutaEspecial("42");
-				rutaMultiple.setNombre("Ruta Multiple Generada");
-				rutaMultiple.setPuntos("");
-				boolean ultima=false;
-				for(int i=0;i<editPointList.size();i++){
-					if(i+1 == editPointList.size()){
-						ultima = true;
+					RutaEspecial rutaMultiple = new RutaEspecial();
+					rutaMultiple.setDescripcion("ruta multiple");
+					rutaMultiple.setIdRutaEspecial("42");
+					rutaMultiple.setNombre("Ruta Multiple Generada");
+					rutaMultiple.setPuntos("");
+					boolean ultima = false;
+					for (int i = 0; i < editPointList.size(); i++) {
+						if (i + 1 == editPointList.size()) {
+							ultima = true;
+						}
+						Point punto = editPointList.get(Integer.toString(i + 1));
+						rutaMultiple.setPuntos(rutaMultiple.getPuntos() + "Punto " + (i + 1) + "," + punto.getX() + "," + punto.getY());
+						if (!ultima) {
+							rutaMultiple.setPuntos(rutaMultiple.getPuntos() + "/");
+						}
 					}
-					Point punto = editPointList.get(Integer.toString(i+1));
-					rutaMultiple.setPuntos(rutaMultiple.getPuntos()+"Punto "+(i+1)+","+punto.getX()+","+punto.getY());
-					if(!ultima){
-						rutaMultiple.setPuntos(rutaMultiple.getPuntos()+"/");
-					}
+
+					editPointList.clear();
+					editPoints = 0;
+
+					onGetRouteMultiple(rutaMultiple);
+				}else{
+					Toast.makeText(getActivity(),"Se necesitan al menos dos puntos para trazar la ruta.",Toast.LENGTH_SHORT).show();
 				}
-
-				editPointList.clear();
-				editPoints=0;
-
-				onGetRouteMultiple(rutaMultiple);
 			}
 		});
 
@@ -1384,24 +1409,29 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 				}
 
-                //Guardando puntos
-				if(mStartLocation.equals(getString(R.string.my_location))){
-					globalVariable.setStartName("Origen");
-
-				}else{
-					globalVariable.setStartName(mStartLocation);
-
+                List<MapPoint> listaPuntos = new LinkedList<MapPoint>();
+				for(int i=0;i<puntos.size();i++){
+					MapPoint punto = new MapPoint();
+					punto.setName(nombrePuntos.get(i));
+					punto.setStartLatitud(puntos.get(i).getX());
+					punto.setStartLongitud(puntos.get(i).getY());
+					if(i==0){
+						if(mStartLocation.equals(getString(R.string.my_location))){
+							punto.setName("Origen");
+						}else{
+							punto.setName(mStartLocation);
+						}
+					}
+					if(i+1==puntos.size()){
+						if(mEndLocation.equals(getString(R.string.my_location))){
+							punto.setName("Destino");
+						}else{
+							punto.setName(mEndLocation);
+						}
+					}
+					listaPuntos.add(punto);
 				}
-				if(mEndLocation.equals(getString(R.string.my_location))){
-					globalVariable.setEndName("Destino");
-				}else{
-					globalVariable.setEndName(mEndLocation);
-				}
-
-                globalVariable.setStartLongitude(puntos.get(0).getX());
-                globalVariable.setStartLatitud(puntos.get(0).getY());
-				globalVariable.setEndLongitude(puntos.get(puntos.size() - 1).getX());
-				globalVariable.setEndLatitude(puntos.get(puntos.size() - 1).getY());
+				globalVariable.setListaPuntos(listaPuntos);
 				Log.d("Punto Inicio", "Nombre: " + mStartLocation + "\nPuntoX: " + puntos.get(0).getX() + "\nPuntoY: " + puntos.get(0).getY());
 				Log.d("Punto Fin", "Nombre: " + mEndLocation + "\nPuntoX: " + puntos.get(puntos.size() - 1).getX() + "\nPuntoY: " + puntos.get(puntos.size() - 1).getY());
 
@@ -1476,35 +1506,44 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 
 			// Create polyline graphic of the full route
-			SimpleLineSymbol lineSymbol = new SimpleLineSymbol(Color.rgb(106,0,143), 2,STYLE.SOLID);
+			SimpleLineSymbol lineSymbol = new SimpleLineSymbol(Color.rgb(106,0,143), 2,STYLE.DASH);
+
 			Graphic routeGraphic = new Graphic(route.getRouteGraphic().getGeometry(), lineSymbol);
 
 			// Create point graphic to mark start of route
 			Point startPoint = ((Polyline) routeGraphic.getGeometry()).getPoint(0);
 			Graphic startGraphic = createMarkerGraphic(startPoint, 0);
 
+			TextSymbol textoInicial = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(0),Color.BLACK);
+			textoInicial.setSize(10);
+			textoInicial.setOffsetY(-10);
+
+
 			List<Graphic> graphics = new ArrayList<Graphic>();
 			graphics.add(routeGraphic);
 			graphics.add(startGraphic);
+			graphics.add(new Graphic(puntosGlobales.get(0),textoInicial));
 
 			for(int i = 1;i < puntosGlobales.size() - 1 ;i++){
 
 				graphics.add(createMarkerGraphic(puntosGlobales.get(i),1));
 
 				TextSymbol text = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(i),Color.BLACK);
-				text.setSize(15);
-				text.setOffsetY(10);
+				text.setSize(10);
+				text.setOffsetY(-10);
 				graphics.add(new Graphic(puntosGlobales.get(i),text));
 			}
-
-
 
 			// Create point graphic to mark end of route
 			int endPointIndex = ((Polyline) routeGraphic.getGeometry()).getPointCount() - 1;
 			Point endPoint = ((Polyline) routeGraphic.getGeometry()).getPoint(endPointIndex);
 			Graphic endGraphic = createMarkerGraphic(endPoint, 2);
 
+			TextSymbol textoFinal = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(nombrePuntosGlobales.size() -1),Color.BLACK);
+			textoInicial.setSize(10);
+			textoInicial.setOffsetY(-10);
 			graphics.add(endGraphic);
+			graphics.add(new Graphic(puntosGlobales.get(puntosGlobales.size() - 1),textoFinal));
 
 			// Add these graphics to route layer
 			mRouteLayer.addGraphics(graphics.toArray(new Graphic [graphics.size()] ));
@@ -1525,7 +1564,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			if(pointType == 0){
 				marker = getResources().getDrawable(R.drawable.pin_circle_red);
 			} else if(pointType == 1) {
-				marker = getResources().getDrawable(R.drawable.ic_place_white_24dp);
+				marker = getResources().getDrawable(R.drawable.pin_circle_yellow);
 			} else if(pointType == 2){
 				marker = getResources().getDrawable(R.drawable.pin_circle_blue);
 			}
