@@ -1487,13 +1487,15 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 			TextSymbol textoInicial = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(0),Color.BLACK);
 			textoInicial.setSize(10);
-			textoInicial.setOffsetY(-10);
+			textoInicial.setFontWeight(FontWeight.BOLD);
+			textoInicial.setHorizontalAlignment(TextSymbol.HorizontalAlignment.CENTER);
+			textoInicial.setOffsetY(25);
 
 
 			List<Graphic> graphics = new ArrayList<Graphic>();
 			graphics.add(routeGraphic);
 			graphics.add(startGraphic);
-			graphics.add(new Graphic(puntosGlobales.get(0),textoInicial));
+			graphics.add(new Graphic(startPoint,textoInicial));
 
 			for(int i = 1;i < puntosGlobales.size() - 1 ;i++){
 
@@ -1501,7 +1503,10 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 				TextSymbol text = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(i),Color.BLACK);
 				text.setSize(10);
-				text.setOffsetY(-10);
+				text.setFontWeight(FontWeight.BOLD);
+				text.setHorizontalAlignment(TextSymbol.HorizontalAlignment.CENTER);
+				text.setOffsetY(25);
+
 				graphics.add(new Graphic(puntosGlobales.get(i),text));
 			}
 
@@ -1511,10 +1516,12 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			Graphic endGraphic = createMarkerGraphic(endPoint, 2);
 
 			TextSymbol textoFinal = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(nombrePuntosGlobales.size() -1),Color.BLACK);
-			textoInicial.setSize(10);
-			textoInicial.setOffsetY(-10);
+			textoFinal.setSize(10);
+			textoFinal.setFontWeight(FontWeight.BOLD);
+			textoFinal.setHorizontalAlignment(TextSymbol.HorizontalAlignment.CENTER);
+			textoFinal.setOffsetY(25);
 			graphics.add(endGraphic);
-			graphics.add(new Graphic(puntosGlobales.get(puntosGlobales.size() - 1),textoFinal));
+			graphics.add(new Graphic(endPoint,textoFinal));
 
 			// Add these graphics to route layer
 			mRouteLayer.addGraphics(graphics.toArray(new Graphic [graphics.size()] ));
