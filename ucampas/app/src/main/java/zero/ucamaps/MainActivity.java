@@ -37,6 +37,7 @@ import zero.ucamaps.basemaps.BasemapsDialogFragment;
 import zero.ucamaps.beans.FavoriteRoute;
 import zero.ucamaps.database.CargaAsinc;
 import zero.ucamaps.database.InsertAsinc;
+import zero.ucamaps.database.RutaEspecial;
 import zero.ucamaps.dialogs.AboutDialog;
 import zero.ucamaps.dialogs.DialogFavoriteList;
 import zero.ucamaps.dialogs.DialogSearchForm;
@@ -285,7 +286,7 @@ public class MainActivity extends ActionBarActivity {
                 DialogFavoriteList favFrag = new DialogFavoriteList();
                 favFrag.setRoutingDialogListener(mapFragment);
                 DialogFavoriteList list = favFrag;
-                List<FavoriteRoute> recuperar = list.recuperar();
+                List<RutaEspecial> recuperar = list.recuperar();
                 if(!recuperar.isEmpty()){
                     favFrag.show(getFragmentManager(), "Favorite Routes");
                 }

@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import zero.ucamaps.R;
+import zero.ucamaps.database.CargaBusqueda;
 
 /**
  * Created by alf on 12/06/2016.
@@ -54,10 +55,19 @@ public class DialogSearchForm extends DialogFragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(getActivity(),((TextView) txtbox).getText(), Toast.LENGTH_SHORT).show();
-                        int id = grupo.getCheckedRadioButtonId();
-                        RadioButton valBoton = (RadioButton) vista.findViewById(id);
-                        Toast.makeText(getActivity(),valBoton.getText(), Toast.LENGTH_SHORT).show();
+                        if (((TextView) txtbox).getText().toString().isEmpty()) {
+                            Toast.makeText(getActivity(), "Ingrese un texto para la busqueda", Toast.LENGTH_SHORT).show();
+                        } else {
+                            int id = grupo.getCheckedRadioButtonId();
+                            RadioButton valBoton = (RadioButton) vista.findViewById(id);
+                            CargaBusqueda cb = new CargaBusqueda();
+                            cb.setNombre(((TextView) txtbox).getText().toString());
+                            cb.setCategoria(valBoton.getText().toString());
+                            cb.setFm(getFragmentManager());
+                            cb.execute(getActivity());
+                            vista.setVisibility(vista.GONE);
+                            dismiss();
+                        }
                     }
                 }
         );
