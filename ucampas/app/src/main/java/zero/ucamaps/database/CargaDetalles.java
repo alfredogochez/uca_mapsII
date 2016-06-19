@@ -69,6 +69,7 @@ public class CargaDetalles extends AsyncTask<Activity,Void,Context> {
         // Petición GET
         String paramEncode = null;
             paramEncode = nombreEdificio.replaceAll(" ","+");
+            paramEncode = paramEncode.replaceAll("ñ","%C3%B1");
 
         String url = Constantes.GET_BY_NOMBRE + "?nombre=" + paramEncode;
         Log.d("Esta es la URL",url);

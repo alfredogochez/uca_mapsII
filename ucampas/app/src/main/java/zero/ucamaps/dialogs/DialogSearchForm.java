@@ -45,7 +45,7 @@ public class DialogSearchForm extends DialogFragment {
         //Seteando las cosas del formulario
         ((TextView) titulo_busqueda).setText("Formulario de Busqueda");
         ((TextView)pregunta).setText("¿Que desea buscar?");
-        ((RadioButton)boton1).setText("Sitio");
+        ((RadioButton)boton1).setText("Depto,Unidad,Aula,etc.");
         ((RadioButton)boton2).setText("Personal");
         ((RadioButton)boton3).setText("Edificio");
         ((TextView)busqueda).setText("Ingrese el nombre de lo que busca:");
@@ -62,7 +62,11 @@ public class DialogSearchForm extends DialogFragment {
                             RadioButton valBoton = (RadioButton) vista.findViewById(id);
                             CargaBusqueda cb = new CargaBusqueda();
                             cb.setNombre(((TextView) txtbox).getText().toString());
-                            cb.setCategoria(valBoton.getText().toString());
+                            if (valBoton.getText().toString().equals("Depto,Unidad,Aula,etc.")) {
+                                cb.setCategoria("sitio");
+                            } else {
+                                cb.setCategoria(valBoton.getText().toString());
+                            }
                             cb.setFm(getFragmentManager());
                             cb.execute(getActivity());
                             vista.setVisibility(vista.GONE);
