@@ -10,5 +10,11 @@ public class SpecialRoute {
     private String name;
     private List<MapPoint> points;
 
+    public String getName() {
+        return name;
+    }
 
+    public List<MapPoint> getPoints() {
+        return points;
+    }
 }

@@ -55,6 +55,7 @@ public class CargaBusqueda extends AsyncTask<Activity,Void,Context> {
     public void getSitios() {
         // Petición GET
         nombre = nombre.replaceAll(" ","+");
+        nombre = nombre.replaceAll("ñ","%C3%B1");
         categoria = categoria.toLowerCase();
         String url = Constantes.GET_SITIOS + "?busqueda="+nombre+"&categoria="+categoria;
         //creamos un object request, y lo añadimos a la cola
@@ -86,21 +87,13 @@ public class CargaBusqueda extends AsyncTask<Activity,Void,Context> {
                     for (int i = 0; i < arraySitios.length(); i++) {
                         //como se obtiene un arreglo, se guarda cada sitio en una lista
                         JSONObject sitio = (JSONObject) arraySitios.get(i);
-                        String idSitio = sitio.getString("idSITIOEDIFICIO");
                         String nombre = sitio.getString("NOMBRE");
-                        String categoria = sitio.getString("CATEGORIA");
-                        String descripcion = sitio.getString("DESCRIPCION");
-                        String ubicacion = sitio.getString("UBICACION");
-                        String idEdificio = sitio.getString("idEDIFICIO");
+                        String nombreEdificio = sitio.getString("NOMBREEDIFICIO");
                         //creamos un sitio auxiliar
                         Sitio sitioAux = new Sitio();
                         //lo llenamos
-                        sitioAux.setIdSitioEdificio(idSitio);
                         sitioAux.setNombre(nombre);
-                        sitioAux.setCategoria(categoria);
-                        sitioAux.setDescripcion(descripcion);
-                        sitioAux.setUbicacion(ubicacion);
-                        sitioAux.setIdEdificio(idEdificio);
+                        sitioAux.setNombreEdificio(nombreEdificio);
                         //y lo añadimos a la lista
                         listaSitios.add(sitioAux);
                     }
