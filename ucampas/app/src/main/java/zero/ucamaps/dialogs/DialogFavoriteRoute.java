@@ -102,7 +102,9 @@ public class DialogFavoriteRoute extends DialogFragment {
 
                             } else {
                                 File tarjeta = Environment.getExternalStorageDirectory();
-                                File file = new File(tarjeta.getAbsolutePath(), "favorites_routes");
+                                File dir = new File(tarjeta.getAbsolutePath(), "/ucamaps/");
+                                dir.mkdirs();
+                                File file = new File(dir.getAbsolutePath(),"favorites_routes");
                                 //verificamos si el archivo existe
                                 if (file.createNewFile()) {
                                     //si la condicion da true, es por que el archivo no existia, y se creo, por ende, esta es la primera ruta creada
@@ -150,7 +152,7 @@ public class DialogFavoriteRoute extends DialogFragment {
                                             oos.close();
                                         }
                                         if (fout != null) {
-                                            oos.close();
+                                            fout.close();
                                         }
                                     }
                                 }
@@ -173,7 +175,9 @@ public class DialogFavoriteRoute extends DialogFragment {
     private int calcular_longitud() throws IOException {
         //cuenta las lineas del archivo para que no se pase de 10 rutas favoritas
         File tarjeta = Environment.getExternalStorageDirectory();
-        File file = new File(tarjeta.getAbsolutePath(), "favorites_routes");
+        File dir = new File(tarjeta.getAbsolutePath(), "/ucamaps/");
+        dir.mkdirs();
+        File file = new File(dir.getAbsolutePath(),"favorites_routes");
         ObjectInputStream objectinputstream = null;
         if (file.exists()) {
             try {
@@ -201,7 +205,9 @@ public class DialogFavoriteRoute extends DialogFragment {
         ObjectOutputStream oos = null;
         FileOutputStream fout = null;
         File tarjeta = Environment.getExternalStorageDirectory();
-        File file = new File(tarjeta.getAbsolutePath(), "favorites_routes");
+        File dir = new File(tarjeta.getAbsolutePath(), "/ucamaps/");
+        dir.mkdirs();
+        File file = new File(dir.getAbsolutePath(),"favorites_routes");
         RutaEspecial rutaNueva = new RutaEspecial(nombre_ruta, listaPuntos);
         rutas.set(index_ruta, rutaNueva);
         try {
