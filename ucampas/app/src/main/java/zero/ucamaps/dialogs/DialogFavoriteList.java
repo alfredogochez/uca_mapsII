@@ -8,6 +8,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
+import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -46,8 +47,6 @@ public class DialogFavoriteList extends DialogFragment {
         List<RutaEspecial> listaRutas = recuperar();
 
         String[] listaRutasString = new String[listaRutas.size()];
-
-
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();

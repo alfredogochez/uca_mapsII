@@ -831,6 +831,10 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		executeLocatorTask(address);
 	}
 
+	public void onAdvanceSearchLocate(String address){
+		resetGraphicsLayers();
+		executeLocatorTask(address);
+	}
 	/**
 	 * Set up the search parameters and execute the Locator task.
 	 * @param address

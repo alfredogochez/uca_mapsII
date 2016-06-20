@@ -333,6 +333,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick() {
                 DialogSearchForm diaSEFO = new DialogSearchForm();
+                diaSEFO.setMapFragment(mapFragment);
                 diaSEFO.show(getFragmentManager(),"Dialog Search");
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             }

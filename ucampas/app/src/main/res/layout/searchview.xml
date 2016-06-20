@@ -9,6 +9,12 @@
     android:background="@android:color/white"
     android:orientation="horizontal"
     android:nestedScrollingEnabled="false">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true"></LinearLayout>
 
     <SearchView
         android:id="@+id/searchView1"
@@ -23,7 +29,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
-        android:src="@drawable/ic_loc_directions" 
+        android:src="@drawable/ic_loc_directions"
         android:contentDescription="@string/icon_for_directions_and_routing"/>
+
+
 
 </LinearLayout>

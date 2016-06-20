@@ -14,6 +14,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import zero.ucamaps.MapFragment;
 import zero.ucamaps.R;
 import zero.ucamaps.database.CargaBusqueda;
 
@@ -24,6 +25,16 @@ public class DialogSearchForm extends DialogFragment {
 
 
 
+    private MapFragment mapFragment;
+
+    public MapFragment getMapFragment() {
+        return mapFragment;
+    }
+
+    public void setMapFragment(MapFragment mapFragment) {
+        this.mapFragment = mapFragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +43,7 @@ public class DialogSearchForm extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
     Bundle savedInstanceState){
+        final MapFragment mapFragment1 = this.mapFragment;
         final View vista = inflater.inflate(R.layout.search_form, container, false);
         View titulo_busqueda = vista.findViewById(R.id.titulo_formulario);
         View pregunta = vista.findViewById(R.id.pregunta_formulario);
@@ -61,14 +73,18 @@ public class DialogSearchForm extends DialogFragment {
                             int id = grupo.getCheckedRadioButtonId();
                             RadioButton valBoton = (RadioButton) vista.findViewById(id);
                             CargaBusqueda cb = new CargaBusqueda();
+
                             cb.setNombre(((TextView) txtbox).getText().toString());
                             if (valBoton.getText().toString().equals("Depto,Unidad,Aula,etc.")) {
                                 cb.setCategoria("sitio");
                             } else {
                                 cb.setCategoria(valBoton.getText().toString());
                             }
+
+                            cb.setMapFragment(mapFragment1);
                             cb.setFm(getFragmentManager());
                             cb.execute(getActivity());
+
                             vista.setVisibility(vista.GONE);
                             dismiss();
                         }

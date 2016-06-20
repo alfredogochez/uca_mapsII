@@ -21,6 +21,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import zero.ucamaps.MapFragment;
 import zero.ucamaps.R;
 import zero.ucamaps.database.RutaEspecial;
 import zero.ucamaps.database.Sitio;
@@ -34,12 +35,24 @@ public class DialogSearchResult extends DialogFragment{
     private Context contexto;
 
 
+
+    private MapFragment mapFragment;
+
+    public MapFragment getMapFragment() {
+        return mapFragment;
+    }
+
+    public void setMapFragment(MapFragment mapFragment) {
+        this.mapFragment = mapFragment;
+    }
+
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
 
         //Leer rutas favoritas para ponerlas en la lista
-                String[] listaSitioString = new String[listaSitio.size()];
+        String[] listaSitioString = new String[listaSitio.size()];
 
 
 
@@ -50,7 +63,7 @@ public class DialogSearchResult extends DialogFragment{
         for(int i = 0;i < listaSitio.size() ;i++){
             listaSitioString[i] =  listaSitio.get(i).getNombre();
         }
-        String titulo = listaSitio.size()+" coinciencias encontradas";
+        String titulo = listaSitio.size()+" coincidencias encontradas";
 
         builder.setView(inflater.inflate(R.layout.favorites, null))
                 .setTitle(titulo)
@@ -65,16 +78,19 @@ public class DialogSearchResult extends DialogFragment{
                                 .setPositiveButton("Trazar ruta hacia objetivo", new DialogInterface.OnClickListener() {
                                     @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            Sitio sitioEscogido = listaSitio.get(which);
+                                            //Sitio sitioEscogido = listaSitio.get(which);
                                             Toast.makeText(contexto,"Ubicacion: "+sitioEscogido.getNombreEdificio(),Toast.LENGTH_SHORT).show();
                                             Toast.makeText(contexto,"Ruta trazada, ¡a por el!",Toast.LENGTH_SHORT).show();
+                                        mapFragment.onGetRoute(getString(R.string.my_location),sitioEscogido.getNombreEdificio());
                                         };
                                     })
                                 .setNegativeButton("Solo Marcar objetivo", new DialogInterface.OnClickListener() {
                                     @Override
                                         public void onClick(DialogInterface dialog, int which) {
+                                        mapFragment.onAdvanceSearchLocate(sitioEscogido.getNombreEdificio());
                                         Toast.makeText(contexto,"Ubicacion: "+sitioEscogido.getNombreEdificio(),Toast.LENGTH_SHORT).show();
                                         Toast.makeText(contexto,"Objetico Marcado",Toast.LENGTH_SHORT).show();
+
                                         };
                                     });
                         AlertDialog decisionAlert = decision.create();

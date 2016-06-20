@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import zero.ucamaps.MapFragment;
 import zero.ucamaps.dialogs.DialogSearchResult;
 
 /**
@@ -35,6 +36,17 @@ public class CargaBusqueda extends AsyncTask<Activity,Void,Context> {
     private Context contexto;
     private DialogSearchResult dsr= new DialogSearchResult();
     private FragmentManager fm;
+    private MapFragment mapFragment;
+
+    public MapFragment getMapFragment() {
+        return mapFragment;
+    }
+
+    public void setMapFragment(MapFragment mapFragment) {
+        this.mapFragment = mapFragment;
+    }
+
+
 
 
     @Override
@@ -99,6 +111,7 @@ public class CargaBusqueda extends AsyncTask<Activity,Void,Context> {
                     }
                     //una vez salimos del bucle de llenado, le asignamos la lista al Display de Sitios
                     dsr.setListaSitio(listaSitios);
+                    dsr.setMapFragment(this.mapFragment);
                     dsr.show(fm,"Search Results");
                     dsr.setContexto(contexto);
                     break;
