@@ -75,20 +75,18 @@ public class DialogSearchResult extends DialogFragment{
                         decision.setTitle("Seleccione")
                                 .setMessage("Su objetivo fue encontrado, ¿que desea hacer?")
                                 .setIcon(R.drawable.ic_find_in_page_black_24dp)
-                                .setPositiveButton("Trazar ruta hacia objetivo", new DialogInterface.OnClickListener() {
+                                .setPositiveButton("Trazar ruta", new DialogInterface.OnClickListener() {
                                     @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             //Sitio sitioEscogido = listaSitio.get(which);
-                                            Toast.makeText(contexto,"Ubicacion: "+sitioEscogido.getNombreEdificio(),Toast.LENGTH_SHORT).show();
-                                            Toast.makeText(contexto,"Ruta trazada, ¡a por el!",Toast.LENGTH_SHORT).show();
-                                            mapFragment.onGetRouteMarked("My Location",sitioEscogido.getNombreEdificio());
+                                        mapFragment.onGetRouteMarked("Magna II",sitioEscogido.getNombreEdificio());
+                                        Toast.makeText(contexto,"Ruta trazada, ¡a por el!",Toast.LENGTH_SHORT).show();
                                         };
                                     })
                                 .setNegativeButton("Solo Marcar objetivo", new DialogInterface.OnClickListener() {
                                     @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                         mapFragment.onAdvanceSearchLocate(sitioEscogido.getNombreEdificio());
-                                        Toast.makeText(contexto,"Ubicacion: "+sitioEscogido.getNombreEdificio(),Toast.LENGTH_SHORT).show();
                                         Toast.makeText(contexto,"Objetico Marcado",Toast.LENGTH_SHORT).show();
 
                                         };

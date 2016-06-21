@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
@@ -1293,7 +1294,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		}
 
 		@Override
-		protected void onPostExecute(List<LocatorGeocodeResult> result) {
+		protected void onPostExecute(final List<LocatorGeocodeResult> result) {
 			// Display results on UI thread
 			mProgressDialog.dismiss();
 			if (mException != null) {
@@ -1306,23 +1307,41 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			if (result.size() == 0) {
 				Toast.makeText(getActivity(),getString(R.string.noResultsFound), Toast.LENGTH_LONG).show();
 			} else {
-				// Use first result in the list
-				LocatorGeocodeResult geocodeResult = result.get(0);
-				// get return geometry from geocode result
-				Point resultPoint = geocodeResult.getLocation();
-				// create marker symbol to represent location
-				Drawable drawable = getActivity().getResources().getDrawable(R.drawable.pin_circle_red);
-				PictureMarkerSymbol resultSymbol = new PictureMarkerSymbol(getActivity(), drawable);
-				// create graphic object for resulting location
-				Graphic resultLocGraphic = new Graphic(resultPoint,resultSymbol);
-				// add graphic to location layer
-				mLocationLayer.addGraphic(resultLocGraphic);
-				// Get the address
-				String address = geocodeResult.getAddress();
-				mLocationLayerPoint = resultPoint;
-				// Zoom map to geocode result location
-				mMapView.zoomToResolution(geocodeResult.getLocation(), 2);
-				showSearchResultLayout(address);
+
+				//creamos una lista para tener los resultados
+				String[] locatorGeoStrings = new String[result.size()];
+				//llenamos la lista con la direccion de cada resultado
+				for(int i = 0;i < result.size() ;i++){
+					locatorGeoStrings[i] =  result.get(i).getAddress();
+				}
+				//una vez tenemos la lista llena, hacemos un list dialog para que el usuario seleccion el resultado mas cercano
+				AlertDialog.Builder geoDialog = new AlertDialog.Builder(getActivity());
+				geoDialog.setTitle(result.size()+" Resultados:");
+				geoDialog.setItems(locatorGeoStrings, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int item) {
+						//con la seleccion, se regresa el indice para sacar del result
+						LocatorGeocodeResult geocodeResult = result.get(item);
+						// get return geometry from geocode result
+						Point resultPoint = geocodeResult.getLocation();
+						// create marker symbol to represent location
+						Drawable drawable = getActivity().getResources().getDrawable(R.drawable.pin_circle_red);
+						PictureMarkerSymbol resultSymbol = new PictureMarkerSymbol(getActivity(), drawable);
+						// create graphic object for resulting location
+						Graphic resultLocGraphic = new Graphic(resultPoint, resultSymbol);
+						// add graphic to location layer
+						mLocationLayer.addGraphic(resultLocGraphic);
+						// Get the address
+						String address = geocodeResult.getAddress();
+						mLocationLayerPoint = resultPoint;
+						// Zoom map to geocode result location
+						mMapView.zoomToResolution(geocodeResult.getLocation(), 2);
+						showSearchResultLayout(address);
+
+
+					}
+				});
+				final AlertDialog geoAlert = geoDialog.create();
+				geoAlert.show();
 			}
 		}
 
