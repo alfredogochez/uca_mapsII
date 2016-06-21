@@ -907,6 +907,13 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		return true;
 	}
 
+
+	public void onGetRouteMarked(String startPoint, String endPoint){
+		resetGraphicsLayers();
+		// Do the routing
+		executeRoutingTask(startPoint, endPoint);
+	}
+
 	/**
 	 * Set up Route Parameters to execute RouteTask
 	 * @param start

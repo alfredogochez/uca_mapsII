@@ -81,7 +81,7 @@ public class DialogSearchResult extends DialogFragment{
                                             //Sitio sitioEscogido = listaSitio.get(which);
                                             Toast.makeText(contexto,"Ubicacion: "+sitioEscogido.getNombreEdificio(),Toast.LENGTH_SHORT).show();
                                             Toast.makeText(contexto,"Ruta trazada, ¡a por el!",Toast.LENGTH_SHORT).show();
-                                        mapFragment.onGetRoute(getString(R.string.my_location),sitioEscogido.getNombreEdificio());
+                                            mapFragment.onGetRouteMarked("My Location",sitioEscogido.getNombreEdificio());
                                         };
                                     })
                                 .setNegativeButton("Solo Marcar objetivo", new DialogInterface.OnClickListener() {
