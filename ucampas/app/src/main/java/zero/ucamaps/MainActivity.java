@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -28,7 +29,15 @@ import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.zxing.client.android.CaptureActivity;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -78,7 +87,19 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.uca_maps_activity);
         ButterKnife.inject(this);
         setupDrawer();
-        setView();
+        try {
+            String colorMapa = obtenerMapa();
+            if(colorMapa.equals("none")){
+                setView("2161ba8a41114947bc7c533a24bdb150");
+            }else {
+                setView(colorMapa);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+
+        }
+
+
 
 
 
@@ -157,10 +178,10 @@ public class MainActivity extends ActionBarActivity {
     }
 
     //Initialize default view
-    private void setView() {
+    private void setView(String temaMapa) {
         // show the default map
         setChangeSound("Sound Off");
-        showMapWithSound(null, changeSound);
+        showMapWithSound(temaMapa, changeSound);
 
     }
 
@@ -211,6 +232,7 @@ public class MainActivity extends ActionBarActivity {
 
                     @Override
                     public void onBasemapChanged(String itemId) {
+                        guardarTema(itemId);
                         showMapWithSound(itemId, changeSound);
                     }
                 });
@@ -539,6 +561,63 @@ public class MainActivity extends ActionBarActivity {
                 if (resultCode == RESULT_CANCELED) {
                 }
             }
+        }
+    }
+
+    private String obtenerMapa() throws IOException {
+        //cuenta las lineas del archivo para que no se pase de 10 rutas favoritas
+        File tarjeta = Environment.getExternalStorageDirectory();
+        File dir = new File(tarjeta.getAbsolutePath(), "/ucamaps/");
+        dir.mkdirs();
+        File file = new File(dir.getAbsolutePath(),"preferences");
+        ObjectInputStream objectinputstream = null;
+        if (file.exists()) {
+            try {
+                FileInputStream streamIn = new FileInputStream(file);
+                objectinputstream = new ObjectInputStream(streamIn);
+                return (String) objectinputstream.readObject();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (objectinputstream != null) {
+                    objectinputstream.close();
+                }
+            }
+            return "none";
+        } else
+            return "none";
+    }
+
+
+    private void guardarTema(String tema) {
+        File tarjeta = Environment.getExternalStorageDirectory();
+        File dir = new File(tarjeta.getAbsolutePath(), "/ucamaps/");
+        dir.mkdirs();
+        File file = new File(dir.getAbsolutePath(),"preferences");
+        //verificamos si el archivo existe
+        try {
+            FileOutputStream fOut = null;
+            ObjectOutputStream oos = null;
+            try {
+
+
+                fOut = new FileOutputStream(file);
+                oos = new ObjectOutputStream(fOut);
+                oos.writeObject(tema);
+                Toast.makeText(getApplicationContext(), "tema guardado", Toast.LENGTH_SHORT).show();
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            } finally {
+                if (oos != null) {
+                oos.close();
+                }
+                if (fOut != null) {
+                oos.close();
+                }
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
         }
     }
 }

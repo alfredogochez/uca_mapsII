@@ -81,11 +81,12 @@ public class DialogFavoriteList extends DialogFragment {
     }
 
     public List<RutaEspecial> recuperar(){
-        String nombrearchivo = "favorites_routes";
         List<RutaEspecial> listaFavoritos = new LinkedList<RutaEspecial>();
         int i = 0;
         File tarjeta = Environment.getExternalStorageDirectory();
-        File file = new File(tarjeta.getAbsolutePath(), nombrearchivo);
+        File dir = new File(tarjeta.getAbsolutePath(), "/ucamaps/");
+        dir.mkdirs();
+        File file = new File(dir.getAbsolutePath(),"favorites_routes");
         ObjectInputStream objectinputstream = null;
         FileInputStream streamIn = null;
         try {

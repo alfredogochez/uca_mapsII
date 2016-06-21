@@ -17,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,8 +67,8 @@ public class CargaBusqueda extends AsyncTask<Activity,Void,Context> {
 
     public void getSitios() {
         // Petición GET
-        nombre = nombre.replaceAll(" ","+");
-        nombre = nombre.replaceAll("ñ","%C3%B1");
+        nombre = nombre.replaceAll("\n","");
+        nombre = URLEncoder.encode(nombre);
         categoria = categoria.toLowerCase();
         String url = Constantes.GET_SITIOS + "?busqueda="+nombre+"&categoria="+categoria;
         //creamos un object request, y lo añadimos a la cola
