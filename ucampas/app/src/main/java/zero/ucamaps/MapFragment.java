@@ -1,5 +1,6 @@
 package zero.ucamaps;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
@@ -42,6 +44,12 @@ import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.LocationDisplayManager.AutoPanMode;
@@ -53,7 +61,10 @@ import com.esri.android.map.event.OnStatusChangedListener;
 import zero.ucamaps.beans.MapPoint;
 import zero.ucamaps.database.CargaAsinc;
 import zero.ucamaps.database.CargaDetalles;
+import zero.ucamaps.database.Constantes;
 import zero.ucamaps.database.RutaEspecial;
+import zero.ucamaps.database.Sitio;
+import zero.ucamaps.database.VolleySingleton;
 import zero.ucamaps.dialogs.DialogFavoriteRoute;
 import zero.ucamaps.dialogs.ProgressDialogFragment;
 import zero.ucamaps.location.DirectionsDialogFragment;
@@ -98,6 +109,10 @@ import com.esri.core.tasks.na.RouteResult;
 import com.esri.core.tasks.na.RouteTask;
 import com.esri.core.tasks.na.StopGraphic;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Implements the view that shows the map.
@@ -829,7 +844,9 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 		// Remove any previous graphics and routes
 		resetGraphicsLayers();
-		executeLocatorTask(address);
+		LocatorAsyncPreTask lapt = new LocatorAsyncPreTask();
+		lapt.execute(address);
+		//executeLocatorTask(address);
 	}
 
 	public void onAdvanceSearchLocate(String address){
@@ -1262,6 +1279,120 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	 * This class provides an AsyncTask that performs a geolocation request on a
 	 * background thread and displays the first result on the map on the UI thread.
 	 */
+	private class LocatorAsyncPreTask extends AsyncTask<String,Void,Context>{
+		private VolleySingleton volley;
+		private RequestQueue requestQueue;
+		private List<Sitio> listaSitios = new ArrayList<>();
+		private String nombre;
+
+		@Override
+		protected Context doInBackground(String... strings){
+			//asignamos valores al volley y a la queue.
+			volley = VolleySingleton.getInstance(getActivity().getApplicationContext());
+			requestQueue = volley.getRequestQueue();
+			//llamamos a getSitios, donde obtenemos las cosas que necesitamos
+			nombre = strings[0];
+			getSitios();
+			Context contexto = getActivity().getApplicationContext();
+			return contexto;
+		}
+
+		@Override
+		protected void onPostExecute(Context contexto){
+			//relleno
+		}
+
+		public void getSitios() {
+			nombre = nombre.replaceAll("\n", "");
+			nombre = URLEncoder.encode(nombre);
+			String url = Constantes.GET_SITIOS + "?busqueda="+nombre+"&categoria=edificio";
+			//creamos un object request, y lo añadimos a la cola
+			JsonObjectRequest request = new JsonObjectRequest
+					(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
+						@Override
+						public void onResponse(JSONObject response) {
+							//cuando obtenemos una respuesta, la procesamos
+							procesarRespuesta(response);
+						}
+					}, new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							Toast.makeText(getActivity().getApplicationContext(),"Se produjo un error: "+ error,Toast.LENGTH_LONG).show();
+						}
+					});
+			addtoQueue(request);
+		}
+
+		private void procesarRespuesta(JSONObject response) {
+			try {
+				// Obtener atributo "estado"
+				String estado = response.getString("estado");
+				switch (estado) {
+					case "1": // EXITO
+						// Obtener array "sitios" Json
+						JSONArray arraySitios = response.getJSONArray("sitios");
+						// Parsear
+						for (int i = 0; i < arraySitios.length(); i++) {
+							//como se obtiene un arreglo, se guarda cada sitio en una lista
+							JSONObject sitio = (JSONObject) arraySitios.get(i);
+							String nombre = sitio.getString("NOMBRE");
+							String nombreEdificio = sitio.getString("NOMBREEDIFICIO");
+							//creamos un sitio auxiliar
+							Sitio sitioAux = new Sitio();
+							//lo llenamos
+							sitioAux.setNombre(nombre);
+							sitioAux.setNombreEdificio(nombreEdificio);
+							//y lo añadimos a la lista
+							listaSitios.add(sitioAux);
+						}
+						String[] listaResultString = new String[listaSitios.size()];
+						for (int j = 0; j < listaSitios.size(); j++) {
+							listaResultString[j] = listaSitios.get(j).getNombre();
+						}
+						//una vez tenemos la lista llena, hacemos un dialogito con los nombres de los lugares,
+						AlertDialog.Builder sitiosResult = new AlertDialog.Builder(getActivity());
+						sitiosResult.setTitle(listaSitios.size()+" resultados encontrados")
+								.setItems(listaResultString, new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog, int item) {
+										String resultado = listaSitios.get(item).getNombreEdificio();
+										executeLocatorTask(resultado);
+									}
+								});
+						final AlertDialog alertResult = sitiosResult.create();
+						alertResult.show();
+						break;
+					case "2": // FALLIDO
+						String mensaje2 = response.getString("mensaje");
+						Toast.makeText(getActivity().getApplicationContext(),"Lo sentimos, "+ mensaje2,Toast.LENGTH_LONG).show();
+						break;
+				}
+
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+
+
+		}
+
+
+		public void addtoQueue(Request request) {
+			if (request != null) {
+				request.setTag(this);
+				if (requestQueue == null)
+					requestQueue = volley.getRequestQueue();
+				request.setRetryPolicy(new DefaultRetryPolicy(
+						600000, 3, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+				));
+
+				requestQueue.add(request);
+			}
+		}
+	}
+
+
+
+
 	private class LocatorAsyncTask extends AsyncTask<LocatorFindParameters, Void, List<LocatorGeocodeResult>> {
 		private static final String TAG_LOCATOR_PROGRESS_DIALOG = "TAG_LOCATOR_PROGRESS_DIALOG";
 		private Exception mException;
@@ -1314,13 +1445,8 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				for(int i = 0;i < result.size() ;i++){
 					locatorGeoStrings[i] =  result.get(i).getAddress();
 				}
-				//una vez tenemos la lista llena, hacemos un list dialog para que el usuario seleccion el resultado mas cercano
-				AlertDialog.Builder geoDialog = new AlertDialog.Builder(getActivity());
-				geoDialog.setTitle(result.size()+" Resultados:");
-				geoDialog.setItems(locatorGeoStrings, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int item) {
-						//con la seleccion, se regresa el indice para sacar del result
-						LocatorGeocodeResult geocodeResult = result.get(item);
+
+						LocatorGeocodeResult geocodeResult = result.get(0);
 						// get return geometry from geocode result
 						Point resultPoint = geocodeResult.getLocation();
 						// create marker symbol to represent location
@@ -1334,18 +1460,16 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 						String address = geocodeResult.getAddress();
 						mLocationLayerPoint = resultPoint;
 						// Zoom map to geocode result location
-						mMapView.zoomToResolution(geocodeResult.getLocation(), 2);
+						mMapView.zoomToResolution(geocodeResult.getLocation(), 1);
 						showSearchResultLayout(address);
 
 
 					}
-				});
-				final AlertDialog geoAlert = geoDialog.create();
-				geoAlert.show();
+
 			}
 		}
 
-	}
+
 
 	/**
 	 * This class provides an AsyncTask that performs a routing request on a
