@@ -532,8 +532,8 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 						icono = R.drawable.pin_circle_yellow;
 						letra = Color.WHITE;
 					}else if(ALT_MAP.equals(mBasemapPortalItemId)){
-						icono = R.drawable.pin_circle_yellow;
-						letra = Color.WHITE;
+						icono = R.drawable.pin_circle_green;
+						letra = Color.BLACK;
 					}else{
 						icono = R.drawable.pin_circle_purple;
 						letra = Color.BLACK;
@@ -1658,9 +1658,19 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			// Get first item in list of routes provided by server
 			Route route = result.getRoutes().get(0);
 
+			int linea;
+			if(DAY_MAP.equals(mBasemapPortalItemId)){
+				linea = Color.rgb(106,0,143);
+			}else if(NIGHT_MAP.equals(mBasemapPortalItemId) ){
+				linea = Color.rgb(255,255,102);
+			}else if(ALT_MAP.equals(mBasemapPortalItemId)){
+				linea = Color.rgb(34,139,34);
+			}else{
+				linea = Color.rgb(106,0,143);
+			}
 
 			// Create polyline graphic of the full route
-			SimpleLineSymbol lineSymbol = new SimpleLineSymbol(Color.rgb(106,0,143), 2,STYLE.DASH);
+			SimpleLineSymbol lineSymbol = new SimpleLineSymbol(linea, 2,STYLE.SOLID);
 
 			Graphic routeGraphic = new Graphic(route.getRouteGraphic().getGeometry(), lineSymbol);
 
@@ -1668,11 +1678,22 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			Point startPoint = ((Polyline) routeGraphic.getGeometry()).getPoint(0);
 			Graphic startGraphic = createMarkerGraphic(startPoint, 0);
 
-			TextSymbol textoInicial = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(0),Color.BLACK);
-			textoInicial.setSize(10);
+			int letra;
+			if(DAY_MAP.equals(mBasemapPortalItemId)){
+				letra = Color.BLACK;
+			}else if(NIGHT_MAP.equals(mBasemapPortalItemId) ){
+				letra = Color.WHITE;
+			}else if(ALT_MAP.equals(mBasemapPortalItemId)){
+				letra = Color.BLACK;
+			}else{
+				letra = Color.BLACK;
+			}
+
+			TextSymbol textoInicial = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(0),letra);
+			textoInicial.setSize(15);
 			textoInicial.setFontWeight(FontWeight.BOLD);
 			textoInicial.setHorizontalAlignment(TextSymbol.HorizontalAlignment.CENTER);
-			textoInicial.setOffsetY(25);
+			textoInicial.setOffsetY(40);
 
 
 			List<Graphic> graphics = new ArrayList<Graphic>();
@@ -1684,11 +1705,11 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 				graphics.add(createMarkerGraphic(puntosGlobales.get(i),1));
 
-				TextSymbol text = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(i),Color.BLACK);
-				text.setSize(10);
+				TextSymbol text = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(i),letra);
+				text.setSize(15);
 				text.setFontWeight(FontWeight.BOLD);
 				text.setHorizontalAlignment(TextSymbol.HorizontalAlignment.CENTER);
-				text.setOffsetY(25);
+				text.setOffsetY(40);
 
 				graphics.add(new Graphic(puntosGlobales.get(i),text));
 			}
@@ -1698,11 +1719,12 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			Point endPoint = ((Polyline) routeGraphic.getGeometry()).getPoint(endPointIndex);
 			Graphic endGraphic = createMarkerGraphic(endPoint, 2);
 
-			TextSymbol textoFinal = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(nombrePuntosGlobales.size() -1),Color.BLACK);
-			textoFinal.setSize(10);
+
+			TextSymbol textoFinal = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(nombrePuntosGlobales.size() -1),letra);
+			textoFinal.setSize(15);
 			textoFinal.setFontWeight(FontWeight.BOLD);
 			textoFinal.setHorizontalAlignment(TextSymbol.HorizontalAlignment.CENTER);
-			textoFinal.setOffsetY(25);
+			textoFinal.setOffsetY(40);
 			graphics.add(endGraphic);
 			graphics.add(new Graphic(endPoint,textoFinal));
 
@@ -1721,11 +1743,23 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		}
 
 		Graphic createMarkerGraphic(Point point, int pointType) {
+
+			int icono;
+			if(DAY_MAP.equals(mBasemapPortalItemId)){
+				icono = R.drawable.pin_circle_purple;
+			}else if(NIGHT_MAP.equals(mBasemapPortalItemId) ){
+				icono = R.drawable.pin_circle_yellow;
+			}else if(ALT_MAP.equals(mBasemapPortalItemId)){
+				icono = R.drawable.pin_circle_green;
+			}else{
+				icono = R.drawable.pin_circle_purple;
+			}
+
 			Drawable marker = null;
 			if(pointType == 0){
 				marker = getResources().getDrawable(R.drawable.pin_circle_red);
 			} else if(pointType == 1) {
-				marker = getResources().getDrawable(R.drawable.pin_circle_yellow);
+				marker = getResources().getDrawable(icono);
 			} else if(pointType == 2){
 				marker = getResources().getDrawable(R.drawable.pin_circle_blue);
 			}
