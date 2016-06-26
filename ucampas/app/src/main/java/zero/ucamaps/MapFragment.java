@@ -1291,7 +1291,14 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			volley = VolleySingleton.getInstance(getActivity().getApplicationContext());
 			requestQueue = volley.getRequestQueue();
 			//llamamos a getSitios, donde obtenemos las cosas que necesitamos
+			if (strings[0].equals("Plaza Central") ||
+				strings[0].equals("plaza central") ||
+				strings[0].equals("plaza") ||
+				strings[0].equals("Plaza")){
+				nombre = "Plaza Central";
+			}else{
 			nombre = strings[0];
+			}
 			getSitios();
 			Context contexto = getActivity().getApplicationContext();
 			return contexto;
@@ -1349,6 +1356,9 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 						for (int j = 0; j < listaSitios.size(); j++) {
 							listaResultString[j] = listaSitios.get(j).getNombre();
 						}
+						if(listaSitios.size()==1){
+							executeLocatorTask(listaSitios.get(0).getNombreEdificio());
+						}else{
 						//una vez tenemos la lista llena, hacemos un dialogito con los nombres de los lugares,
 						AlertDialog.Builder sitiosResult = new AlertDialog.Builder(getActivity());
 						sitiosResult.setTitle(listaSitios.size()+" resultados encontrados")
@@ -1361,6 +1371,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 								});
 						final AlertDialog alertResult = sitiosResult.create();
 						alertResult.show();
+						}
 						break;
 					case "2": // FALLIDO
 						String mensaje2 = response.getString("mensaje");
@@ -1439,12 +1450,6 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				Toast.makeText(getActivity(),getString(R.string.noResultsFound), Toast.LENGTH_LONG).show();
 			} else {
 
-				//creamos una lista para tener los resultados
-				String[] locatorGeoStrings = new String[result.size()];
-				//llenamos la lista con la direccion de cada resultado
-				for(int i = 0;i < result.size() ;i++){
-					locatorGeoStrings[i] =  result.get(i).getAddress();
-				}
 
 						LocatorGeocodeResult geocodeResult = result.get(0);
 						// get return geometry from geocode result
@@ -1809,6 +1814,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				@SuppressWarnings("ResourceType") SpatialReference mapRef = mMapView.getSpatialReference();
 				result = locator.reverseGeocode(mPoint, 100.0, mapRef, mapRef);
 				mLocationLayerPoint = mPoint;
+
 			} catch (Exception e) {
 				mException = e;
 			}
@@ -1818,6 +1824,8 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 		@Override
 		protected void onPostExecute(LocatorReverseGeocodeResult result) {
+
+
 			// Display results on UI thread
 			mProgressDialog.dismiss();
 			if (mException != null) {
@@ -1832,6 +1840,8 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			if (result != null && result.getAddressFields() != null) {
 				Map<String, String> addressFields = result.getAddressFields();
 				address.append(String.format("%s\n", addressFields.get("SingleKey")));
+				//probando hacer la busqueda de "punto marcado" usando lo devuelto por el reverse geolocator
+				onAdvanceSearchLocate(address.toString());
 
 				// Draw marker on map.
 				// create marker symbol to represent location

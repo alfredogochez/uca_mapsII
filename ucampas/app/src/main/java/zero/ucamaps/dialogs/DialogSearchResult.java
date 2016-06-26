@@ -79,7 +79,7 @@ public class DialogSearchResult extends DialogFragment{
                                     @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             //Sitio sitioEscogido = listaSitio.get(which);
-                                        mapFragment.onGetRouteMarked("Magna II",sitioEscogido.getNombreEdificio());
+                                        mapFragment.onGetRouteMarked("My Location",sitioEscogido.getNombreEdificio());
                                         Toast.makeText(contexto,"Ruta trazada, ¡a por el!",Toast.LENGTH_SHORT).show();
                                         };
                                     })

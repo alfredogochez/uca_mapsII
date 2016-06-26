@@ -88,11 +88,11 @@ public class MainActivity extends ActionBarActivity {
         ButterKnife.inject(this);
         setupDrawer();
         try {
-            String colorMapa = obtenerMapa();
-            if(colorMapa.equals("none")){
-                setView("2161ba8a41114947bc7c533a24bdb150");
+            String[] colorMapa = obtenerMapa();
+            if(colorMapa[0].equals("none")){
+                setView("2161ba8a41114947bc7c533a24bdb150","Sound Off");
             }else {
-                setView(colorMapa);
+                setView(colorMapa[0],colorMapa[1]);
             }
         }catch(Exception e){
             e.printStackTrace();
@@ -178,10 +178,10 @@ public class MainActivity extends ActionBarActivity {
     }
 
     //Initialize default view
-    private void setView(String temaMapa) {
+    private void setView(String temaMapa,String sonido) {
         // show the default map
-        setChangeSound("Sound Off");
-        showMapWithSound(temaMapa, changeSound);
+        setChangeSound(sonido);
+        showMapWithSound(temaMapa, changeSound,0);
 
     }
 
@@ -189,22 +189,29 @@ public class MainActivity extends ActionBarActivity {
      * Opens the map represented by the specified portal item or if null, opens a default map.
      */
 
-    public void showMapWithSound(String basemapPortalItemId, String changeSound) {
+    public void showMapWithSound(String basemapPortalItemId, String changeSound,int momento) {
 
-        setBasemapItem(basemapPortalItemId);
+        if (momento == 0) {
 
-        // remove existing MapFragment explicitly, simply replacing it can cause the app to freeze when switching basemaps
-        FragmentTransaction transaction;
-        FragmentManager fragmentManager = getFragmentManager();
+            setBasemapItem(basemapPortalItemId);
 
-        mapFragment = MapFragment.newSoundInstance(basemapPortalItemId, changeSound);
+            // remove existing MapFragment explicitly, simply replacing it can cause the app to freeze when switching basemaps
+            FragmentTransaction transaction;
+            FragmentManager fragmentManager = getFragmentManager();
 
-        transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.uca_maps_activity_content_frame, mapFragment, MapFragment.TAG);
-        transaction.addToBackStack(null);
-        transaction.commit();
+            mapFragment = MapFragment.newSoundInstance(basemapPortalItemId, changeSound);
 
-        invalidateOptionsMenu(); // reload the options menu
+            transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.uca_maps_activity_content_frame, mapFragment, MapFragment.TAG);
+            transaction.addToBackStack(null);
+            transaction.commit();
+
+            invalidateOptionsMenu(); // reload the options menu
+        } else{
+            Intent intent = getIntent();
+            finish();
+            startActivity(intent);
+    }
     }
 
     /**
@@ -232,8 +239,8 @@ public class MainActivity extends ActionBarActivity {
 
                     @Override
                     public void onBasemapChanged(String itemId) {
-                        guardarTema(itemId);
-                        showMapWithSound(itemId, changeSound);
+                        guardarTema(itemId,getChangeSound(),0);
+                        showMapWithSound(itemId, changeSound,1);
                     }
                 });
                 basemapsFrag.show(getFragmentManager(), null);
@@ -278,11 +285,13 @@ public class MainActivity extends ActionBarActivity {
 
                 //Sends the parameter to the dynamic fragment
                 if (getChangeSound().equals("Sound Off")) {
+                    guardarTema(baseColor,"Sound On",1);
                     setChangeSound("Sound On");
-                    showMapWithSound(baseColor, changeSound);
+                    showMapWithSound(baseColor, changeSound,1);
                 } else {
+                    guardarTema(baseColor,"Sound Off",1);
                     setChangeSound("Sound Off");
-                    showMapWithSound(baseColor, changeSound);
+                    showMapWithSound(baseColor, changeSound,1);
                 }
                 //Close and lock the drawer
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -564,7 +573,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private String obtenerMapa() throws IOException {
+    private String[] obtenerMapa() throws IOException {
         //cuenta las lineas del archivo para que no se pase de 10 rutas favoritas
         File tarjeta = Environment.getExternalStorageDirectory();
         File dir = new File(tarjeta.getAbsolutePath(), "/ucamaps/");
@@ -575,7 +584,9 @@ public class MainActivity extends ActionBarActivity {
             try {
                 FileInputStream streamIn = new FileInputStream(file);
                 objectinputstream = new ObjectInputStream(streamIn);
-                return (String) objectinputstream.readObject();
+                String tema = objectinputstream.readObject().toString();
+                String[] partes = tema.split("/");
+                return partes;
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -583,13 +594,16 @@ public class MainActivity extends ActionBarActivity {
                     objectinputstream.close();
                 }
             }
-            return "none";
-        } else
-            return "none";
+            String [] wrong = {"none"};
+            return wrong;
+        } else{
+            String [] wrong = {"none"};
+        return wrong;
+        }
     }
 
 
-    private void guardarTema(String tema) {
+    private void guardarTema(String tema,String sonido,int guardado) {
         File tarjeta = Environment.getExternalStorageDirectory();
         File dir = new File(tarjeta.getAbsolutePath(), "/ucamaps/");
         dir.mkdirs();
@@ -603,9 +617,12 @@ public class MainActivity extends ActionBarActivity {
 
                 fOut = new FileOutputStream(file);
                 oos = new ObjectOutputStream(fOut);
-                oos.writeObject(tema);
-                Toast.makeText(getApplicationContext(), "tema guardado", Toast.LENGTH_SHORT).show();
-
+                oos.writeObject(tema + "/" + sonido);
+                if(guardado==0){
+                    Toast.makeText(getApplicationContext(), "Tema Guardado", Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(getApplicationContext(), "Opcion de Sonido Guardada", Toast.LENGTH_SHORT).show();
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
             } finally {
