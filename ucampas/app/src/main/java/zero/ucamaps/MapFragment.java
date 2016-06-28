@@ -1,5 +1,6 @@
 package zero.ucamaps;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -8,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
@@ -41,6 +44,12 @@ import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.LocationDisplayManager;
 import com.esri.android.map.LocationDisplayManager.AutoPanMode;
@@ -52,7 +61,10 @@ import com.esri.android.map.event.OnStatusChangedListener;
 import zero.ucamaps.beans.MapPoint;
 import zero.ucamaps.database.CargaAsinc;
 import zero.ucamaps.database.CargaDetalles;
+import zero.ucamaps.database.Constantes;
 import zero.ucamaps.database.RutaEspecial;
+import zero.ucamaps.database.Sitio;
+import zero.ucamaps.database.VolleySingleton;
 import zero.ucamaps.dialogs.DialogFavoriteRoute;
 import zero.ucamaps.dialogs.ProgressDialogFragment;
 import zero.ucamaps.location.DirectionsDialogFragment;
@@ -100,6 +112,10 @@ import com.esri.core.tasks.na.RouteResult;
 import com.esri.core.tasks.na.RouteTask;
 import com.esri.core.tasks.na.StopGraphic;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Implements the view that shows the map.
@@ -521,8 +537,8 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 						icono = R.drawable.pin_circle_yellow;
 						letra = Color.WHITE;
 					}else if(ALT_MAP.equals(mBasemapPortalItemId)){
-						icono = R.drawable.pin_circle_yellow;
-						letra = Color.WHITE;
+						icono = R.drawable.pin_circle_green;
+						letra = Color.BLACK;
 					}else{
 						icono = R.drawable.pin_circle_purple;
 						letra = Color.BLACK;
@@ -857,7 +873,9 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 		// Remove any previous graphics and routes
 		resetGraphicsLayers();
-		executeLocatorTask(address);
+		LocatorAsyncPreTask lapt = new LocatorAsyncPreTask();
+		lapt.execute(address);
+		//executeLocatorTask(address);
 	}
 
 	public void onAdvanceSearchLocate(String address){
@@ -1290,6 +1308,131 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	 * This class provides an AsyncTask that performs a geolocation request on a
 	 * background thread and displays the first result on the map on the UI thread.
 	 */
+	private class LocatorAsyncPreTask extends AsyncTask<String,Void,Context>{
+		private VolleySingleton volley;
+		private RequestQueue requestQueue;
+		private List<Sitio> listaSitios = new ArrayList<>();
+		private String nombre;
+
+		@Override
+		protected Context doInBackground(String... strings){
+			//asignamos valores al volley y a la queue.
+			volley = VolleySingleton.getInstance(getActivity().getApplicationContext());
+			requestQueue = volley.getRequestQueue();
+			//llamamos a getSitios, donde obtenemos las cosas que necesitamos
+			if (strings[0].equals("Plaza Central") ||
+				strings[0].equals("plaza central") ||
+				strings[0].equals("plaza") ||
+				strings[0].equals("Plaza")){
+				nombre = "Plaza Central";
+			}else{
+			nombre = strings[0];
+			}
+			getSitios();
+			Context contexto = getActivity().getApplicationContext();
+			return contexto;
+		}
+
+		@Override
+		protected void onPostExecute(Context contexto){
+			//relleno
+		}
+
+		public void getSitios() {
+			nombre = nombre.replaceAll("\n", "");
+			nombre = URLEncoder.encode(nombre);
+			String url = Constantes.GET_SITIOS + "?busqueda="+nombre+"&categoria=edificio";
+			//creamos un object request, y lo añadimos a la cola
+			JsonObjectRequest request = new JsonObjectRequest
+					(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
+						@Override
+						public void onResponse(JSONObject response) {
+							//cuando obtenemos una respuesta, la procesamos
+							procesarRespuesta(response);
+						}
+					}, new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							Toast.makeText(getActivity().getApplicationContext(),"Se produjo un error: "+ error,Toast.LENGTH_LONG).show();
+						}
+					});
+			addtoQueue(request);
+		}
+
+		private void procesarRespuesta(JSONObject response) {
+			try {
+				// Obtener atributo "estado"
+				String estado = response.getString("estado");
+				switch (estado) {
+					case "1": // EXITO
+						// Obtener array "sitios" Json
+						JSONArray arraySitios = response.getJSONArray("sitios");
+						// Parsear
+						for (int i = 0; i < arraySitios.length(); i++) {
+							//como se obtiene un arreglo, se guarda cada sitio en una lista
+							JSONObject sitio = (JSONObject) arraySitios.get(i);
+							String nombre = sitio.getString("NOMBRE");
+							String nombreEdificio = sitio.getString("NOMBREEDIFICIO");
+							//creamos un sitio auxiliar
+							Sitio sitioAux = new Sitio();
+							//lo llenamos
+							sitioAux.setNombre(nombre);
+							sitioAux.setNombreEdificio(nombreEdificio);
+							//y lo añadimos a la lista
+							listaSitios.add(sitioAux);
+						}
+						String[] listaResultString = new String[listaSitios.size()];
+						for (int j = 0; j < listaSitios.size(); j++) {
+							listaResultString[j] = listaSitios.get(j).getNombre();
+						}
+						if(listaSitios.size()==1){
+							executeLocatorTask(listaSitios.get(0).getNombreEdificio());
+						}else{
+						//una vez tenemos la lista llena, hacemos un dialogito con los nombres de los lugares,
+						AlertDialog.Builder sitiosResult = new AlertDialog.Builder(getActivity());
+						sitiosResult.setTitle(listaSitios.size()+" resultados encontrados")
+								.setItems(listaResultString, new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog, int item) {
+										String resultado = listaSitios.get(item).getNombreEdificio();
+										executeLocatorTask(resultado);
+									}
+								});
+						final AlertDialog alertResult = sitiosResult.create();
+						alertResult.show();
+						}
+						break;
+					case "2": // FALLIDO
+						String mensaje2 = response.getString("mensaje");
+						Toast.makeText(getActivity().getApplicationContext(),"Lo sentimos, "+ mensaje2,Toast.LENGTH_LONG).show();
+						break;
+				}
+
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+
+
+		}
+
+
+		public void addtoQueue(Request request) {
+			if (request != null) {
+				request.setTag(this);
+				if (requestQueue == null)
+					requestQueue = volley.getRequestQueue();
+				request.setRetryPolicy(new DefaultRetryPolicy(
+						600000, 3, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+				));
+
+				requestQueue.add(request);
+			}
+		}
+	}
+
+
+
+
 	private class LocatorAsyncTask extends AsyncTask<LocatorFindParameters, Void, List<LocatorGeocodeResult>> {
 		private static final String TAG_LOCATOR_PROGRESS_DIALOG = "TAG_LOCATOR_PROGRESS_DIALOG";
 		private Exception mException;
@@ -1322,7 +1465,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		}
 
 		@Override
-		protected void onPostExecute(List<LocatorGeocodeResult> result) {
+		protected void onPostExecute(final List<LocatorGeocodeResult> result) {
 			// Display results on UI thread
 			mProgressDialog.dismiss();
 			if (mException != null) {
@@ -1335,27 +1478,32 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			if (result.size() == 0) {
 				Toast.makeText(getActivity(),getString(R.string.noResultsFound), Toast.LENGTH_LONG).show();
 			} else {
-				// Use first result in the list
-				LocatorGeocodeResult geocodeResult = result.get(0);
-				// get return geometry from geocode result
-				Point resultPoint = geocodeResult.getLocation();
-				// create marker symbol to represent location
-				Drawable drawable = getActivity().getResources().getDrawable(R.drawable.pin_circle_red);
-				PictureMarkerSymbol resultSymbol = new PictureMarkerSymbol(getActivity(), drawable);
-				// create graphic object for resulting location
-				Graphic resultLocGraphic = new Graphic(resultPoint,resultSymbol);
-				// add graphic to location layer
-				mLocationLayer.addGraphic(resultLocGraphic);
-				// Get the address
-				String address = geocodeResult.getAddress();
-				mLocationLayerPoint = resultPoint;
-				// Zoom map to geocode result location
-				mMapView.zoomToResolution(geocodeResult.getLocation(), 2);
-				showSearchResultLayout(address);
+
+
+						LocatorGeocodeResult geocodeResult = result.get(0);
+						// get return geometry from geocode result
+						Point resultPoint = geocodeResult.getLocation();
+						// create marker symbol to represent location
+						Drawable drawable = getActivity().getResources().getDrawable(R.drawable.pin_circle_red);
+						PictureMarkerSymbol resultSymbol = new PictureMarkerSymbol(getActivity(), drawable);
+						// create graphic object for resulting location
+						Graphic resultLocGraphic = new Graphic(resultPoint, resultSymbol);
+						// add graphic to location layer
+						mLocationLayer.addGraphic(resultLocGraphic);
+						// Get the address
+						String address = geocodeResult.getAddress();
+						mLocationLayerPoint = resultPoint;
+						// Zoom map to geocode result location
+						mMapView.zoomToResolution(geocodeResult.getLocation(), 1);
+						showSearchResultLayout(address);
+
+
+					}
+
 			}
 		}
 
-	}
+
 
 	/**
 	 * This class provides an AsyncTask that performs a routing request on a
@@ -1547,9 +1695,19 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			// Get first item in list of routes provided by server
 			Route route = result.getRoutes().get(0);
 
+			int linea;
+			if(DAY_MAP.equals(mBasemapPortalItemId)){
+				linea = Color.rgb(106,0,143);
+			}else if(NIGHT_MAP.equals(mBasemapPortalItemId) ){
+				linea = Color.rgb(255,255,102);
+			}else if(ALT_MAP.equals(mBasemapPortalItemId)){
+				linea = Color.rgb(34,139,34);
+			}else{
+				linea = Color.rgb(106,0,143);
+			}
 
 			// Create polyline graphic of the full route
-			SimpleLineSymbol lineSymbol = new SimpleLineSymbol(Color.rgb(106,0,143), 2,STYLE.DASH);
+			SimpleLineSymbol lineSymbol = new SimpleLineSymbol(linea, 2,STYLE.SOLID);
 
 			Graphic routeGraphic = new Graphic(route.getRouteGraphic().getGeometry(), lineSymbol);
 
@@ -1559,11 +1717,22 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			Point startPoint = ((Polyline) routeGraphic.getGeometry()).getPoint(0);
 			Graphic startGraphic = createMarkerGraphic(startPoint, 0);
 
-			TextSymbol textoInicial = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(0),Color.BLACK);
-			textoInicial.setSize(10);
+			int letra;
+			if(DAY_MAP.equals(mBasemapPortalItemId)){
+				letra = Color.BLACK;
+			}else if(NIGHT_MAP.equals(mBasemapPortalItemId) ){
+				letra = Color.WHITE;
+			}else if(ALT_MAP.equals(mBasemapPortalItemId)){
+				letra = Color.BLACK;
+			}else{
+				letra = Color.BLACK;
+			}
+
+			TextSymbol textoInicial = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(0),letra);
+			textoInicial.setSize(15);
 			textoInicial.setFontWeight(FontWeight.BOLD);
 			textoInicial.setHorizontalAlignment(TextSymbol.HorizontalAlignment.CENTER);
-			textoInicial.setOffsetY(25);
+			textoInicial.setOffsetY(40);
 
 
 			List<Graphic> graphics = new ArrayList<Graphic>();
@@ -1575,11 +1744,11 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 				graphics.add(createMarkerGraphic(puntosGlobales.get(i),1));
 
-				TextSymbol text = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(i),Color.BLACK);
-				text.setSize(10);
+				TextSymbol text = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(i),letra);
+				text.setSize(15);
 				text.setFontWeight(FontWeight.BOLD);
 				text.setHorizontalAlignment(TextSymbol.HorizontalAlignment.CENTER);
-				text.setOffsetY(25);
+				text.setOffsetY(40);
 
 				graphics.add(new Graphic(puntosGlobales.get(i),text));
 
@@ -1590,11 +1759,12 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			Point endPoint = ((Polyline) routeGraphic.getGeometry()).getPoint(endPointIndex);
 			Graphic endGraphic = createMarkerGraphic(endPoint, 2);
 
-			TextSymbol textoFinal = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(nombrePuntosGlobales.size() -1),Color.BLACK);
-			textoFinal.setSize(10);
+
+			TextSymbol textoFinal = new TextSymbol(FontStyle.ITALIC.name(),nombrePuntosGlobales.get(nombrePuntosGlobales.size() -1),letra);
+			textoFinal.setSize(15);
 			textoFinal.setFontWeight(FontWeight.BOLD);
 			textoFinal.setHorizontalAlignment(TextSymbol.HorizontalAlignment.CENTER);
-			textoFinal.setOffsetY(25);
+			textoFinal.setOffsetY(40);
 			graphics.add(endGraphic);
 			graphics.add(new Graphic(endPoint,textoFinal));
 
@@ -1615,11 +1785,23 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		}
 
 		Graphic createMarkerGraphic(Point point, int pointType) {
+
+			int icono;
+			if(DAY_MAP.equals(mBasemapPortalItemId)){
+				icono = R.drawable.pin_circle_purple;
+			}else if(NIGHT_MAP.equals(mBasemapPortalItemId) ){
+				icono = R.drawable.pin_circle_yellow;
+			}else if(ALT_MAP.equals(mBasemapPortalItemId)){
+				icono = R.drawable.pin_circle_green;
+			}else{
+				icono = R.drawable.pin_circle_purple;
+			}
+
 			Drawable marker = null;
 			if(pointType == 0){
 				marker = getResources().getDrawable(R.drawable.pin_circle_red);
 			} else if(pointType == 1) {
-				marker = getResources().getDrawable(R.drawable.pin_circle_yellow);
+				marker = getResources().getDrawable(icono);
 			} else if(pointType == 2){
 				marker = getResources().getDrawable(R.drawable.pin_circle_blue);
 			}
@@ -1669,6 +1851,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				@SuppressWarnings("ResourceType") SpatialReference mapRef = mMapView.getSpatialReference();
 				result = locator.reverseGeocode(mPoint, 100.0, mapRef, mapRef);
 				mLocationLayerPoint = mPoint;
+
 			} catch (Exception e) {
 				mException = e;
 			}
@@ -1678,6 +1861,8 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 		@Override
 		protected void onPostExecute(LocatorReverseGeocodeResult result) {
+
+
 			// Display results on UI thread
 			mProgressDialog.dismiss();
 			if (mException != null) {
@@ -1692,6 +1877,8 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			if (result != null && result.getAddressFields() != null) {
 				Map<String, String> addressFields = result.getAddressFields();
 				address.append(String.format("%s\n", addressFields.get("SingleKey")));
+				//probando hacer la busqueda de "punto marcado" usando lo devuelto por el reverse geolocator
+				onAdvanceSearchLocate(address.toString());
 
 				// Draw marker on map.
 				// create marker symbol to represent location
