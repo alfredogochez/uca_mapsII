@@ -66,6 +66,8 @@ import zero.ucamaps.util.GlobalPoints;
 import zero.ucamaps.util.TaskExecutor;
 
 import com.esri.android.runtime.ArcGISRuntime;
+import com.esri.android.toolkit.map.MapViewHelper;
+import com.esri.android.toolkit.map.OnGraphicClickListener;
 import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.LinearUnit;
@@ -84,6 +86,7 @@ import com.esri.core.symbol.FontWeight;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.core.symbol.SimpleLineSymbol.STYLE;
+import com.esri.core.symbol.Symbol;
 import com.esri.core.symbol.TextSymbol;
 import com.esri.core.tasks.geocode.Locator;
 import com.esri.core.tasks.geocode.LocatorFindParameters;
@@ -147,6 +150,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	//FrameLayout for the MapView
 	private FrameLayout mMapContainer;
 	public static MapView mMapView;
+	public static MapViewHelper mapViewHelper;
 	private String mMapViewState;
 
 	Point center = new Point(0,0);
@@ -235,7 +239,6 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		ArcGISRuntime.setClientId("eACA1B4bnlmT8rPm");
 
 
-
         mMapContainer = (FrameLayout) inflater.inflate(R.layout.map_fragment_layout,container,false);
 
 		if (mBasemapPortalItemId != null) {
@@ -249,6 +252,8 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			// Set the MapView
 			setMapView(mapView);
 			mapView.zoomin();
+
+
 		}
 		return mMapContainer;
 	}
@@ -576,6 +581,27 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 		});
 
+		mapViewHelper = new MapViewHelper(mMapView);
+
+		mapViewHelper.setOnGraphicClickListener(new OnGraphicClickListener() {
+			@Override
+			public void onGraphicClick(Graphic graphic) {
+				Symbol simbolo = graphic.getSymbol();
+				Log.d("Mensaje","Entre al listener");
+				if(simbolo instanceof TextSymbol){
+					TextSymbol texto = (TextSymbol) simbolo;
+					texto.getText();
+					Log.d("Mensaje:","Asi me llamo: " + texto.getText());
+				}
+				else{
+					Log.d("Mensaje:","No soy un texto");
+				}
+			}
+		});
+
+		mapViewHelper.setShowGraphicCallout(false);
+
+
 	}
 
 	/**
@@ -767,7 +793,10 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		if (mRouteLayer == null) {
 			mRouteLayer = new GraphicsLayer();
 		}
+
 		mMapView.addLayer(mRouteLayer);
+
+
 	}
 
 	/**
@@ -1342,6 +1371,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		public RouteAsyncTask() {
 		}
 
+
 		@Override
 		protected void onPreExecute() {
 			mProgressDialog = ProgressDialogFragment.newInstance(getActivity().getString(R.string.route_search));
@@ -1354,6 +1384,8 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		protected RouteResult doInBackground(List<LocatorFindParameters>... params) {
 			// Perform routing request on background thread
 			mException = null;
+
+
 
             //Declarando clase global
             final GlobalPoints globalVariable;
@@ -1521,6 +1553,8 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 			Graphic routeGraphic = new Graphic(route.getRouteGraphic().getGeometry(), lineSymbol);
 
+
+
 			// Create point graphic to mark start of route
 			Point startPoint = ((Polyline) routeGraphic.getGeometry()).getPoint(0);
 			Graphic startGraphic = createMarkerGraphic(startPoint, 0);
@@ -1548,6 +1582,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				text.setOffsetY(25);
 
 				graphics.add(new Graphic(puntosGlobales.get(i),text));
+
 			}
 
 			// Create point graphic to mark end of route
@@ -1563,8 +1598,10 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			graphics.add(endGraphic);
 			graphics.add(new Graphic(endPoint,textoFinal));
 
+
 			// Add these graphics to route layer
 			mRouteLayer.addGraphics(graphics.toArray(new Graphic [graphics.size()] ));
+			mapViewHelper.addMarkerGraphic(endPoint.getX(),endPoint.getY(),"","","",getResources().getDrawable(R.drawable.pin_circle_red),false,500);
 
 			// Zoom to the extent of the entire route with a padding
 			mMapView.setExtent(route.getEnvelope(),100);
