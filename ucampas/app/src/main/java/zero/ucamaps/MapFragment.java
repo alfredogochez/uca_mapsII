@@ -1258,15 +1258,6 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			mEndLocation = mEndLocation.substring(0, index_to);
 
 		// Initialize the textview and display the text
-		if(tipo==1){
-			TextView tv_from = (TextView) mSearchResult.findViewById(R.id.tv_from_label);
-			TextView tv_ruta = (TextView) mSearchResult.findViewById(R.id.tv_from);
-			tv_from.setText("Ruta: ");
-			tv_ruta.setText(ruta.getNombre());
-			TextView tv_to = (TextView) mSearchResult.findViewById(R.id.tv_to_label);
-			tv_to.setVisibility(View.INVISIBLE);
-		}else {
-
 			TextView tv_from = (TextView) mSearchResult.findViewById(R.id.tv_from);
 			tv_from.setTypeface(null, Typeface.BOLD);
 			tv_from.setText(" " + mStartLocation);
@@ -1274,7 +1265,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			TextView tv_to = (TextView) mSearchResult.findViewById(R.id.tv_to);
 			tv_to.setTypeface(null, Typeface.BOLD);
 			tv_to.setText(" " + mEndLocation);
-		}
+
 		// Rounding off the values
 		distance = Math.round((distance * 1609.344));
 
