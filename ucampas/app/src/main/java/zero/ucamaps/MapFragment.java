@@ -175,6 +175,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	private boolean mIsLocationTracking;
 	private Point mLocation = null;
 
+	private MenuItem editButton;
 	// Graphics layer to show geocode and reverse geocode results
 	private GraphicsLayer mLocationLayer;
 	private Point mLocationLayerPoint;
@@ -299,6 +300,16 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 			}
 			return true;
+		case R.id.editMode:
+			if(!editMode){
+				this.editMode = !this.editMode;
+				this.editButton = item;
+				item.setVisible(false);
+				this.showEditionMenu();
+				//item.setIcon(null);
+				//item.setTitle("");
+			}
+
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -524,17 +535,17 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				}*/
 				if (mLongPressEvent == null && !ignoreTap && event.getPointerCount() == 1 && tap && !dragged && editMode) {
 					Point mapPoint = mMapView.toMapPoint(event.getX(), event.getY());
-					int icono,letra;
-					if(DAY_MAP.equals(mBasemapPortalItemId)){
+					int icono, letra;
+					if (DAY_MAP.equals(mBasemapPortalItemId)) {
 						icono = R.drawable.pin_circle_purple;
 						letra = Color.BLACK;
-					}else if(NIGHT_MAP.equals(mBasemapPortalItemId) ){
+					} else if (NIGHT_MAP.equals(mBasemapPortalItemId)) {
 						icono = R.drawable.pin_circle_yellow;
 						letra = Color.WHITE;
-					}else if(ALT_MAP.equals(mBasemapPortalItemId)){
+					} else if (ALT_MAP.equals(mBasemapPortalItemId)) {
 						icono = R.drawable.pin_circle_green;
 						letra = Color.BLACK;
-					}else{
+					} else {
 						icono = R.drawable.pin_circle_purple;
 						letra = Color.BLACK;
 					}
@@ -1032,6 +1043,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				editPointList.clear();
 				editPoints=0;
 				editMode=false;
+				if(editButton != null){editButton.setVisible(true);}
 				resetGraphicsLayers();
 
 			}
@@ -1742,6 +1754,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			// Save routing directions so user can display them later
 			mRoutingDirections = route.getRoutingDirections();
 
+			if(editButton != null){editButton.setVisible(true);}
 			// Show Routing Result Layout
 			showRoutingResultLayout(route.getTotalMiles());
 
