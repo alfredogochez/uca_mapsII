@@ -14,6 +14,8 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import zero.ucamaps.MapFragment;
 import zero.ucamaps.R;
 import zero.ucamaps.database.CargaBusqueda;
@@ -73,8 +75,16 @@ public class DialogSearchForm extends DialogFragment {
                             int id = grupo.getCheckedRadioButtonId();
                             RadioButton valBoton = (RadioButton) vista.findViewById(id);
                             CargaBusqueda cb = new CargaBusqueda();
+                            String busqueda = ((TextView) txtbox).getText().toString();
+                            if (busqueda.equals("Plaza Central") ||
+                                    busqueda.equals("plaza central") ||
+                                    busqueda.equals("plaza") ||
+                                    busqueda.equals("Plaza")) {
+                                cb.setNombre("Plaza los Martires");
+                            }else{
+                                cb.setNombre(busqueda);
+                            }
 
-                            cb.setNombre(((TextView) txtbox).getText().toString());
                             if (valBoton.getText().toString().equals("Depto,Unidad,Aula,etc.")) {
                                 cb.setCategoria("sitio");
                             } else {

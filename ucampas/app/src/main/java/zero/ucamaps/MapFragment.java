@@ -13,9 +13,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -49,6 +52,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.LocationDisplayManager;
@@ -62,10 +66,12 @@ import zero.ucamaps.beans.MapPoint;
 import zero.ucamaps.database.CargaAsinc;
 import zero.ucamaps.database.CargaDetalles;
 import zero.ucamaps.database.Constantes;
+import zero.ucamaps.database.DetalleEdificio;
 import zero.ucamaps.database.RutaEspecial;
 import zero.ucamaps.database.Sitio;
 import zero.ucamaps.database.VolleySingleton;
 import zero.ucamaps.dialogs.DialogFavoriteRoute;
+import zero.ucamaps.dialogs.DialogInfoRoutes;
 import zero.ucamaps.dialogs.ProgressDialogFragment;
 import zero.ucamaps.location.DirectionsDialogFragment;
 import zero.ucamaps.location.DirectionsDialogFragment.DirectionsDialogListener;
@@ -119,6 +125,10 @@ import org.json.JSONObject;
  */
 public class MapFragment extends Fragment implements RoutingDialogListener, OnCancelListener {
 	public static final String TAG = MapFragment.class.getSimpleName();
+
+	private VolleySingleton volley;
+	private RequestQueue requestQueue;
+
 
 	private static final String KEY_BASEMAP_ITEM = "KEY_BASEMAP_ITEM";
     private static final String KEY_SOUND_ITEM = "KEY_SOUND_ITEM";
@@ -917,11 +927,11 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	}
 
 	@Override
-	public boolean onGetRouteMultiple(RutaEspecial ruta){
+	public boolean onGetRouteMultiple(RutaEspecial ruta,int tipo){
 		// Remove any previous graphics and routes
 		resetGraphicsLayers();
 		// Do the routing
-		executeMultipleRoutingTask(ruta);
+		executeMultipleRoutingTask(ruta,tipo);
 		return true;
 	}
 
@@ -951,6 +961,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
         // Execute async task to do the routing
 		RouteAsyncTask routeTask = new RouteAsyncTask();
+		routeTask.setTipo(0);
 		routeTask.execute(routeParams);
 		mPendingTask = routeTask;
 	}
@@ -975,11 +986,14 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 		// Execute async task to do the routing
 		RouteAsyncTask routeTask = new RouteAsyncTask();
+		routeTask.setTipo(0);
 		routeTask.execute(routeParams);
 		mPendingTask = routeTask;
 	}
 
-	private void executeMultipleRoutingTask(RutaEspecial ruta){
+	private void executeMultipleRoutingTask(final RutaEspecial ruta,int tipo){
+		volley = VolleySingleton.getInstance(getActivity().getApplicationContext());
+		requestQueue = volley.getRequestQueue();
 		List<LocatorFindParameters> routeParams = new ArrayList<LocatorFindParameters>();
 
 		String [] puntosString = ruta.getPuntos().split("/");
@@ -996,11 +1010,48 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		}
 
 		RouteAsyncTask routeTask = new RouteAsyncTask();
+		routeTask.setTipo(tipo);
+		routeTask.setRuta(ruta);
 		routeTask.execute(routeParams);
 		mPendingTask = routeTask;
 
-
 	}
+
+	public void addtoQueue(Request request) {
+		if (request != null) {
+			request.setTag(this);
+			if (requestQueue == null)
+				requestQueue = volley.getRequestQueue();
+			request.setRetryPolicy(new DefaultRetryPolicy(
+					600000, 3, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+			));
+			requestQueue.add(request);
+		}
+	}
+
+	public void obtenerImagen(String ruta, final DialogInfoRoutes dialogo){
+
+		String urlImagen = Constantes.BASE + ruta;
+		ImageRequest request = new ImageRequest(
+				urlImagen,
+				new Response.Listener<Bitmap>() {
+					@Override
+					public void onResponse(Bitmap bitmap) {
+						dialogo.setImagen(bitmap);
+						dialogo.show(getFragmentManager(),"Dialog Route");
+					}
+				}, 0, 0, null,
+				new Response.ErrorListener() {
+					public void onErrorResponse(VolleyError error) {
+						Log.d("En el get imagen ruta",error.toString());
+						Bitmap bitFalso = BitmapFactory.decodeResource(getActivity().getResources(),R.drawable.logouca);
+						dialogo.setImagen(bitFalso);
+						dialogo.show(getFragmentManager(),"Dialog Route");
+					}
+				});
+		addtoQueue(request);
+	}
+
 
 	@Override
 	public void onCancel(DialogInterface dialog) {
@@ -1093,7 +1144,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 					editPointList.clear();
 					editPoints = 0;
 
-					onGetRouteMultiple(rutaMultiple);
+					onGetRouteMultiple(rutaMultiple,0);
 				}else{
 					Toast.makeText(getActivity(),"Se necesitan al menos dos puntos para trazar la ruta.",Toast.LENGTH_SHORT).show();
 				}
@@ -1188,7 +1239,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	 * Shows the Routing result layout after successful routing
 	 * @param distance in meters
 	 */
-	private void showRoutingResultLayout(double distance) {
+	private void showRoutingResultLayout(double distance,int tipo,final RutaEspecial ruta) {
         // Remove the layours
 		mMapContainer.removeView(mSearchResult);
 		mMapContainer.removeView(mSearchBox);
@@ -1207,14 +1258,23 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			mEndLocation = mEndLocation.substring(0, index_to);
 
 		// Initialize the textview and display the text
-		TextView tv_from = (TextView) mSearchResult.findViewById(R.id.tv_from);
-		tv_from.setTypeface(null, Typeface.BOLD);
-		tv_from.setText(" " + mStartLocation);
+		if(tipo==1){
+			TextView tv_from = (TextView) mSearchResult.findViewById(R.id.tv_from_label);
+			TextView tv_ruta = (TextView) mSearchResult.findViewById(R.id.tv_from);
+			tv_from.setText("Ruta: ");
+			tv_ruta.setText(ruta.getNombre());
+			TextView tv_to = (TextView) mSearchResult.findViewById(R.id.tv_to_label);
+			tv_to.setVisibility(View.INVISIBLE);
+		}else {
 
-		TextView tv_to = (TextView) mSearchResult.findViewById(R.id.tv_to);
-		tv_to.setTypeface(null, Typeface.BOLD);
-		tv_to.setText(" " + mEndLocation);
+			TextView tv_from = (TextView) mSearchResult.findViewById(R.id.tv_from);
+			tv_from.setTypeface(null, Typeface.BOLD);
+			tv_from.setText(" " + mStartLocation);
 
+			TextView tv_to = (TextView) mSearchResult.findViewById(R.id.tv_to);
+			tv_to.setTypeface(null, Typeface.BOLD);
+			tv_to.setText(" " + mEndLocation);
+		}
 		// Rounding off the values
 		distance = Math.round((distance * 1609.344));
 
@@ -1240,17 +1300,37 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			}
 		});
 
-		ImageView iv_save = (ImageView) mSearchResult.findViewById(R.id.imageView4);
-		iv_save.setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
+		if (tipo==1){
+			ImageView iv_info = (ImageView) mSearchResult.findViewById(R.id.info_place_button);
+			iv_info.setOnClickListener(new OnClickListener() {
 
-				DialogFragment newFragment = new DialogFavoriteRoute();
-				newFragment.show(getFragmentManager(),"Favorites");
+				@Override
+				public void onClick(View v) {
+					DialogInfoRoutes diaInfoRuta = new DialogInfoRoutes();
+					diaInfoRuta.setNombreRuta(ruta.getNombre());
+					diaInfoRuta.setDescripcion(ruta.getDescripcion());
+					obtenerImagen(ruta.getImagen(),diaInfoRuta);
+					Toast.makeText(getActivity(), "Cargando Informacion...",Toast.LENGTH_SHORT).show();
+				}
+			});
+			ImageView iv_save = (ImageView) mSearchResult.findViewById(R.id.imageView4);
+			iv_save.setVisibility(View.GONE);
+		}else {
+			ImageView iv_save = (ImageView) mSearchResult.findViewById(R.id.imageView4);
+			iv_save.setOnClickListener(new OnClickListener() {
 
-			}
-		});
+				@Override
+				public void onClick(View v) {
+
+					DialogFragment newFragment = new DialogFavoriteRoute();
+					newFragment.show(getFragmentManager(),"Favorites");
+
+				}
+			});
+			ImageView iv_info = (ImageView) mSearchResult.findViewById(R.id.info_place_button);
+			iv_info.setVisibility(View.GONE);
+		}
 
 		// Set up the listener for the "Show Directions" icon
 		ImageView iv_directions = (ImageView) mSearchResult.findViewById(R.id.imageView2);
@@ -1295,7 +1375,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				strings[0].equals("plaza central") ||
 				strings[0].equals("plaza") ||
 				strings[0].equals("Plaza")){
-				nombre = "Plaza Central";
+				nombre = "Plaza los Martires";
 			}else{
 			nombre = strings[0];
 			}
@@ -1487,6 +1567,8 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		private ProgressDialogFragment mProgressDialog;
 		private List<Point> puntosGlobales;
 		private List<String> nombrePuntosGlobales;
+		private int tipo;
+		private RutaEspecial ruta;
 		public RouteAsyncTask() {
 		}
 
@@ -1743,7 +1825,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			mRoutingDirections = route.getRoutingDirections();
 
 			// Show Routing Result Layout
-			showRoutingResultLayout(route.getTotalMiles());
+			showRoutingResultLayout(route.getTotalMiles(),tipo,ruta);
 
 		}
 
@@ -1779,6 +1861,21 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			return new Graphic(point, destinationSymbol);
 		}
 
+		public int getTipo() {
+			return tipo;
+		}
+
+		public void setTipo(int tipo) {
+			this.tipo = tipo;
+		}
+
+		public RutaEspecial getRuta() {
+			return ruta;
+		}
+
+		public void setRuta(RutaEspecial ruta) {
+			this.ruta = ruta;
+		}
 	}
 
 	/**
@@ -1840,22 +1937,9 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			if (result != null && result.getAddressFields() != null) {
 				Map<String, String> addressFields = result.getAddressFields();
 				address.append(String.format("%s\n", addressFields.get("SingleKey")));
-				//probando hacer la busqueda de "punto marcado" usando lo devuelto por el reverse geolocator
+				//se utiliza la funcion de localizar desde busqueda avanzada, para marcar el punto
+				//justamente en el edificio, y no en terreno fuera de lugar
 				onAdvanceSearchLocate(address.toString());
-
-				// Draw marker on map.
-				// create marker symbol to represent location
-				Drawable drawable = getActivity().getResources().getDrawable(R.drawable.pin_circle_red);
-				PictureMarkerSymbol symbol = new PictureMarkerSymbol(getActivity(), drawable);
-				mLocationLayer.addGraphic(new Graphic(mPoint, symbol));
-
-				// Address string is saved for use in routing
-				mLocationLayerPointString = address.toString();
-				// center the map to result location
-				mMapView.centerAt(mPoint, true);
-
-				// Show the result on the search result layout
-				showSearchResultLayout(address.toString());
 			}
 		}
 	}
