@@ -72,6 +72,7 @@ import zero.ucamaps.database.Sitio;
 import zero.ucamaps.database.VolleySingleton;
 import zero.ucamaps.dialogs.DialogFavoriteRoute;
 import zero.ucamaps.dialogs.DialogInfoRoutes;
+import zero.ucamaps.dialogs.DialogSaveNote;
 import zero.ucamaps.dialogs.ProgressDialogFragment;
 import zero.ucamaps.location.DirectionsDialogFragment;
 import zero.ucamaps.location.DirectionsDialogFragment.DirectionsDialogListener;
@@ -258,7 +259,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		//probando el licenciamiento gratuito
+		//Clave para licenciamiento gratuito
 		ArcGISRuntime.setClientId("eACA1B4bnlmT8rPm");
 
 
@@ -1169,7 +1170,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	/**
 	 * Shows the search result in the layout after successful geocoding and reverse geocoding
 	 */
-	private void showSearchResultLayout(String address) {
+	private void showSearchResultLayout(final String address) {
 		// Remove the layouts
 		mMapContainer.removeView(mSearchBox);
 		mMapContainer.removeView(mSearchResult);
@@ -1193,17 +1194,17 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		ImageView iv_cancel = (ImageView) mSearchResult .findViewById(R.id.imageView3);
 		iv_cancel.setOnClickListener(new OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                // Remove the search result view
-                mMapContainer.removeView(mSearchResult);
-                // Add the search box view
-                showSearchBoxLayout();
-                // Remove all graphics from the map
-                resetGraphicsLayers();
+			@Override
+			public void onClick(View v) {
+				// Remove the search result view
+				mMapContainer.removeView(mSearchResult);
+				// Add the search box view
+				showSearchBoxLayout();
+				// Remove all graphics from the map
+				resetGraphicsLayers();
 
-            }
-        });
+			}
+		});
 
 		// Set up the listener for the "Get Directions" icon
 		ImageView iv_route = (ImageView) mSearchResult.findViewById(R.id.imageView2);
@@ -1212,6 +1213,17 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			@Override
 			public void onClick(View v) {
 				onGetRoute(getString(R.string.my_location), mLocationLayerPointString);
+			}
+		});
+
+		ImageView iv_note = (ImageView) mSearchResult.findViewById(R.id.noteButton);
+		iv_note.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Toast.makeText(getActivity(),"va a crear una nota sobre este edificio",Toast.LENGTH_SHORT).show();
+				DialogSaveNote dsn = new DialogSaveNote();
+				dsn.setEdificio(address);
+				dsn.show(getFragmentManager(),"guardarNota");
 			}
 		});
 

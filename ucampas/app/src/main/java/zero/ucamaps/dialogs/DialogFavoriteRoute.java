@@ -57,7 +57,7 @@ public class DialogFavoriteRoute extends DialogFragment {
                         //List<RutaEspecial> listaRutas = globalVariable.getListaRutas();
 
                         try {//Esta toast es para cuando se va a reemplazar una ruta
-                            final Toast tostada= Toast.makeText(getActivity(), "Ruta Modificada Exitosamente", Toast.LENGTH_SHORT);
+                            final Toast tostada= Toast.makeText(getActivity(), "Ruta Reemplazada Exitosamente", Toast.LENGTH_SHORT);
                             //verificamos si llegamos a las 10 rutas limite
                             int lineas = calcular_longitud();
                             if (lineas >= 10) {//si se tienen 10 rutas o mas (mediante manipulacion erronea del archivo) creamos dos dialogs

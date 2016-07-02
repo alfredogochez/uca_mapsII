@@ -46,9 +46,11 @@ import zero.ucamaps.basemaps.BasemapsDialogFragment;
 import zero.ucamaps.beans.FavoriteRoute;
 import zero.ucamaps.database.CargaAsinc;
 import zero.ucamaps.database.InsertAsinc;
+import zero.ucamaps.database.Nota;
 import zero.ucamaps.database.RutaEspecial;
 import zero.ucamaps.dialogs.AboutDialog;
 import zero.ucamaps.dialogs.DialogFavoriteList;
+import zero.ucamaps.dialogs.DialogNotesList;
 import zero.ucamaps.dialogs.DialogSearchForm;
 
 
@@ -319,8 +321,7 @@ public class MainActivity extends ActionBarActivity {
 
                 DialogFavoriteList favFrag = new DialogFavoriteList();
                 favFrag.setRoutingDialogListener(mapFragment);
-                DialogFavoriteList list = favFrag;
-                List<RutaEspecial> recuperar = list.recuperar();
+                List<RutaEspecial> recuperar = favFrag.recuperar();
                 if(!recuperar.isEmpty()){
                     favFrag.show(getFragmentManager(), "Favorite Routes");
                 }
@@ -376,6 +377,36 @@ public class MainActivity extends ActionBarActivity {
 
         mDrawerItems.add(item);
 
+        // añandiendo el item de rutas favoritas
+        LinearLayout notes = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
+        TextView text_notes = (TextView) notes.findViewById(R.id.drawer_item_textview);
+        ImageView icon_notes = (ImageView) notes.findViewById(R.id.drawer_item_icon);
+
+        text_notes.setText("Notes");
+        icon_notes.setImageResource(R.drawable.ic_book_black_24dp);
+        item = new DrawerItem(notes, new DrawerItem.OnClickListener() {
+
+            @Override
+            public void onClick() {
+
+                DialogNotesList noteFrag = new DialogNotesList();
+                noteFrag.setContexto(MainActivity.this);
+                noteFrag.setFragmento(mapFragment);
+                noteFrag.setManager(getFragmentManager());
+                List<Nota> recuperar = noteFrag.recuperar();
+                if(!recuperar.isEmpty()){
+                    noteFrag.show(getFragmentManager(), "Reminders");
+                }
+                else{
+                    Toast.makeText(getApplicationContext(),"No hay anotaciones guardadas", Toast.LENGTH_SHORT).show();
+                }
+                mDrawerLayout.closeDrawers();
+            }
+
+        });
+
+        mDrawerItems.add(item);
+
 
         // Item para añadir rutas al servidor, para comprobar si funciona
         /*LinearLayout insert = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
@@ -391,27 +422,6 @@ public class MainActivity extends ActionBarActivity {
                 InsertAsinc ia = new InsertAsinc();
                 ia.execute(MainActivity.this);
 
-            }
-
-        });
-
-        mDrawerItems.add(item);*/
-
-        //añadiendo el item de modo de edicion
-        /*LinearLayout view_edit = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
-        TextView text_drawer_edit = (TextView) view_edit.findViewById(R.id.drawer_item_textview);
-        ImageView icon_drawer_edit = (ImageView) view_edit.findViewById(R.id.drawer_item_icon);
-
-        text_drawer_edit.setText(getString(R.string.edit_mode_option));
-        icon_drawer_edit.setImageResource(R.drawable.ic_create_black_24dp);
-        item = new DrawerItem(view_edit, new DrawerItem.OnClickListener() {
-
-            @Override
-            public void onClick() {
-
-                MapFragment.editMode = !MapFragment.editMode;
-                mapFragment.showEditionMenu();
-                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             }
 
         });
