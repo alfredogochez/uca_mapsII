@@ -88,11 +88,13 @@ public class CargaAsinc extends AsyncTask<Activity,Void,Context> {
                         String idRuta = ruta.getString("idRUTAESPECIAL");
                         String nombre = ruta.getString("NOMBRE");
                         String descripcion = ruta.getString("DESCRIPCION");
+                        String imagen = ruta.getString("IMAGEN");
                         String puntos = ruta.getString("PUNTOS");
                         //creamos una ruta auxiliar
                         RutaEspecial rutaEspecialAux = new RutaEspecial();
                         //la llenamos
                         rutaEspecialAux.setNombre(nombre);
+                        rutaEspecialAux.setImagen(imagen);
                         rutaEspecialAux.setDescripcion(descripcion);
                         rutaEspecialAux.setIdRutaEspecial(idRuta);
                         rutaEspecialAux.setPuntos(puntos);

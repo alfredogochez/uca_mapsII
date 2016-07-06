@@ -16,6 +16,7 @@ public class RutaEspecial implements Serializable {
     private String idRutaEspecial;
     private String nombre;
     private String descripcion;
+    private String imagen;
     private String puntos;
 
     public RutaEspecial() {
@@ -68,5 +69,13 @@ public class RutaEspecial implements Serializable {
 
     public void setPuntos(String puntos) {
         this.puntos = puntos;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 }

@@ -46,9 +46,11 @@ import zero.ucamaps.basemaps.BasemapsDialogFragment;
 import zero.ucamaps.beans.FavoriteRoute;
 import zero.ucamaps.database.CargaAsinc;
 import zero.ucamaps.database.InsertAsinc;
+import zero.ucamaps.database.Nota;
 import zero.ucamaps.database.RutaEspecial;
 import zero.ucamaps.dialogs.AboutDialog;
 import zero.ucamaps.dialogs.DialogFavoriteList;
+import zero.ucamaps.dialogs.DialogNotesList;
 import zero.ucamaps.dialogs.DialogSearchForm;
 
 
@@ -118,6 +120,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // first check if the drawer toggle button was selected
+        if(MapFragment.editMode){return false;}
         boolean handled = mDrawerToggle.onOptionsItemSelected(item);
         if (!handled) {
             handled = super.onOptionsItemSelected(item);
@@ -220,6 +223,8 @@ public class MainActivity extends ActionBarActivity {
     private void updateDrawer() {
         mDrawerItems.clear();
 
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
         DrawerItem item = null;
         // Adding the theme item in the drawer
         LinearLayout view_basemap = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
@@ -265,7 +270,7 @@ public class MainActivity extends ActionBarActivity {
                 Intent myIntent = new Intent(MainActivity.this, CaptureActivity.class);
                 startActivityForResult(myIntent, 1);
                 //Close and lock the drawer
-                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                mDrawerLayout.closeDrawers();
             }
         });
         mDrawerItems.add(item);
@@ -294,7 +299,7 @@ public class MainActivity extends ActionBarActivity {
                     showMapWithSound(baseColor, changeSound,1);
                 }
                 //Close and lock the drawer
-                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                mDrawerLayout.closeDrawers();
             }
 
         });
@@ -316,8 +321,7 @@ public class MainActivity extends ActionBarActivity {
 
                 DialogFavoriteList favFrag = new DialogFavoriteList();
                 favFrag.setRoutingDialogListener(mapFragment);
-                DialogFavoriteList list = favFrag;
-                List<RutaEspecial> recuperar = list.recuperar();
+                List<RutaEspecial> recuperar = favFrag.recuperar();
                 if(!recuperar.isEmpty()){
                     favFrag.show(getFragmentManager(), "Favorite Routes");
                 }
@@ -325,7 +329,7 @@ public class MainActivity extends ActionBarActivity {
 
                     Toast.makeText(getApplicationContext(),"No hay rutas favoritas", Toast.LENGTH_SHORT).show();
                 }
-                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                mDrawerLayout.closeDrawers();
             }
 
         });
@@ -345,7 +349,7 @@ public class MainActivity extends ActionBarActivity {
             public void onClick() {
 
                 ca.dsr.show(getFragmentManager(),"Usando Base de datos");
-                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                mDrawerLayout.closeDrawers();
             }
 
         });
@@ -365,8 +369,38 @@ public class MainActivity extends ActionBarActivity {
             public void onClick() {
                 DialogSearchForm diaSEFO = new DialogSearchForm();
                 diaSEFO.setMapFragment(mapFragment);
-                diaSEFO.show(getFragmentManager(),"Dialog Search");
-                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                diaSEFO.show(getFragmentManager(), "Dialog Search");
+                mDrawerLayout.closeDrawers();
+            }
+
+        });
+
+        mDrawerItems.add(item);
+
+        // añandiendo el item de rutas favoritas
+        LinearLayout notes = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
+        TextView text_notes = (TextView) notes.findViewById(R.id.drawer_item_textview);
+        ImageView icon_notes = (ImageView) notes.findViewById(R.id.drawer_item_icon);
+
+        text_notes.setText("Notes");
+        icon_notes.setImageResource(R.drawable.ic_book_black_24dp);
+        item = new DrawerItem(notes, new DrawerItem.OnClickListener() {
+
+            @Override
+            public void onClick() {
+
+                DialogNotesList noteFrag = new DialogNotesList();
+                noteFrag.setContexto(MainActivity.this);
+                noteFrag.setFragmento(mapFragment);
+                noteFrag.setManager(getFragmentManager());
+                List<Nota> recuperar = noteFrag.recuperar();
+                if(!recuperar.isEmpty()){
+                    noteFrag.show(getFragmentManager(), "Reminders");
+                }
+                else{
+                    Toast.makeText(getApplicationContext(),"No hay anotaciones guardadas", Toast.LENGTH_SHORT).show();
+                }
+                mDrawerLayout.closeDrawers();
             }
 
         });
@@ -394,27 +428,6 @@ public class MainActivity extends ActionBarActivity {
 
         mDrawerItems.add(item);*/
 
-        //añadiendo el item de modo de edicion
-        LinearLayout view_edit = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
-        TextView text_drawer_edit = (TextView) view_edit.findViewById(R.id.drawer_item_textview);
-        ImageView icon_drawer_edit = (ImageView) view_edit.findViewById(R.id.drawer_item_icon);
-
-        text_drawer_edit.setText(getString(R.string.edit_mode_option));
-        icon_drawer_edit.setImageResource(R.drawable.ic_create_black_24dp);
-        item = new DrawerItem(view_edit, new DrawerItem.OnClickListener() {
-
-            @Override
-            public void onClick() {
-
-                MapFragment.editMode = !MapFragment.editMode;
-                mapFragment.showEditionMenu();
-                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-            }
-
-        });
-
-        mDrawerItems.add(item);
-
         // Adding the about item
         LinearLayout view_about = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
         TextView text_drawer_about = (TextView) view_about.findViewById(R.id.drawer_item_textview);
@@ -431,7 +444,7 @@ public class MainActivity extends ActionBarActivity {
                 about.setTitle("About this app");
                 about.show();
                 //Close and lock the drawer
-                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                mDrawerLayout.closeDrawers();
             }
 
         });

@@ -68,7 +68,7 @@ public class DialogSpecialRoutes extends DialogFragment{
 
                             RutaEspecial rutaEspecial = listaRutas.get(which);
 
-                            mRoutingDialogListener.onGetRouteMultiple(rutaEspecial);
+                            mRoutingDialogListener.onGetRouteMultiple(rutaEspecial,1);
 
                         }
                     });

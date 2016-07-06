@@ -32,6 +32,15 @@
         android:contentDescription="@string/icon_for_directions_and_routing"/>
 
     <ImageView
+        android:id="@+id/noteButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:src="@drawable/ic_bookmark_border_black_24dp"
+        android:visibility="visible" />
+
+    <ImageView
         android:id="@+id/info_place_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
