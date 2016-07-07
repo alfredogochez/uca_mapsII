@@ -26,8 +26,8 @@
                 android:gravity="center_vertical|center_horizontal"
                 android:elegantTextHeight="false"
                 android:capitalize="words"
-                android:background="#000000"
-                android:textColor="#ffffff" />
+                android:background="#ffffff"
+                android:textColor="@color/primary_dark_material_light" />
 
             <ImageView
                 android:layout_width="320dp"
@@ -62,12 +62,11 @@
         android:foregroundGravity="center_vertical|center_horizontal"
         android:gravity="center_vertical|center_horizontal"
         android:textAlignment="center"
-        android:textStyle="bold"
+        android:textStyle="normal"
         android:textSize="25dp"
-        android:layout_weight="0.11"
         android:background="@color/common_signin_btn_light_text_pressed"
         android:clickable="true"
         android:enabled="true"
-        />
+        style="@android:style/Widget.Material.Light.Button.Borderless" />
 
 </LinearLayout>
