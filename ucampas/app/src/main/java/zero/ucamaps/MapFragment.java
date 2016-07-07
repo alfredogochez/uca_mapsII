@@ -943,7 +943,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		// Remove any previous graphics and routes
 		resetGraphicsLayers();
 		// Do the routing
-		executeMultipleRoutingTask(ruta,tipo);
+		executeMultipleRoutingTask(ruta, tipo);
 		return true;
 	}
 
@@ -1223,7 +1223,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				Toast.makeText(getActivity(),"va a crear una nota sobre este edificio",Toast.LENGTH_SHORT).show();
 				DialogSaveNote dsn = new DialogSaveNote();
 				dsn.setEdificio(address);
-				dsn.show(getFragmentManager(),"guardarNota");
+				dsn.show(getFragmentManager(), "guardarNota");
 			}
 		});
 
@@ -1545,12 +1545,21 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				Toast.makeText(getActivity(),getString(R.string.noResultsFound), Toast.LENGTH_LONG).show();
 			} else {
 
-
+						int icono;
+						if(DAY_MAP.equals(mBasemapPortalItemId)){
+							icono = R.drawable.pin_circle_purple;
+						}else if(NIGHT_MAP.equals(mBasemapPortalItemId) ){
+							icono = R.drawable.pin_circle_yellow;
+						}else if(ALT_MAP.equals(mBasemapPortalItemId)){
+							icono = R.drawable.pin_circle_green;
+						}else{
+							icono = R.drawable.pin_circle_purple;
+						}
 						LocatorGeocodeResult geocodeResult = result.get(0);
 						// get return geometry from geocode result
 						Point resultPoint = geocodeResult.getLocation();
 						// create marker symbol to represent location
-						Drawable drawable = getActivity().getResources().getDrawable(R.drawable.pin_circle_red);
+						Drawable drawable = getActivity().getResources().getDrawable(icono);
 						PictureMarkerSymbol resultSymbol = new PictureMarkerSymbol(getActivity(), drawable);
 						// create graphic object for resulting location
 						Graphic resultLocGraphic = new Graphic(resultPoint, resultSymbol);

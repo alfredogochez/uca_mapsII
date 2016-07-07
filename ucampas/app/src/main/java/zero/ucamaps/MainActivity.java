@@ -120,7 +120,10 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // first check if the drawer toggle button was selected
-        if(MapFragment.editMode){return false;}
+        if(MapFragment.editMode){
+            Toast.makeText(this,"Hay un tiempo y lugar para todo, pero no ahora.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         boolean handled = mDrawerToggle.onOptionsItemSelected(item);
         if (!handled) {
             handled = super.onOptionsItemSelected(item);
