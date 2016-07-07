@@ -263,7 +263,6 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		ArcGISRuntime.setClientId("eACA1B4bnlmT8rPm");
 
 
-
         mMapContainer = (FrameLayout) inflater.inflate(R.layout.map_fragment_layout,container,false);
 
 		if (mBasemapPortalItemId != null) {
@@ -1074,6 +1073,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	}
 
 	public void showEditionMenu(){
+		resetGraphicsLayers();
 		mMapContainer.removeView(mSearchBox);
 		mMapContainer.removeView(mSearchResult);
 
@@ -1617,6 +1617,9 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			List<Point> puntos = new ArrayList<Point>();
 			List<String> nombrePuntos = new ArrayList<String>();
 
+			List<Point> puntosDeImportancia = new ArrayList<Point>();
+			List<String> nombreImportanes = new ArrayList<String>();
+
 			// Create a new locator to geocode start/end points; by default uses ArcGIS online world geocoding service
 			Locator locator = Locator.createOnlineLocator(getString(R.string.geocodeservice_url));
 
@@ -1672,6 +1675,13 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 					puntos.add(punto);
 					nombrePuntos.add(paramLocator.getText());
 
+
+					if(!paramLocator.getText().equalsIgnoreCase("NONE")){
+
+						puntosDeImportancia.add(punto);
+						nombreImportanes.add(paramLocator.getText());
+					}
+
 				}
 
                 List<MapPoint> listaPuntos = new LinkedList<MapPoint>();
@@ -1700,7 +1710,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				Log.d("Punto Inicio", "Nombre: " + mStartLocation + "\nPuntoX: " + puntos.get(0).getX() + "\nPuntoY: " + puntos.get(0).getY());
 				Log.d("Punto Fin", "Nombre: " + mEndLocation + "\nPuntoX: " + puntos.get(puntos.size() - 1).getX() + "\nPuntoY: " + puntos.get(puntos.size() - 1).getY());
 
-				puntosGlobales = puntos;
+				puntosGlobales = puntosDeImportancia;
 				nombrePuntosGlobales = nombrePuntos;
 
 			} catch (Exception e) {
