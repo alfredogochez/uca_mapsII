@@ -19,5 +19,6 @@ public class Constantes {
     public static final String INSERT = IP + PUERTO_HOST + "/ucamaps/insert_ruta.php";
     public static final String GET_BY_NOMBRE = IP + PUERTO_HOST + "/ucamaps/get_detalle.php";
     public static final String GET_SITIOS = IP + PUERTO_HOST + "/ucamaps/get_sitios.php";
+    public static final String GET_RUTA_BY_ID = IP + PUERTO_HOST + "/ucamaps/get_detalle_ruta.php";
 
 }

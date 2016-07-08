@@ -989,7 +989,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		Point puntoFin = new Point();
 		puntoFin.setXY(endLongitud,endLatitud);
 
-		routeStartParams.setLocation(puntoIncio,mWm);
+		routeStartParams.setLocation(puntoIncio, mWm);
 		routeEndParams.setLocation(puntoFin,mWm);
 		// Add params to list
 		routeParams.add(routeStartParams);
@@ -1006,22 +1006,29 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		volley = VolleySingleton.getInstance(getActivity().getApplicationContext());
 		requestQueue = volley.getRequestQueue();
 		List<LocatorFindParameters> routeParams = new ArrayList<LocatorFindParameters>();
-
+		List<String> nomEdi = new LinkedList<String>();
+		//agregamos el nombre de la ruta
+		nomEdi.add(ruta.getNombre());
 		String [] puntosString = ruta.getPuntos().split("/");
 
 		for(String cadena: puntosString){
 			String[] puntoInformacion = cadena.split(",");
+			if(puntoInformacion[0].equals("NONE")){
+			}else {//añadimos los nombres de los edificios mientras no sean NONE
+				nomEdi.add(puntoInformacion[0]);
+			}
 			LocatorFindParameters param = new LocatorFindParameters(puntoInformacion[0]);
 			Point punto = new Point();
 			double x = Double.parseDouble(puntoInformacion[1]);
 			double y = Double.parseDouble(puntoInformacion[2]);
-			punto.setXY(x,y);
-			param.setLocation(punto,mWm);
+			punto.setXY(x, y);
+			param.setLocation(punto, mWm);
 			routeParams.add(param);
 		}
 
 		RouteAsyncTask routeTask = new RouteAsyncTask();
 		routeTask.setTipo(tipo);
+		routeTask.setNombreEdificios(nomEdi);
 		routeTask.setRuta(ruta);
 		routeTask.execute(routeParams);
 		mPendingTask = routeTask;
@@ -1263,7 +1270,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	 * Shows the Routing result layout after successful routing
 	 * @param distance in meters
 	 */
-	private void showRoutingResultLayout(double distance,int tipo,final RutaEspecial ruta) {
+	private void showRoutingResultLayout(double distance,int tipo,final RutaEspecial ruta, final List<String> edificios) {
         // Remove the layours
 		mMapContainer.removeView(mSearchResult);
 		mMapContainer.removeView(mSearchBox);
@@ -1325,7 +1332,9 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 					DialogInfoRoutes diaInfoRuta = new DialogInfoRoutes();
 					diaInfoRuta.setNombreRuta(ruta.getNombre());
 					diaInfoRuta.setDescripcion(ruta.getDescripcion());
-					obtenerImagen(ruta.getImagen(),diaInfoRuta);
+					diaInfoRuta.setContador(0);
+					diaInfoRuta.setEdificios(edificios);
+					obtenerImagen(ruta.getImagen(), diaInfoRuta);
 					Toast.makeText(getActivity(), "Cargando Informacion...",Toast.LENGTH_SHORT).show();
 				}
 			});
@@ -1591,6 +1600,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		private ProgressDialogFragment mProgressDialog;
 		private List<Point> puntosGlobales;
 		private List<String> nombrePuntosGlobales;
+		private List<String> nombreEdificios;
 		private int tipo;
 		private RutaEspecial ruta;
 		public RouteAsyncTask() {
@@ -1860,7 +1870,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 			if(editButton != null){editButton.setVisible(true);}
 			// Show Routing Result Layout
-			showRoutingResultLayout(route.getTotalMiles(),tipo,ruta);
+			showRoutingResultLayout(route.getTotalMiles(),tipo,ruta,nombreEdificios);
 
 		}
 
@@ -1894,6 +1904,14 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			destinationSymbol.setOffsetY(offsetY);
 
 			return new Graphic(point, destinationSymbol);
+		}
+
+		public List<String> getNombreEdificios() {
+			return nombreEdificios;
+		}
+
+		public void setNombreEdificios(List<String> nombreEdificios) {
+			this.nombreEdificios = nombreEdificios;
 		}
 
 		public int getTipo() {
