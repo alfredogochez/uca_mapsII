@@ -1721,7 +1721,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				Log.d("Punto Fin", "Nombre: " + mEndLocation + "\nPuntoX: " + puntos.get(puntos.size() - 1).getX() + "\nPuntoY: " + puntos.get(puntos.size() - 1).getY());
 
 				puntosGlobales = puntosDeImportancia;
-				nombrePuntosGlobales = nombrePuntos;
+				nombrePuntosGlobales = nombreImportanes;
 
 			} catch (Exception e) {
 				mException = e;
