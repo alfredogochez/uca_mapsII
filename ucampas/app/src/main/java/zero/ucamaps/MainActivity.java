@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,6 +84,12 @@ public class MainActivity extends ActionBarActivity {
     private GoogleApiClient client;
 
     @Override
+    public void onBackPressed() {
+        finish();
+    }
+
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -100,6 +107,7 @@ public class MainActivity extends ActionBarActivity {
             e.printStackTrace();
 
         }
+
 
 
 
