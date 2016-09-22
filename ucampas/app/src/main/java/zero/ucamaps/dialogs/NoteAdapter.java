@@ -78,15 +78,15 @@ public class NoteAdapter extends ArrayAdapter<Nota> {
                     public void onClick(View v) {
                         AlertDialog.Builder build = new AlertDialog.Builder(cont);
                         build.setTitle("Alerta");
-                        build.setMessage("Esta a punto de borrar una anotacion, ¿Está sseguro?");
-                        build.setPositiveButton("Si, eliminar", new DialogInterface.OnClickListener() {
+                        build.setMessage("Esta a punto de borrar una anotacion, ¿Está seguro?");
+                        build.setPositiveButton("Si", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 eliminarNota(position);
                                 dial.dismiss();
                             }
                         });
-                        build.setNegativeButton("No,deseo conservar la anotacion", new DialogInterface.OnClickListener() {
+                        build.setNegativeButton("No", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();

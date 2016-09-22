@@ -99,7 +99,7 @@ public class MainActivity extends ActionBarActivity {
         try {
             String[] colorMapa = obtenerMapa();
             if(colorMapa[0].equals("none")){
-                setView("2161ba8a41114947bc7c533a24bdb150","Sound Off");
+                setView("2161ba8a41114947bc7c533a24bdb150","Sonido Apagado");
             }else {
                 setView(colorMapa[0],colorMapa[1]);
             }
@@ -291,7 +291,12 @@ public class MainActivity extends ActionBarActivity {
         final TextView text_drawer_sound = (TextView) view_sound.findViewById(R.id.drawer_item_textview);
         ImageView icon_drawer_sound = (ImageView) view_sound.findViewById(R.id.drawer_item_icon);
 
-        text_drawer_sound.setText(getString(R.string.action_sound));
+        if(getChangeSound().equals("Sonido Apagado")) {
+            text_drawer_sound.setText(getString(R.string.action_sound_1));}
+        else {
+            text_drawer_sound.setText(getString(R.string.action_sound_2));
+        }
+
         icon_drawer_sound.setImageResource(R.drawable.action_sound);
 
         item = new DrawerItem(view_sound, new DrawerItem.OnClickListener() {
@@ -300,13 +305,13 @@ public class MainActivity extends ActionBarActivity {
             public void onClick() {
 
                 //Sends the parameter to the dynamic fragment
-                if (getChangeSound().equals("Sound Off")) {
-                    guardarTema(baseColor,"Sound On",1);
-                    setChangeSound("Sound On");
+                if (getChangeSound().equals("Sonido Apagado")) {
+                    guardarTema(baseColor,"Sonido Encendido",1);
+                    setChangeSound("Sonido Encendido");
                     showMapWithSound(baseColor, changeSound,1);
                 } else {
-                    guardarTema(baseColor,"Sound Off",1);
-                    setChangeSound("Sound Off");
+                    guardarTema(baseColor,"Sonido Apagado",1);
+                    setChangeSound("Sonido Apagado");
                     showMapWithSound(baseColor, changeSound,1);
                 }
                 //Close and lock the drawer
@@ -322,7 +327,7 @@ public class MainActivity extends ActionBarActivity {
         TextView text_favorites = (TextView) favorites.findViewById(R.id.drawer_item_textview);
         ImageView icon_favorites = (ImageView) favorites.findViewById(R.id.drawer_item_icon);
 
-        text_favorites.setText("Favorite Routes");
+        text_favorites.setText("Rutas Favoritas");
         icon_favorites.setImageResource(R.drawable.ic_star_black_24dp);
         item = new DrawerItem(favorites, new DrawerItem.OnClickListener() {
 
@@ -334,7 +339,7 @@ public class MainActivity extends ActionBarActivity {
                 favFrag.setRoutingDialogListener(mapFragment);
                 List<RutaEspecial> recuperar = favFrag.recuperar();
                 if(!recuperar.isEmpty()){
-                    favFrag.show(getFragmentManager(), "Favorite Routes");
+                    favFrag.show(getFragmentManager(), "Rutas Favoritas");
                 }
                 else{
 
@@ -352,7 +357,7 @@ public class MainActivity extends ActionBarActivity {
         TextView text_specials = (TextView) specials.findViewById(R.id.drawer_item_textview);
         ImageView icon_specials = (ImageView) specials.findViewById(R.id.drawer_item_icon);
 
-        text_specials.setText("Special Routes");
+        text_specials.setText("Rutas Especiales");
         icon_specials.setImageResource(R.drawable.ic_business_black_24dp);
         item = new DrawerItem(specials, new DrawerItem.OnClickListener() {
 
@@ -372,7 +377,7 @@ public class MainActivity extends ActionBarActivity {
         TextView text_search = (TextView) advanced_search.findViewById(R.id.drawer_item_textview);
         ImageView icon_search = (ImageView) advanced_search.findViewById(R.id.drawer_item_icon);
 
-        text_search.setText("Advanced Search");
+        text_search.setText("Busqueda Avanzada");
         icon_search.setImageResource(R.drawable.ic_find_in_page_black_24dp);
         item = new DrawerItem(advanced_search, new DrawerItem.OnClickListener() {
 
@@ -393,7 +398,7 @@ public class MainActivity extends ActionBarActivity {
         TextView text_notes = (TextView) notes.findViewById(R.id.drawer_item_textview);
         ImageView icon_notes = (ImageView) notes.findViewById(R.id.drawer_item_icon);
 
-        text_notes.setText("Notes");
+        text_notes.setText("Anotaciones");
         icon_notes.setImageResource(R.drawable.ic_book_black_24dp);
         item = new DrawerItem(notes, new DrawerItem.OnClickListener() {
 
@@ -452,7 +457,7 @@ public class MainActivity extends ActionBarActivity {
             public void onClick() {
 
                 AboutDialog about = new AboutDialog(MainActivity.this);
-                about.setTitle("About this app");
+                about.setTitle("Sobre esta app");
                 about.show();
                 //Close and lock the drawer
                 mDrawerLayout.closeDrawers();

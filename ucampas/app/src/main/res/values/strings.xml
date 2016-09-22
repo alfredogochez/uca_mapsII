@@ -24,46 +24,47 @@
     <string name="address">Place name or address</string>
 
     <!-- action bar titles -->
-    <string name="menu_basemaps">Switch Theme</string>
-    <string name="action_location">Compass</string>
-    <string name="action_qr">Scan with QR Code</string>
-    <string name="action_sound">Sound On / Off </string>
-    <string name="action_sound_on">Sound On</string>
-    <string name="action_sound_off">Sound Off</string>
-    <string name="action_about">About</string>
+    <string name="menu_basemaps">Cambiar Tema</string>
+    <string name="action_location">Compas</string>
+    <string name="action_qr">Escanear Codigo QR</string>
+    <string name="action_sound_1">Activar Sonido</string>
+    <string name="action_sound_2">Desactivar Sonido</string>
+    <string name="action_sound_on">Sonido Encendido</string>
+    <string name="action_sound_off">Sonido Apagado</string>
+    <string name="action_about">Acerca de...</string>
 
     <!-- directions button text -->
-    <string name="get_route">Get Route</string>
+    <string name="get_route">Obtener Ruta</string>
 
     <!-- location search hint -->
-    <string name="my_location">My Location</string>
-    <string name="need_location_fix">Need a location fix before \'My Location\' can be used</string>
+    <string name="my_location">Mi ubicacion</string>
+    <string name="need_location_fix">Necesita obtenerse su ubicacion antes de generar rutas</string>
 
     <!-- dialog titles -->
-    <string name="title_basemaps_dialog">Select Base Map</string>
-    <string name="title_routing_dialog">Routing</string>
-    <string name="title_directions_dialog">Directions</string>
+    <string name="title_basemaps_dialog">Seleccione el tema</string>
+    <string name="title_routing_dialog">Enrutamiento</string>
+    <string name="title_directions_dialog">Direcciones</string>
 
     <!-- progress dialog messages -->
-    <string name="fetching_basemap">Fetching Basemap</string>
-    <string name="fetching_basemaps">Fetching Basemap Gallery</string>
-    <string name="fetching_selected_basemap">Fetching Selected Basemap</string>
-    <string name="address_search">Searching for a Place</string>
-    <string name="route_search">Searching for Route</string>
-    <string name="reverse_geocoding">Reverse Geocoding</string>
-    <string name="basemapSearchFailed">Basemap search failed</string>
-    <string name="routingFailed">Routing task failed</string>
-    <string name="addressSearchFailed">Address search failed</string>
-    <string name="noResultsFound">No results found</string>
-    <string name="route_time">Time</string>
-    <string name="route_distance">Distance</string>
-    <string name="swap_addresses">Interchange the addresses</string>
-    <string name="routing_title">Routing</string>
-    <string name="clearText">Clear Text</string>
+    <string name="fetching_basemap">Obteniendo temas </string>
+    <string name="fetching_basemaps">Obteniendo galeria de temas</string>
+    <string name="fetching_selected_basemap">Obteniedo tema seleccionado</string>
+    <string name="address_search">Buscando un lugar</string>
+    <string name="route_search">Generando Ruta</string>
+    <string name="reverse_geocoding">Geocodificacion inversa…</string>
+    <string name="basemapSearchFailed">La busqueda del tema falló</string>
+    <string name="routingFailed">El enrutamiento falló</string>
+    <string name="addressSearchFailed">La busqueda del lugar falló</string>
+    <string name="noResultsFound">No se encontraron resultados</string>
+    <string name="route_time">Tiempo</string>
+    <string name="route_distance">Distancia</string>
+    <string name="swap_addresses">Intercambiar direcciones</string>
+    <string name="routing_title">Enrutamiento</string>
+    <string name="clearText">Limpiar texto</string>
 
     <!-- Routing Dialog Fragment -->
-    <string name="to">TO </string>
-    <string name="from">FROM </string>
+    <string name="to">HACIA </string>
+    <string name="from">DESDE </string>
 
     <!-- ImageView content Descriptions -->
     <string name="icon_for_searchResult">Icon indicating Search</string>
