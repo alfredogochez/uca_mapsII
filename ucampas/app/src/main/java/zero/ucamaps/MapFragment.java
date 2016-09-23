@@ -135,7 +135,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
     private static final String KEY_SOUND_ITEM = "KEY_SOUND_ITEM";
 	private static final String KEY_IS_LOCATION_TRACKING = "IsLocationTracking";
 	private static final int REQUEST_CODE_PROGRESS_DIALOG = 1;
-	private static final String SEARCH_HINT = "Search";
+	private static final String SEARCH_HINT = "Busqueda";
 
 	private static FrameLayout.LayoutParams mlayoutParams;
 
@@ -275,7 +275,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			mBasemapPortalItemId = defaultBaseMapURL.substring(defaultBaseMapURL.indexOf("id=")+3);
 			// Set the MapView
 			setMapView(mapView);
-			mapView.zoomin();
+			//mapView.zoomin();
 		}
 		return mMapContainer;
 	}
@@ -402,7 +402,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 						}
 					});
 				} else {
-					throw new Exception("Failed to load web map.");
+					throw new Exception("Ocurrió un error al cargar el mapa");
 				}
 				return null;
 			}
@@ -658,7 +658,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
         MainActivity main = (MainActivity) getActivity();
         mSoundActive = main.getChangeSound();
 
-        if (mSoundActive.equals("Sound On")) {
+        if (mSoundActive.equals("Sonido Encendido")) {
             Toast.makeText(getActivity(),mSoundActive, Toast.LENGTH_LONG).show();
         }
         else{
@@ -703,7 +703,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 						String text = mRoutingDirections.get(position).getText(); //getting the direction
 						mMapView.setExtent(direction.getGeometry());
 						//Reads the direction with sound
-						if (mSoundActive.equals("Sound On")) {
+						if (mSoundActive.equals("Sonido Encendido")) {
 							Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
 							ttsManager.initQueue(text);
 						}
@@ -832,18 +832,18 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 					Unit mapUnit = mMapView.getSpatialReference().getUnit();
 					double zoomWidth = Unit.convertUnits(SEARCH_RADIUS, Unit.create(LinearUnit.Code.METER), mapUnit);
 					Envelope zoomExtent = new Envelope(mLocation, zoomWidth / 10, zoomWidth / 10);
-					mMapView.setExtent(zoomExtent);
+					//mMapView.setExtent(zoomExtent);
 				}
 			}
 
 			@Override
 			public void onProviderDisabled(String arg0) {
-				Toast.makeText(getActivity(), "GPS turned off", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getActivity(), "GPS apagado", Toast.LENGTH_SHORT).show();
 			}
 
 			@Override
 			public void onProviderEnabled(String arg0) {
-				Toast.makeText(getActivity(), "GPS turned on", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getActivity(), "GPS encendido", Toast.LENGTH_SHORT).show();
 			}
 
 			@Override
@@ -1123,7 +1123,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 					editMarkerNames.remove(editMarkerNames.size() - 1);
 					editPoints--;
 				}else{
-					Toast.makeText(getActivity(),"No hay ningún punto colocado.",Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(),"No hay ningún punto colocado",Toast.LENGTH_SHORT).show();
 				}
 
 				//resetGraphicsLayers();
@@ -1227,7 +1227,6 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		iv_note.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(getActivity(),"va a crear una nota sobre este edificio",Toast.LENGTH_SHORT).show();
 				DialogSaveNote dsn = new DialogSaveNote();
 				dsn.setEdificio(address);
 				dsn.show(getFragmentManager(), "guardarNota");
@@ -1578,7 +1577,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 						String address = geocodeResult.getAddress();
 						mLocationLayerPoint = resultPoint;
 						// Zoom map to geocode result location
-						mMapView.zoomToResolution(geocodeResult.getLocation(), 1);
+						mMapView.zoomToResolution(geocodeResult.getLocation(), 0.3);
 						showSearchResultLayout(address);
 
 

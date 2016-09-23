@@ -61,12 +61,15 @@ public class DialogSaveNote extends DialogFragment{
                                 ((TextView) tituloBox).getText().toString().isEmpty()) {
                             Toast.makeText(getActivity(), "No puede haber campos en blanco", Toast.LENGTH_SHORT).show();
                         } else {
+                            if (((TextView) tituloBox).getText().toString().length() > 20) {
+                                Toast.makeText(getActivity(), "El titulo es demasiado largo, el maximo es 20 caracteres", Toast.LENGTH_SHORT).show();
+                            }else {
                             String titulo = ((TextView) tituloBox).getText().toString();
                             String nota = ((TextView) notaBox).getText().toString();
                             guardarNota(titulo,nota);
                             vista.setVisibility(vista.GONE);
                             dismiss();
-                        }
+                        }}
                     }
                 }
         );

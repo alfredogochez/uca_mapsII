@@ -201,7 +201,6 @@ public class DialogFavoriteRoute extends DialogFragment {
     private void reemplazar_ruta(int index_ruta,String nombre_ruta,Toast tostada,List<MapPoint> listaPuntos) {
         DialogFavoriteList dfl = new DialogFavoriteList();
         List<RutaEspecial> rutas = dfl.recuperar();
-        ObjectInputStream objectinputstream = null;
         ObjectOutputStream oos = null;
         FileOutputStream fout = null;
         File tarjeta = Environment.getExternalStorageDirectory();
@@ -211,8 +210,6 @@ public class DialogFavoriteRoute extends DialogFragment {
         RutaEspecial rutaNueva = new RutaEspecial(nombre_ruta, listaPuntos);
         rutas.set(index_ruta, rutaNueva);
         try {
-            FileInputStream streamIn = new FileInputStream(file);
-            objectinputstream = new ObjectInputStream(streamIn);
             fout = new FileOutputStream(file);
             oos = new ObjectOutputStream(fout);
             oos.writeObject(rutas);

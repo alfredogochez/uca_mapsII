@@ -63,7 +63,6 @@ public class DialogNotesList extends DialogFragment{
 
     public List<Nota> recuperar(){
         List<Nota> listaNota = new LinkedList<Nota>();
-        int i = 0;
         File tarjeta = Environment.getExternalStorageDirectory();
         File dir = new File(tarjeta.getAbsolutePath(), "/ucamaps/");
         dir.mkdirs();

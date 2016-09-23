@@ -17,9 +17,9 @@ import zero.ucamaps.database.RutaEspecial;
 
 public class RoutingDialogFragment extends DialogFragment {
 	public static final String ARG_END_POINT_DEFAULT = "EndPointDefault";
-	public static final String MY_LOCATION = "My Location";
+	public static final String MY_LOCATION = "Mi ubicacion";
 	private static final String SEARCH_FROM = "Desde";
-	private static final String SEARCH_TO = "Hasta";
+	private static final String SEARCH_TO = "Hacia";
 	private String mEndPointDefault;
 	private SearchView mStartText;
 	private SearchView mEndText;
@@ -117,10 +117,9 @@ public class RoutingDialogFragment extends DialogFragment {
 				String endPoint = mEndText.getQuery().toString();
 
 				if(startPoint.equalsIgnoreCase(endPoint)){
-					Toast.makeText(getActivity(),"", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(),getString(R.string.error_nombre_igual_ruta), Toast.LENGTH_SHORT).show();
 				}
-
-				if (mRoutingDialogListener.onGetRoute(startPoint, endPoint)) {
+				else if (mRoutingDialogListener.onGetRoute(startPoint, endPoint)) {
 					dismiss();
 				}
 			}

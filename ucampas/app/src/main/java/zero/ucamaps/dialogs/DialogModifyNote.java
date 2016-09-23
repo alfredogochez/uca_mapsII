@@ -55,15 +55,19 @@ public class DialogModifyNote extends DialogFragment {
                     @Override
                     public void onClick(View v) {
                         if (((TextView) notaBox).getText().toString().isEmpty() ||
-                                ((TextView) tituloBox).getText().toString().isEmpty()) {
+                                ((TextView) tituloBox).getText().toString().isEmpty())
+                            {
                             Toast.makeText(getActivity(), "No puede haber campos en blanco", Toast.LENGTH_SHORT).show();
                         } else {
+                            if (((TextView) tituloBox).getText().toString().length() > 20) {
+                                Toast.makeText(getActivity(), "El titulo es demasiado largo, el maximo es 20 caracteres", Toast.LENGTH_SHORT).show();
+                            }else {
                             String titulo = ((TextView) tituloBox).getText().toString();
                             String nota = ((TextView) notaBox).getText().toString();
                             modificarNota(posicion,titulo,nota,notaext.getEdificio());
                             vista.setVisibility(vista.GONE);
                             dismiss();
-                        }
+                        }}
                     }
                 }
         );

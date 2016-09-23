@@ -47,4 +47,8 @@ public class InfoActivity extends ActionBarActivity {
 
     }
 
+    @Override
+    public android.support.v4.app.FragmentManager getSupportFragmentManager() {
+        return null;
+    }
 }
