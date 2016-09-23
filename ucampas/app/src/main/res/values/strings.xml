@@ -41,7 +41,7 @@
 
     <!-- dialog titles -->
     <string name="title_basemaps_dialog">Select Base Map</string>
-    <string name="title_routing_dialog">Routing</string>
+    <string name="title_routing_dialog">Ruta</string>
     <string name="title_directions_dialog">Directions</string>
 
     <!-- progress dialog messages -->
@@ -204,4 +204,9 @@
 
     <!-- Edit Mode -->
     <string name="edit_mode_option">Edit Mode</string>
+
+    <!-- Error Message -->
+    <string name="error_nombre_igual_ruta">No se pueden crear rutas </string>
+
+
 </resources>

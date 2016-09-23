@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
+import android.widget.Toast;
 
 import zero.ucamaps.R;
 import zero.ucamaps.database.RutaEspecial;
@@ -17,8 +18,8 @@ import zero.ucamaps.database.RutaEspecial;
 public class RoutingDialogFragment extends DialogFragment {
 	public static final String ARG_END_POINT_DEFAULT = "EndPointDefault";
 	public static final String MY_LOCATION = "My Location";
-	private static final String SEARCH_FROM = "From";
-	private static final String SEARCH_TO = "To";
+	private static final String SEARCH_FROM = "Desde";
+	private static final String SEARCH_TO = "Hasta";
 	private String mEndPointDefault;
 	private SearchView mStartText;
 	private SearchView mEndText;
@@ -114,6 +115,11 @@ public class RoutingDialogFragment extends DialogFragment {
 			public void onClick(View v) {
 				String startPoint = mStartText.getQuery().toString();
 				String endPoint = mEndText.getQuery().toString();
+
+				if(startPoint.equalsIgnoreCase(endPoint)){
+					Toast.makeText(getActivity(),"", Toast.LENGTH_SHORT).show();
+				}
+
 				if (mRoutingDialogListener.onGetRoute(startPoint, endPoint)) {
 					dismiss();
 				}
