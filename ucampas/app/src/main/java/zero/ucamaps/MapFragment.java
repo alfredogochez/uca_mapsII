@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.support.v4.view.GravityCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -186,6 +187,11 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	private boolean mIsLocationTracking;
 	private Point mLocation = null;
 
+	public static boolean showBar=true;
+	public void setEditButton(MenuItem editButton) {
+		this.editButton = editButton;
+	}
+
 	private MenuItem editButton;
 	// Graphics layer to show geocode and reverse geocode results
 	private GraphicsLayer mLocationLayer;
@@ -272,7 +278,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			// show the default map
 			String defaultBaseMapURL = getString(R.string.default_basemap_url);
 			MapView mapView = new MapView(getActivity(), defaultBaseMapURL,"", "");
-			mBasemapPortalItemId = defaultBaseMapURL.substring(defaultBaseMapURL.indexOf("id=")+3);
+			mBasemapPortalItemId = defaultBaseMapURL.substring(defaultBaseMapURL.indexOf("id=") + 3);
 			// Set the MapView
 			setMapView(mapView);
 			//mapView.zoomin();
@@ -285,44 +291,50 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		super.onCreateOptionsMenu(menu, inflater);
 		// Inflate the menu items for use in the action bar
 		inflater.inflate(R.menu.action, menu);
+		menu.findItem(R.id.editMode).setVisible(showBar);
+		menu.findItem(R.id.location).setVisible(showBar);
 	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
+		//if(!MainActivity.mDrawerLayout.isDrawerOpen(GravityCompat.START) || true){
+			switch (item.getItemId()) {
 
-		case R.id.location:
-			// Toggle location tracking on or off
-			if (mIsLocationTracking) {
-				item.setIcon(R.drawable.ic_action_compass_mode);
-				mMapView.getLocationDisplayManager().setAutoPanMode(AutoPanMode.COMPASS);
-				mCompass.start();
-				mCompass.setVisibility(View.VISIBLE);
-				mIsLocationTracking = false;
-			} else {
-				startLocationTracking();
-				item.setIcon(android.R.drawable.ic_menu_mylocation);
-				if (mMapView.getRotationAngle() != 0) {
+			case R.id.location:
+				// Toggle location tracking on or off
+				if (mIsLocationTracking) {
+					item.setIcon(R.drawable.ic_action_compass_mode);
+					mMapView.getLocationDisplayManager().setAutoPanMode(AutoPanMode.COMPASS);
+					mCompass.start();
 					mCompass.setVisibility(View.VISIBLE);
-					mCompass.setRotationAngle(mMapView.getRotationAngle());
+					mIsLocationTracking = false;
 				} else {
-					mCompass.setVisibility(View.GONE);
+					startLocationTracking();
+					item.setIcon(android.R.drawable.ic_menu_mylocation);
+					if (mMapView.getRotationAngle() != 0) {
+						mCompass.setVisibility(View.VISIBLE);
+						mCompass.setRotationAngle(mMapView.getRotationAngle());
+					} else {
+						mCompass.setVisibility(View.GONE);
+					}
+
+				}
+				return true;
+			case R.id.editMode:
+				if(!editMode){
+					this.editMode = true;
+					this.editButton = item;
+					item.setVisible(false);
+					this.showEditionMenu();
+					//item.setIcon(null);
+					//item.setTitle("");
 				}
 
+			default:
+				return super.onOptionsItemSelected(item);
 			}
-			return true;
-		case R.id.editMode:
-			if(!editMode){
-				this.editMode = !this.editMode;
-				this.editButton = item;
-				item.setVisible(false);
-				this.showEditionMenu();
-				//item.setIcon(null);
-				//item.setTitle("");
-			}
-
-		default:
-			return super.onOptionsItemSelected(item);
-		}
+		//}else{
+		//	return super.onOptionsItemSelected(item);
+		//}
 	}
 
 	@Override
@@ -1865,7 +1877,10 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			mMapView.setExtent(route.getEnvelope(),100);
 
 			// Save routing directions so user can display them later
-			mRoutingDirections = route.getRoutingDirections();
+			List<RouteDirection> lista = route.getRoutingDirections();
+			LinkedList<RouteDirection> listaL = new LinkedList<RouteDirection>();
+			listaL.addAll(lista);
+			mRoutingDirections = listaL;
 
 			if(editButton != null){editButton.setVisible(true);}
 			// Show Routing Result Layout
