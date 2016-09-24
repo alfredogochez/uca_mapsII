@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import zero.ucamaps.R;
 import com.esri.core.tasks.na.RouteDirection;
@@ -106,9 +107,9 @@ public class DirectionsDialogFragment extends DialogFragment {
       View v = convertView;
       double distanceinmeters;
 
-      if (convertView == null) {
+      //if (convertView == null) {
         v = getActivity().getLayoutInflater().inflate(R.layout.directions_list_item, parent, false);
-      }
+      //}
 
       // Configure the view for this item
       RouteDirection direction = getItem(position);
@@ -117,6 +118,7 @@ public class DirectionsDialogFragment extends DialogFragment {
       if (drawable != null) {
         imageView.setImageDrawable(drawable);
       }
+      //Toast.makeText(getActivity(),direction.getText()+" "+Integer.toString(position),Toast.LENGTH_SHORT).show();
         TextView textView = (TextView) v.findViewById(R.id.directions_text_textview);
         textView.setText(direction.getText());
         textView = (TextView) v.findViewById(R.id.directions_length_textview);

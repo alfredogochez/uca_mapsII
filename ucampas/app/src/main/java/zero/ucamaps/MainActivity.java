@@ -170,14 +170,14 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                MapFragment.showBar=true;
+                //MapFragment.showBar=true;
                 invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                MapFragment.showBar=false;
+                //MapFragment.showBar=false;
                 invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
         };

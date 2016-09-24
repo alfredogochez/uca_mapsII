@@ -292,7 +292,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		// Inflate the menu items for use in the action bar
 		inflater.inflate(R.menu.action, menu);
 		menu.findItem(R.id.editMode).setVisible(showBar);
-		menu.findItem(R.id.location).setVisible(showBar);
+		//menu.findItem(R.id.location).setVisible(showBar);
 	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -322,9 +322,11 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			case R.id.editMode:
 				if(!editMode){
 					this.editMode = true;
+					this.showBar = false;
 					this.editButton = item;
 					item.setVisible(false);
 					this.showEditionMenu();
+					MainActivity.mDrawerLayout.closeDrawers();
 					//item.setIcon(null);
 					//item.setTitle("");
 				}
@@ -1114,9 +1116,10 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				editPointList.clear();
 				editPoints=0;
 				editMode=false;
+				showBar = true;
 				if(editButton != null){editButton.setVisible(true);}
 				resetGraphicsLayers();
-
+				getActivity().invalidateOptionsMenu();
 			}
 		});
 
@@ -1154,8 +1157,9 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 					editMarkers.clear();
 					editMarkerNames.clear();
 					editMode = false;
+					showBar = true;
 					resetGraphicsLayers();
-
+					getActivity().invalidateOptionsMenu();
 					RutaEspecial rutaMultiple = new RutaEspecial();
 					rutaMultiple.setDescripcion("ruta multiple");
 					rutaMultiple.setIdRutaEspecial("42");
