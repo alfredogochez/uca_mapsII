@@ -114,7 +114,7 @@ public class NoteAdapter extends ArrayAdapter<Nota> {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     //Sitio sitioEscogido = listaSitio.get(which);
-                                    mapFragment.onGetRouteMarked("Mi ubicacion", nota.getEdificio());
+                                    mapFragment.onGetRouteMarked(getContext().getString(R.string.my_location), nota.getEdificio());
                                     Toast.makeText(getContext(), "Ruta trazada, ¡a por el!", Toast.LENGTH_SHORT).show();
                                     dialog.dismiss();
                                     dial.dismiss();

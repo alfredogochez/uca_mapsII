@@ -147,7 +147,11 @@ public class RoutingDialogFragment extends DialogFragment {
 				String startPoint = mStartText.getQuery().toString();
 				String endPoint = mEndText.getQuery().toString();
 				if (startPoint.length() > 0) {
-					if (mRoutingDialogListener.onGetRoute(startPoint, endPoint)) {
+
+					if(startPoint.equalsIgnoreCase(endPoint)){
+						Toast.makeText(getActivity(),getString(R.string.error_nombre_igual_ruta), Toast.LENGTH_SHORT).show();
+					}
+					else if (mRoutingDialogListener.onGetRoute(startPoint, endPoint)) {
 						dismiss();
 					}
 				}
