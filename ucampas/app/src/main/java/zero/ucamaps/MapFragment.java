@@ -330,6 +330,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 					//item.setIcon(null);
 					//item.setTitle("");
 				}
+				return true;
 
 			default:
 				return super.onOptionsItemSelected(item);

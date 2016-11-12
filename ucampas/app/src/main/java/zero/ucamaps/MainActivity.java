@@ -123,7 +123,9 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        if(MapFragment.editMode){
+            mapFragment.showEditionMenu();
+        }
         updateDrawer();
     }
 
